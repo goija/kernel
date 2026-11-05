@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="nl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VORTEX KERNEL IDE // Sensoren, Tijdcapsules, Navigatiesterren & Nautische Positielijnen</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: JetBrains Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vortex: {
+              bg: '#03060c',
+              panel: '#0b1322',
+              panelAlt: '#0f1b31',
+              border: '#1e2f4d',
+              cyan: '#00f0ff',
+              amber: '#f59e0b',
+              emerald: '#10b981',
+              purple: '#a855f7',
+              crimson: '#ef4444'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    body {
+      background-color: #03060c;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #03060c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e2f4d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f0ff;
+    }
+    .cyber-panel {
+      background: rgba(11, 19, 34, 0.92);
+      border: 1px solid #1e2f4d;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
+    }
+    .cyber-btn {
+      transition: all 0.15s ease;
+      border: 1px solid #1e2f4d;
+    }
+    .cyber-btn:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+    }
+    .cyber-btn-active {
+      background: rgba(0, 240, 255, 0.16) !important;
+      border-color: #00f0ff !important;
+      color: #00f0ff !important;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+    }
+    .layer-pill-on {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      color: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+    .layer-pill-off {
+      background: rgba(15, 23, 42, 0.7);
+      border-color: #1e293b;
+      color: #64748b;
+    }
+    input[type="range"] {
+      accent-color: #00f0ff;
+    }
+    .code-editor {
+      font-family: 'JetBrains Mono', monospace;
+      tab-size: 2;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col select-none">
+
+  <!-- TOP TELEMETRY & KERNEL HEADER -->
+  <header class="cyber-panel border-b border-vortex-border px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 sticky top-0">
+    <!-- Brand & Kernel Version -->
+    <div class="flex items-center gap-2.5">
+      <div class="w-3 h-3 rounded-full bg-vortex-cyan animate-pulse shadow-[0_0_10px_#00f0ff]"></div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-xs sm:text-sm tracking-wider text-vortex-cyan">VORTEX KERNEL IDE v26.8</span>
+          <span class="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-vortex-purple/20 border border-vortex-purple/50 text-purple-300">SPICE / MEEUS / MARCQ ST. HILAIRE</span>
+        </div>
+        <div class="text-[10px] text-slate-400 flex items-center gap-2">
+          <span id="hdr-location">ANKER: LAREN / TAFELBERGHEIDE (52.2300°N, 5.1800°E)</span>
+          <span class="text-vortex-amber hidden sm:inline" id="hdr-rd">RD: 140850 · 471350</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Chronometer & Sidereal Readout -->
+    <div class="flex items-center gap-2 sm:gap-4 bg-[#050a14] px-3 py-1 rounded border border-vortex-border text-[11px]">
+      <div>
+        <span class="text-slate-500">UTC:</span>
+        <span id="hdr-utc" class="text-slate-200 font-semibold">2026-11-05 14:54:00</span>
+      </div>
+      <div class="hidden sm:block border-l border-slate-800 pl-3">
+        <span class="text-slate-500">JD:</span>
+        <span id="hdr-jd" class="text-vortex-amber">2461350.12083</span>
+      </div>
+      <div class="border-l border-slate-800 pl-2 sm:pl-3">
+        <span class="text-slate-500">LST:</span>
+        <span id="hdr-lst" class="text-vortex-cyan font-bold">18h 21m 44s</span>
+      </div>
+      <div class="hidden lg:block border-l border-slate-800 pl-3">
+        <span class="text-slate-500">GRAY-39:</span>
+        <span id="hdr-gray" class="text-vortex-emerald">0x2E000B5</span>
+      </div>
+    </div>
+
+    <!-- Mode Switcher (Mobile HUD vs Desktop Split IDE) & Quick Actions -->
+    <div class="flex items-center gap-1.5">
+      <button id="btn-mode-desktop" onclick="setLayoutMode('desktop')" class="cyber-btn cyber-btn-active px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1">
+        <span>🖥️</span><span class="hidden sm:inline">Desktop IDE</span>
+      </button>
+      <button id="btn-mode-mobile" onclick="setLayoutMode('mobile')" class="cyber-btn px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 text-slate-300">
+        <span>📱</span><span class="hidden sm:inline">Mobiel Veld-HUD</span>
+      </button>
+      <button onclick="panicResetAllLayers()" title="Zet alle projectielagen op OFF (Strikte Nul-Standaard)" class="cyber-btn px-2 py-1 rounded text-[11px] bg-red-950/50 border-red-800/70 text-red-300 hover:bg-red-900/60">
+        🛑 LAGEN UIT
+      </button>
+    </div>
+  </header>
+
+  <!-- STRICT LAYER CONTROL BAR (ALL START OFF AT INITIALIZATION) -->
+  <section class="bg-[#060b16] border-b border-vortex-border px-3 py-1.5 flex items-center justify-between gap-2 overflow-x-auto z-20">
+    <div class="flex items-center gap-1.5 shrink-0">
+      <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mr-1">Projectielagen (Start=OFF):</span>
+      
+      <button id="layer-btn-sterren" onclick="toggleLayer('sterren')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>✨</span><span>navigatiesterren</span><span class="font-bold text-[9px] ml-0.5" id="state-sterren">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-uurhoek_grid" onclick="toggleLayer('uurhoek_grid')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🧭</span><span>uurhoek_grid</span><span class="font-bold text-[9px] ml-0.5" id="state-uurhoek_grid">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-nautische_positielijnen" onclick="toggleLayer('nautische_positielijnen')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>⚓</span><span>nautische_positielijnen</span><span class="font-bold text-[9px] ml-0.5" id="state-nautische_positielijnen">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-reisschema_vectoren" onclick="toggleLayer('reisschema_vectoren')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🗺️</span><span>reisschema_vectoren</span><span class="font-bold text-[9px] ml-0.5" id="state-reisschema_vectoren">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-fotonisch_rooster" onclick="toggleLayer('fotonisch_rooster')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🔬</span><span>fotonisch_110nm</span><span class="font-bold text-[9px] ml-0.5" id="state-fotonisch_rooster">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-planimeter_arm" onclick="toggleLayer('planimeter_arm')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>📐</span><span>ott_planimeter</span><span class="font-bold text-[9px] ml-0.5" id="state-planimeter_arm">[OFF]</span>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button onclick="enableAllLayers()" class="px-2 py-0.5 rounded text-[10px] bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/60">
+        + Alles AAN
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN WORKSPACE CONTAINER (ADAPTS TO DESKTOP SPLIT OR MOBILE STACK) -->
+  <main id="main-workspace" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
+
+    <!-- LEFT / TOP VIEWPORT: INTERACTIVE VORTEX CANVAS & CAMERA AR OVERLAY (Cols 1-7 on Desktop) -->
+    <section id="viewport-section" class="lg:col-span-7 flex flex-col gap-2 min-h-[420px] lg:h-[calc(100vh-108px)]">
+      
+      <!-- Canvas Container -->
+      <div class="relative flex-1 cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border">
+        
+        <!-- Hidden/Background WebRTC Video Element for Mobile/Desktop Optical AR -->
+        <video id="ar-camera-video" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none transition-opacity duration-300"></video>
+
+        <!-- Primary Interactive Astrometric & Nautical Canvas -->
+        <canvas id="vortex-canvas" class="relative z-10 w-full h-full block cursor-crosshair"></canvas>
+
+        <!-- Floating Top-Left HUD Overlay on Canvas -->
+        <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none flex flex-col gap-1 bg-[#03060c]/85 border border-vortex-border/80 px-3 py-2 rounded text-[11px] max-w-xs">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-vortex-cyan font-bold">VORTEX TABLEAU #03060c</span>
+            <span id="canvas-proj-mode" class="text-[10px] px-1.5 py-0.2 bg-vortex-cyan/15 text-vortex-cyan rounded">STEREO / NAUTISCH</span>
+          </div>
+          <div id="canvas-layer-notice" class="text-amber-400 text-[10px]">
+            Alle projectielagen staan op [OFF]. Schakel een laag in via de balk hierboven of via VortexKernel.setLayer() in de IDE.
+          </div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-slate-300 pt-1 border-t border-slate-800/80">
+            <div>Azimut ( komp ): <span id="hud-az" class="text-vortex-cyan font-semibold">245.91°</span></div>
+            <div>Elevatie (h): <span id="hud-alt" class="text-vortex-emerald font-semibold">+12.10°</span></div>
+            <div>Quat q0 (w): <span id="hud-qw" class="text-purple-300">0.8341</span></div>
+            <div>Quat |v|: <span id="hud-qv" class="text-purple-300">0.5516</span></div>
+          </div>
+        </div>
+
+        <!-- Floating Bottom-Left Mouse / Fix Telemetry -->
+        <div class="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex flex-wrap items-center justify-between gap-2 bg-[#03060c]/90 border border-vortex-border px-3 py-1.5 rounded text-[10px]">
+          <div class="flex items-center gap-3">
+            <span>CURSOR: <strong id="cursor-readout" class="text-vortex-cyan">Az 000.0° | Alt +00.0° | ΔNM 0.0</strong></span>
+            <span class="hidden sm:inline text-slate-500">|</span>
+            <span class="hidden sm:inline">GEGIST BESTEK (AP): <strong id="ap-readout" class="text-vortex-amber">52°13.8'N, 005°10.8'E</strong></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span>ASTRO FIX (MARCQ ST. HILAIRE):</span>
+            <strong id="fix-readout" class="text-vortex-emerald">52°14.12'N, 005°11.04'E (σ = 0.42 NM)</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Time & Capsule Scrubber Bar under Canvas -->
+      <div class="cyber-panel rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Tijd-Motor:</span>
+          <button onclick="stepTime(-3600)" class="cyber-btn px-2 py-1 rounded text-[11px] bg-slate-900">-1u</button>
+          <button onclick="stepTime(-60)" class="cyber-btn px-2 py-1 rounded text-[11px] bg-slate-900">-1m</button>
+          <button id="btn-live-clock" onclick="toggleLiveClock()" class="cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 font-semibold">
+            ⏸️ PAUZE
+          </button>
+          <button onclick="stepTime(60)" class="cyber-btn px-2 py-1 rounded text-[11px] bg-slate-900">+1m</button>
+          <button onclick="stepTime(3600)" class="cyber-btn px-2 py-1 rounded text-[11px] bg-slate-900">+1u</button>
+          <button onclick="setNowTime()" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-cyan/15 text-vortex-cyan">Nu (5 Nov 2026)</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-[10px] text-slate-400">Tijdcapsule Snelkeuze:</label>
+          <select id="quick-capsule-select" onchange="loadTimeCapsule(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[11px] text-vortex-amber focus:outline-none focus:border-vortex-cyan">
+            <option value="CAP-2026-NOW">⏳ 2026-11-05 15:54 CET — Actuele Kernel Referentie (Laren)</option>
+            <option value="CAP-1889-VANGOGH">🎨 1889-07-22 04:00 UT — Van Gogh Sterrennacht (Saint-Rémy)</option>
+            <option value="CAP-2026-ECLIPSE">🌑 2026-08-12 18:08 UT — Saros 126 Eclips Benchmark (Bourges)</option>
+            <option value="CAP-1530-LODIJKE">🌊 1530-11-05 12:00 UT — Sint-Felixvloed (Kasteel Lodijke / Reimerswaal)</option>
+            <option value="CAP-1953-PLUIMPOT">⚓ 1953-02-01 03:00 UT — Watersnood & Pluimpot (Tholen / Scherpenisse)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT / BOTTOM CONTROL & PROGRAMMING DECK (Cols 8-12 on Desktop) -->
+    <section id="control-section" class="lg:col-span-5 flex flex-col gap-2 lg:h-[calc(100vh-108px)] overflow-hidden">
+      
+      <!-- Module Navigation Tabs -->
+      <nav class="cyber-panel rounded-lg p-1 grid grid-cols-4 gap-1 shrink-0">
+        <button id="tab-btn-sensors" onclick="switchModuleTab('sensors')" class="cyber-btn px-2 py-2 rounded text-[11px] font-semibold flex flex-col sm:flex-row items-center justify-center gap-1">
+          <span>📡</span><span>1. Sensoren</span>
+        </button>
+        <button id="tab-btn-voyage" onclick="switchModuleTab('voyage')" class="cyber-btn px-2 py-2 rounded text-[11px] font-semibold flex flex-col sm:flex-row items-center justify-center gap-1">
+          <span>🧭</span><span>2. Reis & Capsules</span>
+        </button>
+        <button id="tab-btn-nautical" onclick="switchModuleTab('nautical')" class="cyber-btn px-2 py-2 rounded text-[11px] font-semibold flex flex-col sm:flex-row items-center justify-center gap-1">
+          <span>⚓</span><span>3. Uurhoek & LOP</span>
+        </button>
+        <button id="tab-btn-kernel" onclick="switchModuleTab('kernel')" class="cyber-btn cyber-btn-active px-2 py-2 rounded text-[11px] font-semibold flex flex-col sm:flex-row items-center justify-center gap-1">
+          <span>💻</span><span>4. Kernel IDE</span>
+        </button>
+      </nav>
+
+      <!-- MODULE PANELS CONTAINER -->
+      <div class="flex-1 cyber-panel rounded-lg p-3 overflow-y-auto space-y-4">
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 1: HARDWARE SENSOREN, QUATERNIONS & OPTISCHE AR (MOBIEL/DESKTOP)-->
+        <!-- ===================================================================== -->
+        <div id="mod-sensors" class="hidden space-y-4">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 1 // SENSOREN, QUATERNIONS & 110nm AR</h2>
+              <p class="text-[11px] text-slate-400">Mobiele Hardware Sensoren (GPS, Gyro, Kompas, Camera) + Desktop Simulator</p>
+            </div>
+            <span id="sensor-status-badge" class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300">SIMULATIE MODUS</span>
+          </div>
+
+          <!-- Hardware Activation Buttons for Mobile & Desktop -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="activateHardwareGPS()" class="cyber-btn p-2.5 rounded bg-vortex-panelAlt text-left flex items-center gap-2.5">
+              <span class="text-lg">🛰️</span>
+              <div>
+                <div class="text-xs font-bold text-vortex-cyan">Live GPS / GNSS</div>
+                <div class="text-[10px] text-slate-400">WGS84 + RD (EPSG:28992)</div>
+              </div>
+            </button>
+
+            <button onclick="activateHardwareOrientation()" class="cyber-btn p-2.5 rounded bg-vortex-panelAlt text-left flex items-center gap-2.5">
+              <span class="text-lg">🧭</span>
+              <div>
+                <div class="text-xs font-bold text-vortex-emerald">Gyro & Kompas</div>
+                <div class="text-[10px] text-slate-400">4D Quaternion (Geen Gimbal)</div>
+              </div>
+            </button>
+
+            <button id="btn-toggle-camera" onclick="toggleARCamera()" class="cyber-btn p-2.5 rounded bg-vortex-panelAlt text-left flex items-center gap-2.5">
+              <span class="text-lg">📷</span>
+              <div>
+                <div class="text-xs font-bold text-vortex-amber">Optische AR Camera</div>
+                <div class="text-[10px] text-slate-400">WebRTC HUD Overlay</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- 4D Quaternion Attitude & 26-Bit Gray Sensor Readout -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-purple-300">4D QUATERNION ATTITUDE & 26-BIT SENSOR BUS</span>
+              <span class="text-[10px] text-slate-400">q = w + xi + yj + zk</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">q.w (Scalar)</div>
+                <div id="quat-w" class="text-xs font-bold text-vortex-cyan">0.8341</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">q.x (Pitch)</div>
+                <div id="quat-x" class="text-xs font-bold text-purple-300">0.0882</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">q.y (Roll)</div>
+                <div id="quat-y" class="text-xs font-bold text-purple-300">-0.0579</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">q.z (Yaw)</div>
+                <div id="quat-z" class="text-xs font-bold text-vortex-emerald">-0.5414</div>
+              </div>
+            </div>
+
+            <!-- Manual / Simulator Sliders -->
+            <div class="space-y-2 pt-2 border-t border-slate-800/80 text-[11px]">
+              <div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Kompas Azimut (α / VORTEX-as 245.91°):</span>
+                  <span id="lbl-sim-az" class="text-vortex-cyan font-bold">245.91°</span>
+                </div>
+                <input id="slider-az" type="range" min="0" max="360" step="0.01" value="245.91" oninput="updateSensorFromSliders()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Elevatie / Pitch (β):</span>
+                    <span id="lbl-sim-pitch" class="text-vortex-emerald font-bold">+12.10°</span>
+                  </div>
+                  <input id="slider-pitch" type="range" min="-90" max="90" step="0.1" value="12.1" oninput="updateSensorFromSliders()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Hellingshoek / Roll (γ):</span>
+                    <span id="lbl-sim-roll" class="text-purple-300 font-bold">0.00°</span>
+                  </div>
+                  <input id="slider-roll" type="range" min="-90" max="90" step="0.1" value="0.0" oninput="updateSensorFromSliders()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">26-Bit Optische Encoder Positie (0 – 67.108.863):</span>
+                  <span id="lbl-sensor-26bit" class="text-vortex-amber font-bold">45,841,209 (Hex 52 Stilte-Marge: ACTIEF)</span>
+                </div>
+                <input id="slider-26bit" type="range" min="0" max="67108863" step="100" value="45841209" oninput="updateSensorFromSliders()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Hexagonal Photonic Crystal Grating (G1-G6, a=110nm) & Acoustic Pututu 110Hz -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-amber">FOTONISCH KRISTALROOSTER (G1–G6) & PUTUTU 110Hz</span>
+              <button onclick="toggleLayer('fotonisch_rooster')" class="px-2 py-0.5 rounded bg-vortex-amber/20 border border-vortex-amber/50 text-amber-300 text-[10px]">
+                Toon G1-G6 Rooster op Canvas
+              </button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-[10px]">
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-slate-400">Roosterconstante (a)</div>
+                <div class="text-xs font-bold text-vortex-cyan">110.0 nm (s=55nm)</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-slate-400">Eenheidscel Oppervlak</div>
+                <div class="text-xs font-bold text-vortex-emerald">7859.14 nm²</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-slate-400">SiO₂/TiO₂ Diffractie η₁</div>
+                <div class="text-xs font-bold text-vortex-amber">94.2% (620–750nm)</div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-slate-400">Archeo-Akoestische Pututu Resonator (110 Hz / 11:8):</span>
+              <button onclick="triggerPututuResonance()" class="cyber-btn px-3 py-1 rounded bg-emerald-950/70 border-emerald-600/60 text-emerald-300 font-semibold">
+                🔊 Speel 110 Hz Pututu Puls
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 2: PLAATS, REISSCHEMA & TIJDCAPSULES                           -->
+        <!-- ===================================================================== -->
+        <div id="mod-voyage" class="hidden space-y-4">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-amber">MODULE 2 // PLAATS, REISSCHEMA & TIJDCAPSULES</h2>
+              <p class="text-[11px] text-slate-400">Geodetische Ankers (WGS84 ↔ RD EPSG:28992), Orthodroom/Loxodroom & Tijdcapsules</p>
+            </div>
+            <button onclick="toggleLayer('reisschema_vectoren')" class="px-2 py-1 rounded bg-vortex-cyan/20 border border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+              🗺️ Toon Reisschema Laag
+            </button>
+          </div>
+
+          <!-- Active Observer Place Selector & Custom Coordinates -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-cyan">1. ACTIEVE WAARNEMINGSPLAATS (GEODETISCH ANKER)</span>
+              <span id="active-place-code" class="text-[10px] text-vortex-amber">VORTEX-02</span>
+            </div>
+
+            <select id="place-preset-select" onchange="selectGeodeticPlace(this.value)" class="w-full bg-vortex-panel border border-vortex-border rounded px-2.5 py-1.5 text-xs text-slate-100">
+              <option value="VORTEX-02">📍 Laren / Tafelbergheide (NL) — 52.2300°N, 5.1800°E | RD 140850 · 471350</option>
+              <option value="VORTEX-01">🏛️ Bourges Meridiaan Anker (FR) — 47.0844°N, 2.3956°E | 587.0 km Vector</option>
+              <option value="VORTEX-03">🦪 Bol van Lodijke Perceel 369 — 51.4783°N, 4.1375°E | RD 68120 · 388050</option>
+              <option value="VORTEX-06">🗼 Tholen Kruittoren 23 / Contr'Escarpe — 51.5312°N, 4.2201°E | RD 72650 · 393420</option>
+              <option value="VORTEX-07">🌊 Scherpenisse / Platteweg & Pluimpot — 51.5475°N, 4.1039°E | RD 66020 · 395120</option>
+              <option value="VORTEX-DOM">⛩️ Domburg / Nehalennia Kernpunt — 51.5641°N, 3.4982°E | RD 24051 · 399036</option>
+              <option value="VORTEX-ST-REMY">🎨 Saint-Rémy-de-Provence (Van Gogh) — 43.7886°N, 4.8311°E</option>
+              <option value="VORTEX-SLUIS">🏰 Sluis Belfort (Zeeuws-Vlaanderen) — 51.3081°N, 3.3867°E</option>
+            </select>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <div>
+                <label class="text-[10px] text-slate-400">Breedte φ (°N)</label>
+                <input id="inp-obs-lat" type="number" step="0.0001" value="52.2300" onchange="updateCustomObserver()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400">Lengte λ (°E)</label>
+                <input id="inp-obs-lon" type="number" step="0.0001" value="5.1800" onchange="updateCustomObserver()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400">RD X (m)</label>
+                <input id="inp-obs-rdx" type="text" readonly value="140850" class="w-full bg-slate-900/90 border border-slate-800 rounded px-2 py-1 text-xs text-vortex-amber" />
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400">RD Y (m)</label>
+                <input id="inp-obs-rdy" type="text" readonly value="471350" class="w-full bg-slate-900/90 border border-slate-800 rounded px-2 py-1 text-xs text-vortex-amber" />
+              </div>
+            </div>
+          </div>
+
+          <!-- REISSCHEMA (Nautical & Geodetic Route Planner) -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-emerald">2. REISSCHEMA (ORTHODROOM, LOXODROOM & GEGIST BESTEK)</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-slate-400">Vaart:</span>
+                <input id="inp-ship-speed" type="number" value="12.5" min="1" max="500" step="0.5" onchange="renderVoyageTable()" class="w-14 bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-center text-xs text-emerald-300" />
+                <span class="text-[10px] text-slate-400">kn</span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-[10px]">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400">
+                    <th class="py-1">#</th>
+                    <th class="py-1">Etappe (Van → Naar)</th>
+                    <th class="py-1">Orthodroom</th>
+                    <th class="py-1">Zeemijl (NM)</th>
+                    <th class="py-1">Koers (Az)</th>
+                    <th class="py-1">Duur</th>
+                  </tr>
+                </thead>
+                <tbody id="voyage-table-body" class="divide-y divide-slate-800/60">
+                  <!-- Populated dynamically by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
+              <span id="voyage-totals" class="text-slate-300 font-semibold">Totaal: 0.0 km (0.0 NM)</span>
+              <div class="flex gap-1.5">
+                <button onclick="addCurrentPlaceToVoyage()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-emerald/15 text-emerald-300">+ Voeg Huidige Plaats Toe</button>
+                <button onclick="resetDefaultVoyage()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-400">Herstel Bourges-Tholen-Laren Route</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TIJDCAPSULES (Chronometric & Historical State Vault) -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-purple-300">3. TIJDCAPSULES (HISTORISCHE & CRYPTOGRAFISCHE VAULT)</span>
+              <button onclick="createCustomTimeCapsule()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-purple/20 border-vortex-purple text-purple-200 text-[10px] font-semibold">
+                + Verzegel Nieuwe Tijdcapsule
+              </button>
+            </div>
+            <div id="time-capsules-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 3: NAVIGATIESTERREN, UURHOEK & NAUTISCHE POSITIELIJNEN         -->
+        <!-- ===================================================================== -->
+        <div id="mod-nautical" class="hidden space-y-4">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-emerald">MODULE 3 // NAVIGATIESTERREN, UURHOEK & POSITIELIJNEN</h2>
+              <p class="text-[11px] text-slate-400">LHA = LST - RK | Hoogteformule sin(Hc) | Marcq St. Hilaire Intercept (p = 60·ΔH)</p>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="toggleLayer('sterren'); toggleLayer('nautische_positielijnen');" class="px-2 py-1 rounded bg-vortex-emerald/20 border border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                ⚓ Plot Sterren & LOPs
+              </button>
+            </div>
+          </div>
+
+          <!-- Sidereal & Hour Angle Master Box -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-cyan">UURHOEK & STERRENTIJD REKENMOTOR (GREENWICH & LOKAAL)</span>
+              <span class="text-[10px] text-slate-400">1 uur = 15°00' | 1° = 60 NM</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">GHA Aries (γ)</div>
+                <div id="naut-gha-aries" class="text-xs font-bold text-vortex-cyan">270° 14.2'</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Lokale Sterrentijd (LST)</div>
+                <div id="naut-lst-deg" class="text-xs font-bold text-vortex-amber">275° 25.0'</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Bennett Refractie (10°C, 1013mb)</div>
+                <div id="naut-refrac" class="text-xs font-bold text-vortex-emerald">+4.38' (AM 4.67)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigational Stars & Planets Almanac Table -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-amber">ALMANAK NAVIGATIESTERREN & PLANETEN (REAL-TIME EPHEMERIS)</span>
+              <span class="text-[10px] text-slate-400">Klik op ★ om op te nemen in Kruispeiling</span>
+            </div>
+            <div class="overflow-x-auto max-h-52">
+              <table class="w-full text-left border-collapse text-[10px]">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 sticky top-0 bg-[#050a14]">
+                    <th class="py-1">Fix</th>
+                    <th class="py-1">Hemellichaam</th>
+                    <th class="py-1">RK (α) / Dec (δ)</th>
+                    <th class="py-1">LHA (Uurhoek)</th>
+                    <th class="py-1">Hc (Berekend)</th>
+                    <th class="py-1">Zn (Azimut)</th>
+                  </tr>
+                </thead>
+                <tbody id="star-almanac-tbody" class="divide-y divide-slate-800/60">
+                  <!-- Populated dynamically by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Marcq St. Hilaire Sight Reduction & Nautical Position Lines (3-Star Fix) -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-emerald">NAUTISCHE POSITIELIJNEN (MARCQ ST. HILAIRE KRUISPEILING)</span>
+              <button onclick="autoSimulateSextantFix()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-cyan/15 text-vortex-cyan text-[10px]">
+                🔭 IJken op Sextant Simulatie
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              Voor elk geselecteerd hemellichaam wordt de berekende hoogte <code class="text-vortex-cyan">Hc</code> vergeleken met de sextant-waarneming <code class="text-vortex-amber">Ho</code>. Het hoogteverschil <code class="text-vortex-emerald">p = 60 × (Ho - Hc)</code> geeft de loodrechte verschuiving in Zeemijlen (Toward / Away) voor de Positielijn (LOP).
+            </p>
+            <div id="lop-cards-container" class="space-y-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 4: PROFESSIONELE VORTEX KERNEL PROGRAMMEEROMGEVING (IDE)       -->
+        <!-- ===================================================================== -->
+        <div id="mod-kernel" class="space-y-3 flex flex-col h-full">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2 shrink-0">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 4 // VORTEX KERNEL PROGRAMMEEROMGEVING (IDE)</h2>
+              <p class="text-[11px] text-slate-400">Programmeer sensoren, tijdcapsules, navigatiesterren, uurhoeken & positielijnen via <code class="text-vortex-amber">VortexKernel.*</code></p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="runKernelScript()" class="cyber-btn px-3 py-1 rounded bg-vortex-emerald/25 border-vortex-emerald text-emerald-300 text-xs font-bold flex items-center gap-1 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                <span>▶</span><span>RUN KERNEL</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Script Template Selector & Code Language Tabs -->
+          <div class="flex flex-wrap items-center justify-between gap-2 shrink-0 text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-400 text-[10px]">Voorbeeldscript:</span>
+              <select id="ide-template-select" onchange="loadKernelTemplate(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[11px] text-vortex-cyan">
+                <option value="tpl_full_nav">1. Volledige Sterrennavigatie & 3-Sterren Kruispeiling (LOP)</option>
+                <option value="tpl_vangogh_1889">2. Tijdcapsule Reconstructie: Van Gogh 22 Juli 1889 (Saint-Rémy)</option>
+                <option value="tpl_lodijke_reis">3. Geodetisch Reisschema: Bourges → Lodijke → Tholen → Laren</option>
+                <option value="tpl_sensor_quat">4. 26-Bit Sensor, 4D Quaternion & 110nm Fotonisch Rooster</option>
+                <option value="tpl_rust_export">5. Genereer Rust Axum & C++99 LFSR Kernel Header</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button onclick="clearKernelConsole()" class="cyber-btn px-2 py-0.5 rounded text-[10px] text-slate-400">Wis Console</button>
+              <button onclick="copyKernelCode()" class="cyber-btn px-2 py-0.5 rounded text-[10px] text-vortex-cyan">📋 Kopieer Code</button>
+            </div>
+          </div>
+
+          <!-- Live Programmable Code Editor -->
+          <div class="relative flex-1 min-h-[210px] flex flex-col bg-[#040811] border border-vortex-border rounded-lg overflow-hidden">
+            <div class="bg-[#081020] px-3 py-1 border-b border-vortex-border flex items-center justify-between text-[10px] text-slate-400">
+              <span>vortex_kernel_main.js — Beschikbare API: VortexKernel.{setLayer, setObserver, setTime, loadTimeCapsule, calcHourAngle, plotPositionLine, addWaypoint, getQuaternion, log}</span>
+              <span id="editor-status" class="text-vortex-emerald">READY</span>
+            </div>
+            <textarea id="kernel-code-editor" spellcheck="false" class="code-editor flex-1 w-full bg-transparent text-cyan-100 p-3 text-xs focus:outline-none resize-none"></textarea>
+          </div>
+
+          <!-- Kernel Output Console / REPL -->
+          <div class="bg-[#03060c] border border-vortex-border rounded-lg p-2.5 h-44 flex flex-col shrink-0">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 pb-1 border-b border-slate-800">
+              <span class="font-bold text-vortex-amber">VORTEX KERNEL REPL & TELEMETRY LOG</span>
+              <span>PROV-O / SHA-256 VERIFIED</span>
+            </div>
+            <div id="kernel-console-output" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 pt-1.5 text-slate-300 select-text">
+              <!-- Console logs appear here -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- VORTEX KERNEL ENGINE — ASTRONOMY, GEODESY, SENSORS & NAUTICAL LOP SCRIPT  -->
+  <!-- ========================================================================= -->
+  <script>
+    /***************************************************************************
+     * 1. STRICT STARTUP CONFIGURATION (ALL PROJECTION LAYERS START FALSE/OFF)
+     ***************************************************************************/
+    const VortexState = {
+      layoutMode: 'desktop', // 'desktop' | 'mobile'
+      liveClock: false,
+      currentDate: new Date('2026-11-05T14:54:00Z'), // 15:54 CET (Laren Reference)
+      
+      // STRICT STARTUP REQUIREMENT: ALL LAYERS START OFF (false)
+      layers: {
+        sterren: false,
+        uurhoek_grid: false,
+        nautische_positielijnen: false,
+        reisschema_vectoren: false,
+        fotonisch_rooster: false,
+        planimeter_arm: false
+      },
+
+      // Active Observer Geodetic Coordinates (Default: Laren / Tafelbergheide)
+      observer: {
+        id: 'VORTEX-02',
+        name: 'Laren / Tafelbergheide',
+        lat: 52.2300,
+        lon: 5.1800,
+        rdX: 140850,
+        rdY: 471350,
+        tempC: 10.0,
+        pressureMb: 1013.25
+      },
+
+      // Sensor & Attitude State
+      sensors: {
+        hardwareActive: false,
+        cameraActive: false,
+        azimuth: 245.91, // Calibrated VORTEX 245.91° axis
+        pitch: 12.10,    // Calibrated Tafelbergheide elevation h=12.1°
+        roll: 0.00,
+        raw26Bit: 45841209,
+        quaternion: { w: 0.8341, x: 0.0882, y: -0.0579, z: -0.5414 }
+      },
+
+      // Ott Kempten Nr. 573 Compensatie-Poolplanimeter State
+      planimeter: {
+        poleX: 0.28,
+        poleY: 0.72,
+        tracerX: 0.55,
+        tracerY: 0.45,
+        dragging: false,
+        wheelCount: 181.42
+      },
+
+      // Selected Celestial Bodies for Nautical Position Lines (Marcq St. Hilaire)
+      selectedFixBodies: ['Polaris', 'Aldebaran', 'Vega'],
+      sextantOffsets: {
+        'Polaris': 0.04,     // Degrees offset (Ho - Hc) -> +2.4 NM Toward
+        'Aldebaran': -0.03,  // -1.8 NM Away
+        'Vega': 0.025        // +1.5 NM Toward
+      },
+
+      // Geodetic Gazetteer Anchors
+      places: {
+        'VORTEX-02': { code: 'VORTEX-02', name: 'Laren / Tafelbergheide', lat: 52.2300, lon: 5.1800, desc: 'Optisch centreringspunt & VORTEX Nexus Noord-Holland' },
+        'VORTEX-01': { code: 'VORTEX-01', name: 'Bourges Meridiaan Anker', lat: 47.0844, lon: 2.3956, desc: 'Franse Nulmeridiaan referentie (Az 14.5°, 587 km vector)' },
+        'VORTEX-03': { code: 'VORTEX-03', name: 'Bol van Lodijke Perceel 369', lat: 51.4783, lon: 4.1375, desc: 'Verdronken Land van Reimerswaal (12.50 ha / 28.37 gemeten, B.W. Schot)' },
+        'VORTEX-06': { code: 'VORTEX-06', name: 'Tholen Kruittoren 23 / Contr\'Escarpe', lat: 51.5312, lon: 4.2201, desc: 'Sectie A 107 Tholen & Oesterloods B.W. Schot (1901/1913)' },
+        'VORTEX-07': { code: 'VORTEX-07', name: 'Scherpenisse / Platteweg & Pluimpot', lat: 51.5475, lon: 4.1039, desc: 'Sectie E 1551/1552, eikenhouten klepduiker & Pluimpot afdamming' },
+        'VORTEX-DOM': { code: 'VORTEX-DOM', name: 'Domburg / Nehalennia Kernpunt', lat: 51.5641, lon: 3.4982, desc: 'Stratigrafische Ground Truth Boring 1 (RD 24051 · 399036)' },
+        'VORTEX-ST-REMY': { code: 'VORTEX-ST-REMY', name: 'Saint-Rémy-de-Provence', lat: 43.7886, lon: 4.8311, desc: 'Observatiepunt Vincent van Gogh — De Sterrennacht (1889)' },
+        'VORTEX-SLUIS': { code: 'VORTEX-SLUIS', name: 'Sluis Belfort / Het Zwin', lat: 51.3081, lon: 3.3867, desc: 'Zeeuws-Vlaanderen Westelijk IJkpunt (Wilderom Deel IV)' }
+      },
+
+      // Active Voyage Waypoints (Reisschema)
+      voyageRoute: [
+        { name: 'Bourges Meridiaan', lat: 47.0844, lon: 2.3956 },
+        { name: 'Bol van Lodijke 369', lat: 51.4783, lon: 4.1375 },
+        { name: 'Tholen Kruittoren 23', lat: 51.5312, lon: 4.2201 },
+        { name: 'Scherpenisse Pluimpot', lat: 51.5475, lon: 4.1039 },
+        { name: 'Laren Tafelbergheide', lat: 52.2300, lon: 5.1800 }
+      ],
+
+      // Pre-loaded Chronometric Tijdcapsules
+      timeCapsules: [
+        {
+          id: 'CAP-2026-NOW',
+          title: 'Actuele VORTEX Kernel Referentie (Laren)',
+          utc: '2026-11-05T14:54:00Z',
+          placeId: 'VORTEX-02',
+          azimuth: 245.91,
+          pitch: 12.10,
+          hash: '0x2E000B5·E8·9A4F',
+          notes: 'Standaard kalibratie op 52.23°N, 5.18°E met 110nm fotonisch rooster en 3-sterren positielijnen.'
+        },
+        {
+          id: 'CAP-1889-VANGOGH',
+          title: 'Van Gogh — De Sterrennacht (Saint-Rémy)',
+          utc: '1889-07-22T04:00:00Z',
+          placeId: 'VORTEX-ST-REMY',
+          azimuth: 78.50,
+          pitch: 18.40,
+          hash: '0x2000189·VG·7C12',
+          notes: 'Ochtendschemering in Saint-Rémy: Venus, afnemende Maansikkel, Aldebaran en Plejaden (M45) in Stier.'
+        },
+        {
+          id: 'CAP-2026-ECLIPSE',
+          title: 'VORTEX Benchmark Bourges — Totale Eclips 2026',
+          utc: '2026-08-12T18:08:30Z',
+          placeId: 'VORTEX-01',
+          azimuth: 274.20,
+          pitch: 8.60,
+          hash: '0x2E81226·SAR126',
+          notes: 'VORTEX-DE440-BOURGES-001: Saros 126 eclips, γ = +0.8977, ΔT = 69.2s, lage westelijke horizon.'
+        },
+        {
+          id: 'CAP-1530-LODIJKE',
+          title: 'Sint-Felixvloed — Kasteel Lodijke & Reimerswaal',
+          utc: '1530-11-05T12:00:00Z',
+          placeId: 'VORTEX-03',
+          azimuth: 180.00,
+          pitch: 15.00,
+          hash: '0x1530369·ARC-LOD',
+          notes: 'Historisch-geodetisch ankerpunt ARC-LOD-01 en Perceel 369 in het Verdronken Land van Reimerswaal.'
+        },
+        {
+          id: 'CAP-1953-PLUIMPOT',
+          title: 'Watersnoodramp & Pluimpot Geul (Tholen)',
+          utc: '1953-02-01T03:00:00Z',
+          placeId: 'VORTEX-07',
+          azimuth: 310.00,
+          pitch: 22.00,
+          hash: '0x19531551·THOLEN',
+          notes: 'Noordwesterstorm springtij Oosterschelde, Gorishoek, Scherpenisse en de latere afdamming van de Pluimpot.'
+        }
+      ]
+    };
+
+    /***************************************************************************
+     * 2. NAVIGATIONAL STAR & PLANET CATALOG (J2000 / MEEUS APPROXIMATION)
+     ***************************************************************************/
+    const CelestialCatalog = [
+      { name: 'Polaris',constellation: 'UMi', raHours: 2.5303, decDeg: 89.2641, mag: 1.98, color: '#a5f3fc', type: 'star' },
+      { name: 'Aldebaran', constellation: 'Tau', raHours: 4.5987, decDeg: 16.5093, mag: 0.86, color: '#fdba74', type: 'star' },
+      { name: 'Plejaden (M45)', constellation: 'Tau', raHours: 3.7914, decDeg: 24.1050, mag: 1.60, color: '#93c5fd', type: 'cluster' },
+      { name: 'Rigel', constellation: 'Ori', raHours: 5.2423, decDeg: -8.2016, mag: 0.13, color: '#bfdbfe', type: 'star' },
+      { name: 'Betelgeuze', constellation: 'Ori', raHours: 5.9195, decDeg: 7.4071, mag: 0.50, color: '#fca5a5', type: 'star' },
+      { name: 'Sirius', constellation: 'CMa', raHours: 6.7525, decDeg: -16.7161, mag: -1.46, color: '#e0f2fe', type: 'star' },
+      { name: 'Regulus', constellation: 'Leo', raHours: 10.1395, decDeg: 11.9672, mag: 1.36, color: '#bae6fd', type: 'star' },
+      { name: 'Spica', constellation: 'Vir', raHours: 13.4199, decDeg: -11.1613, mag: 0.97, color: '#c7d2fe', type: 'star' },
+      { name: 'Arcturus', constellation: 'Boo', raHours: 14.2610, decDeg: 19.1824, mag: -0.05, color: '#fed7aa', type: 'star' },
+      { name: 'Antares', constellation: 'Sco', raHours: 16.4901, decDeg: -26.4320, mag: 1.06, color: '#f87171', type: 'star' },
+      { name: 'Vega', constellation: 'Lyr', raHours: 18.6156, decDeg: 38.7837, mag: 0.03, color: '#7dd3fc', type: 'star' },
+      { name: 'Deneb', constellation: 'Cyg', raHours: 20.6905, decDeg: 45.2803, mag: 1.25, color: '#e2e8f0', type: 'star' }
+    ];
+
+    /***************************************************************************
+     * 3. MATHEMATICAL, GEODETIC (RD EPSG:28992) & ASTRONOMICAL ENGINE (MEEUS)
+     ***************************************************************************/
+    const DEG2RAD = Math.PI / 180;
+    const RAD2DEG = 180 / Math.PI;
+
+    function mod360(x) {
+      return ((x % 360) + 360) % 360;
+    }
+
+    // Format degrees to Degrees + Decimal Minutes (Nautical Almanac style: DDD° MM.M')
+    function formatDMM(deg, isSigned = false) {
+      const sign = deg < 0 ? '-' : (isSigned ? '+' : '');
+      const abs = Math.abs(deg);
+      const d = Math.floor(abs);
+      const m = (abs - d) * 60;
+      return `${sign}${String(d).padStart(2, '0')}° ${m.toFixed(1).padStart(4, '0')}'`;
+    }
+
+    // Format Right Ascension in Hours (HHh MMm SSs)
+    function formatHMS(hours) {
+      const hNorm = ((hours % 24) + 24) % 24;
+      const h = Math.floor(hNorm);
+      const mFloat = (hNorm - h) * 60;
+      const m = Math.floor(mFloat);
+      const s = Math.round((mFloat - m) * 60);
+      return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+    }
+
+    // Convert Euler Angles (Azimuth/Yaw, Pitch, Roll in degrees) to 4D Unit Quaternion
+    function eulerToQuaternion(azDeg, pitchDeg, rollDeg) {
+      const yaw = -azDeg * DEG2RAD;
+      const pitch = pitchDeg * DEG2RAD;
+      const roll = rollDeg * DEG2RAD;
+
+      const cy = Math.cos(yaw * 0.5);
+      const sy = Math.sin(yaw * 0.5);
+      const cp = Math.cos(pitch * 0.5);
+      const sp = Math.sin(pitch * 0.5);
+      const cr = Math.cos(roll * 0.5);
+      const sr = Math.sin(roll * 0.5);
+
+      return {
+        w: cr * cp * cy + sr * sp * sy,
+        x: sr * cp * cy - cr * sp * sy,
+        y: cr * sp * cy + sr * cp * sy,
+        z: cr * cp * sy - sr * sp * cy
+      };
+    }
+
+    // Convert WGS84 (lat, lon) to Dutch Rijksdriehoeksstelsel RD (EPSG:28992)
+    // Official Schreutelkamp / Kadaster polynomial approximation centered on Amersfoort
+    function wgs84ToRD(lat, lon) {
+      const phi0 = 52.15517440;
+      const lam0 = 5.38720621;
+      const x0 = 155000;
+      const y0 = 463000;
+
+      const dPhi = 0.36 * (lat - phi0);
+      const dLam = 0.36 * (lon - lam0);
+
+      const x = x0
+        + 190094.945 * dLam
+        - 11832.228 * dPhi * dLam
+        - 114.221 * Math.pow(dPhi, 2) * dLam
+        - 32.391 * Math.pow(dLam, 3)
+        - 0.705 * dPhi
+        - 2.340 * Math.pow(dPhi, 3) * dLam
+        - 0.608 * dPhi * Math.pow(dLam, 3);
+
+      const y = y0
+        + 309056.544 * dPhi
+        + 3638.893 * Math.pow(dLam, 2)
+        + 73.077 * Math.pow(dPhi, 2)
+        - 157.984 * dPhi * Math.pow(dLam, 2)
+        + 59.788 * Math.pow(dPhi, 3)
+        + 0.433 * dLam
+        - 6.439 * Math.pow(dPhi, 2) * Math.pow(dLam, 2)
+        - 0.032 * dPhi * dLam
+        + 0.092 * Math.pow(dLam, 4)
+        - 0.054 * dPhi * Math.pow(dLam, 4);
+
+      return { x: Math.round(x), y: Math.round(y) };
+    }
+
+    // Great-Circle (Orthodroom) Distance & Initial Bearing (Haversine + Spherical Law)
+    function calcGreatCircle(lat1, lon1, lat2, lon2) {
+      const R_km = 6371.0088;
+      const p1 = lat1 * DEG2RAD;
+      const p2 = lat2 * DEG2RAD;
+      const dPhi = (lat2 - lat1) * DEG2RAD;
+      const dLam = (lon2 - lon1) * DEG2RAD;
+
+      const a = Math.sin(dPhi / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dLam / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
+      const distKm = R_km * c;
+      const distNM = distKm / 1.852;
+
+      const y = Math.sin(dLam) * Math.cos(p2);
+      const x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dLam);
+      const bearingDeg = mod360(Math.atan2(y, x) * RAD2DEG);
+
+      return { distKm, distNM, bearingDeg };
+    }
+
+    // Jean Meeus Julian Date (JD) from JS Date
+    function dateToJulianDate(dateObj) {
+      return dateObj.getTime() / 86400000 + 2440587.5;
+    }
+
+    // Greenwich Mean Sidereal Time (GMST) & Local Sidereal Time (LST) in degrees
+    function calcSiderealTime(jd, lonDeg) {
+      const T = (jd - 2451545.0) / 36525.0;
+      const gmstDeg = mod360(
+        280.46061837 +
+        360.98564736629 * (jd - 2451545.0) +
+        0.000387933 * T * T -
+        (T * T * T) / 38710000.0
+      );
+      const lstDeg = mod360(gmstDeg + lonDeg);
+      return { gmstDeg, lstDeg, lstHours: lstDeg / 15.0 };
+    }
+
+    // Dynamic Solar, Lunar & Planetary Ephemeris (Meeus Analytical Engine)
+    function getDynamicSolarSystemBodies(jd) {
+      const T = (jd - 2451545.0) / 36525.0;
+      const eps = (23.439291 - 0.0130042 * T) * DEG2RAD;
+
+      // 1. Sun (Helios)
+      const L0 = mod360(280.46646 + 36000.76983 * T);
+      const M = mod360(357.52911 + 35999.05029 * T) * DEG2RAD;
+      const C = (1.914602 - 0.004817 * T) * Math.sin(M) + 0.019993 * Math.sin(2 * M);
+      const sunLon = mod360(L0 + C) * DEG2RAD;
+      const sunRA = mod360(Math.atan2(Math.cos(eps) * Math.sin(sunLon), Math.cos(sunLon)) * RAD2DEG) / 15;
+      const sunDec = Math.asin(Math.sin(eps) * Math.sin(sunLon)) * RAD2DEG;
+
+      // 2. Moon (Luna - ELP-2000 Principal Terms)
+      const Lp = mod360(218.3164477 + 481267.88123421 * T);
+      const D = mod360(297.8501921 + 445267.1114034 * T) * DEG2RAD;
+      const Mp = mod360(134.9633964 + 477198.8675055 * T) * DEG2RAD;
+      const F = mod360(93.2720950 + 483202.0175233 * T) * DEG2RAD;
+
+      const moonLonDeg = mod360(
+        Lp +
+        6.288774 * Math.sin(Mp) +
+        1.274027 * Math.sin(2 * D - Mp) +
+        0.658314 * Math.sin(2 * D) +
+        0.213618 * Math.sin(2 * Mp) -
+        0.185116 * Math.sin(M) -
+        0.114332 * Math.sin(2 * F)
+      );
+      const moonLatDeg = 5.128122 * Math.sin(F) + 0.280602 * Math.sin(Mp + F) + 0.277693 * Math.sin(Mp - F);
+      const lamM = moonLonDeg * DEG2RAD;
+      const betM = moonLatDeg * DEG2RAD;
+
+      const moonRA = mod360(
+        Math.atan2(Math.sin(lamM) * Math.cos(eps) - Math.tan(betM) * Math.sin(eps), Math.cos(lamM)) * RAD2DEG
+      ) / 15;
+      const moonDec = Math.asin(
+        Math.sin(betM) * Math.cos(eps) + Math.cos(betM) * Math.sin(eps) * Math.sin(lamM)
+      ) * RAD2DEG;
+
+      // 3. Venus (Morning/Evening Star)
+      const venusL = mod360(181.9798 + 58517.8156 * T + 22 * Math.sin((50 + 22518 * T) * DEG2RAD)) * DEG2RAD;
+      const venusRA = mod360(Math.atan2(Math.cos(eps) * Math.sin(venusL), Math.cos(venusL)) * RAD2DEG) / 15;
+      const venusDec = Math.asin(Math.sin(eps) * Math.sin(venusL)) * RAD2DEG;
+
+      return [
+        { name: 'Zon (Helios)', constellation: 'Ecl', raHours: sunRA, decDeg: sunDec, mag: -26.7, color: '#fde047', type: 'planet' },
+        { name: 'Maan (Luna)', constellation: 'Ecl', raHours: moonRA, decDeg: moonDec, mag: -12.6, color: '#f8fafc', type: 'moon' },
+        { name: 'Venus', constellation: 'Ecl', raHours: venusRA, decDeg: venusDec, mag: -4.2, color: '#fef08a', type: 'planet' }
+      ];
+    }
+
+    // Bennett (1982) Atmospheric Refraction (in arcminutes) & Kasten-Young Air Mass
+    function calcAtmosphericRefraction(trueAltDeg, tempC = 10, pressureMb = 1013.25) {
+      if (trueAltDeg < -1.0) return { refracArcMin: 0, airMass: 38.0 };
+      const h = Math.max(0.1, trueAltDeg);
+      const R0 = 1.0 / Math.tan((h + 7.31 / (h + 4.4)) * DEG2RAD);
+      const factor = (pressureMb / 1010.0) * (283.0 / (273.0 + tempC));
+      const refracArcMin = R0 * factor;
+      const airMass = 1.0 / (Math.sin(h * DEG2RAD) + 0.50572 * Math.pow(h + 6.07995, -1.6364));
+      return { refracArcMin, airMass };
+    }
+
+    // Complete Nautical Sight Reduction (LHA, Hc, Azimuth Zn, Intercept p)
+    function calcSightReduction(body, obsLatDeg, obsLonDeg, jd) {
+      const sid = calcSiderealTime(jd, obsLonDeg);
+      const raDeg = body.raHours * 15.0;
+      const shaDeg = mod360(360.0 - raDeg);
+      const ghaDeg = mod360(sid.gmstDeg + shaDeg);
+      const lhaDeg = mod360(sid.lstDeg - raDeg); // Uurhoek = LST - RK (Westward 0..360°)
+
+      const phi = obsLatDeg * DEG2RAD;
+      const dec = body.decDeg * DEG2RAD;
+      const lha = lhaDeg * DEG2RAD;
+
+      // Fundamental Spherical Cosine Law for Computed Altitude (Hc)
+      // sin(Hc) = sin(φ)·sin(δ) + cos(φ)·cos(δ)·cos(LHA)
+      const sinHc = Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(lha);
+      const hcRad = Math.asin(Math.max(-1, Math.min(1, sinHc)));
+      const hcDeg = hcRad * RAD2DEG;
+
+      // True Azimuth (Zn) from North (0..360°)
+      const y = -Math.sin(lha);
+      const x = Math.tan(dec) * Math.cos(phi) - Math.sin(phi) * Math.cos(lha);
+      const znDeg = mod360(Math.atan2(y, x) * RAD2DEG);
+
+      // Atmospheric Refraction at Hc
+      const ref = calcAtmosphericRefraction(hcDeg, VortexState.observer.tempC, VortexState.observer.pressureMb);
+      const apparentAltDeg = hcDeg + ref.refracArcMin / 60.0;
+
+      // Simulated or user-adjusted Sextant Observed Altitude (Ho)
+      const offsetDeg = VortexState.sextantOffsets[body.name] !== undefined
+        ? VortexState.sextantOffsets[body.name]
+        : 0.02;
+      const hoDeg = hcDeg + offsetDeg;
+
+      // Marcq St. Hilaire Intercept: p = 60 * (Ho - Hc) in Nautical Miles
+      const interceptNM = 60.0 * (hoDeg - hcDeg);
+
+      return {
+        name: body.name,
+        constellation: body.constellation,
+        color: body.color,
+        raHours: body.raHours,
+        decDeg: body.decDeg,
+        shaDeg,
+        ghaDeg,
+        lhaDeg,
+        lhaHours: lhaDeg / 15.0,
+        hcDeg,
+        apparentAltDeg,
+        hoDeg,
+        znDeg,
+        interceptNM,
+        direction: interceptNM >= 0 ? 'TOWARD (Naar Toe)' : 'AWAY (Van Af)',
+        refracArcMin: ref.refracArcMin
+      };
+    }
+
+    /***************************************************************************
+     * 4. UI & STATE CONTROLLERS
+     ***************************************************************************/
+    function toggleLayer(layerName, forceState = null) {
+      if (!(layerName in VortexState.layers)) return false;
+      VortexState.layers[layerName] = forceState !== null ? Boolean(forceState) : !VortexState.layers[layerName];
+      syncLayerButtonsUI();
+      renderCanvas();
+      return VortexState.layers[layerName];
+    }
+
+    function panicResetAllLayers() {
+      Object.keys(VortexState.layers).forEach(k => {
+        VortexState.layers[k] = false;
+      });
+      syncLayerButtonsUI();
+      renderCanvas();
+      kernelLog('🛑 ALLE PROJECTIELAGEN UITGESCHAKELD (Strikte Opstart-Nulstand #03060c).', 'warn');
+    }
+
+    function enableAllLayers() {
+      Object.keys(VortexState.layers).forEach(k => {
+        VortexState.layers[k] = true;
+      });
+      syncLayerButtonsUI();
+      renderCanvas();
+      kernelLog('✅ Alle 6 VORTEX projectielagen geactiveerd op het tableau.', 'success');
+    }
+
+    function syncLayerButtonsUI() {
+      let anyOn = false;
+      Object.entries(VortexState.layers).forEach(([key, isOn]) => {
+        if (isOn) anyOn = true;
+        const btn = document.getElementById(`layer-btn-${key}`);
+        const st = document.getElementById(`state-${key}`);
+        if (btn && st) {
+          btn.className = isOn
+            ? 'layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition'
+            : 'layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition';
+          st.textContent = isOn ? '[ON]' : '[OFF]';
+        }
+      });
+
+      const notice = document.getElementById('canvas-layer-notice');
+      if (notice) {
+        if (anyOn) {
+          const activeNames = Object.entries(VortexState.layers).filter(([, v]) => v).map(([k]) => k).join(', ');
+          notice.className = 'text-emerald-400 text-[10px]';
+          notice.textContent = `Actieve lagen: ${activeNames}`;
+        } else {
+          notice.className = 'text-amber-400 text-[10px]';
+          notice.textContent = 'Alle projectielagen staan op [OFF]. Schakel een laag in via de balk hierboven of via VortexKernel.setLayer() in de IDE.';
+        }
+      }
+    }
+
+    function switchModuleTab(tabName) {
+      const tabs = ['sensors', 'voyage', 'nautical', 'kernel'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`mod-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (panel) panel.classList.toggle('hidden', t !== tabName);
+        if (btn) btn.classList.toggle('cyber-btn-active', t === tabName);
+      });
+      updateAllCalculations();
+    }
+
+    function setLayoutMode(mode) {
+      VortexState.layoutMode = mode;
+      const ws = document.getElementById('main-workspace');
+      const vp = document.getElementById('viewport-section');
+      const ct = document.getElementById('control-section');
+      const btnD = document.getElementById('btn-mode-desktop');
+      const btnM = document.getElementById('btn-mode-mobile');
+
+      if (mode === 'mobile') {
+        ws.className = 'flex-1 flex flex-col gap-2 p-2 max-w-lg mx-auto w-full';
+        vp.className = 'flex flex-col gap-2 h-[380px]';
+        ct.className = 'flex flex-col gap-2 flex-1';
+        btnM.classList.add('cyber-btn-active');
+        btnD.classList.remove('cyber-btn-active');
+      } else {
+        ws.className = 'flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden';
+        vp.className = 'lg:col-span-7 flex flex-col gap-2 min-h-[420px] lg:h-[calc(100vh-108px)]';
+        ct.className = 'lg:col-span-5 flex flex-col gap-2 lg:h-[calc(100vh-108px)] overflow-hidden';
+        btnD.classList.add('cyber-btn-active');
+        btnM.classList.remove('cyber-btn-active');
+      }
+      setTimeout(resizeCanvas, 50);
+    }
+
+    /***************************************************************************
+     * 5. MODULE 1: HARDWARE SENSORS, CAMERA AR & PUTUTU AUDIO SYNTHESIS
+     ***************************************************************************/
+    function updateSensorFromSliders() {
+      const az = parseFloat(document.getElementById('slider-az').value) || 0;
+      const pitch = parseFloat(document.getElementById('slider-pitch').value) || 0;
+      const roll = parseFloat(document.getElementById('slider-roll').value) || 0;
+      const raw26 = parseInt(document.getElementById('slider-26bit').value, 10) || 0;
+
+      VortexState.sensors.azimuth = az;
+      VortexState.sensors.pitch = pitch;
+      VortexState.sensors.roll = roll;
+      VortexState.sensors.raw26Bit = raw26;
+      VortexState.sensors.quaternion = eulerToQuaternion(az, pitch, roll);
+
+      syncSensorUI();
+      renderCanvas();
+    }
+
+    function syncSensorUI() {
+      const s = VortexState.sensors;
+      const q = s.quaternion;
+      const normV = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+
+      document.getElementById('lbl-sim-az').textContent = `${s.azimuth.toFixed(2)}°`;
+      document.getElementById('lbl-sim-pitch').textContent = `${s.pitch >= 0 ? '+' : ''}${s.pitch.toFixed(2)}°`;
+      document.getElementById('lbl-sim-roll').textContent = `${s.roll.toFixed(2)}°`;
+
+      const grayVal = (s.raw26Bit ^ (s.raw26Bit >> 1)) >>> 0;
+      const hexGray = '0x' + grayVal.toString(16).toUpperCase().padStart(7, '0');
+      document.getElementById('lbl-sensor-26bit').textContent = `${s.raw26Bit.toLocaleString('nl-NL')} (Gray: ${hexGray})`;
+      document.getElementById('hdr-gray').textContent = hexGray;
+
+      document.getElementById('quat-w').textContent = q.w.toFixed(4);
+      document.getElementById('quat-x').textContent = q.x.toFixed(4);
+      document.getElementById('quat-y').textContent = q.y.toFixed(4);
+      document.getElementById('quat-z').textContent = q.z.toFixed(4);
+
+      document.getElementById('hud-az').textContent = `${s.azimuth.toFixed(2)}°`;
+      document.getElementById('hud-alt').textContent = `${s.pitch >= 0 ? '+' : ''}${s.pitch.toFixed(2)}°`;
+      document.getElementById('hud-qw').textContent = q.w.toFixed(4);
+      document.getElementById('hud-qv').textContent = normV.toFixed(4);
+    }
+
+    function activateHardwareGPS() {
+      if (!navigator.geolocation) {
+        kernelLog('⚠️ Geolocation API niet ondersteund in deze browser.', 'warn');
+        return;
+      }
+      kernelLog('🛰️ Opvragen van live GNSS / GPS positie...', 'info');
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          setObserverLocation('LIVE-GPS', 'Live Mobiel/Desktop GPS', lat, lon);
+          document.getElementById('sensor-status-badge').textContent = 'LIVE HARDWARE GPS';
+          document.getElementById('sensor-status-badge').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+          kernelLog(`✅ Live GPS vergrendeld: ${lat.toFixed(5)}°N, ${lon.toFixed(5)}°E`, 'success');
+        },
+        err => {
+          kernelLog(`⚠️ GPS toegang geweigerd of timeout (${err.message}). Gebruik geodetische presets.`, 'warn');
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    function activateHardwareOrientation() {
+      const startListening = () => {
+        window.addEventListener('deviceorientation', e => {
+          if (e.alpha === null) return;
+          VortexState.sensors.hardwareActive = true;
+          const az = mod360(360 - e.alpha);
+          const pitch = Math.max(-90, Math.min(90, e.beta || 0));
+          const roll = Math.max(-90, Math.min(90, e.gamma || 0));
+
+          VortexState.sensors.azimuth = az;
+          VortexState.sensors.pitch = pitch;
+          VortexState.sensors.roll = roll;
+          VortexState.sensors.quaternion = eulerToQuaternion(az, pitch, roll);
+
+          document.getElementById('slider-az').value = az;
+          document.getElementById('slider-pitch').value = pitch;
+          document.getElementById('slider-roll').value = roll;
+          syncSensorUI();
+          renderCanvas();
+        });
+        document.getElementById('sensor-status-badge').textContent = 'LIVE GYRO / KOMPAS';
+        document.getElementById('sensor-status-badge').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+        kernelLog('🧭 DeviceOrientation 4D Quaternion stream geactiveerd.', 'success');
+      };
+
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(state => {
+            if (state === 'granted') startListening();
+            else kernelLog('⚠️ Toestemming voor oriëntatiesensor geweigerd.', 'warn');
+          })
+          .catch(err => kernelLog(`⚠️ Sensor fout: ${err.message}`, 'warn'));
+      } else {
+        startListening();
+      }
+    }
+
+    async function toggleARCamera() {
+      const video = document.getElementById('ar-camera-video');
+      const btn = document.getElementById('btn-toggle-camera');
+      if (VortexState.sensors.cameraActive) {
+        if (video.srcObject) {
+          video.srcObject.getTracks().forEach(t => t.stop());
+          video.srcObject = null;
+        }
+        video.classList.replace('opacity-40', 'opacity-0');
+        VortexState.sensors.cameraActive = false;
+        btn.classList.remove('cyber-btn-active');
+        kernelLog('📷 Optische AR Camera-feed uitgeschakeld.', 'info');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+        video.srcObject = stream;
+        video.classList.replace('opacity-0', 'opacity-40');
+        VortexState.sensors.cameraActive = true;
+        btn.classList.add('cyber-btn-active');
+        kernelLog('📷 WebRTC Optische AR Camera actief op achtergrond van het tableau.', 'success');
+      } catch (err) {
+        kernelLog(`⚠️ Camera niet beschikbaar (${err.message}). Synthetische AR-modus blijft actief.`, 'warn');
+      }
+    }
+
+    // Physical Modeling Pututu 110 Hz Acoustic Pulse (Web Audio API)
+    let audioCtx = null;
+    function triggerPututuResonance(baseFreq = 110.0) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const gain = audioCtx.createGain();
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(baseFreq, now);
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(baseFreq * (11 / 8), now); // 11-limit harmonic 151.25 Hz
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(baseFreq * 2, now);
+        filter.Q.setValueAtTime(12, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.22, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 1.4);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 1.45);
+        osc2.stop(now + 1.45);
+
+        kernelLog(`🔊 Pututu Archeo-Resonator geactiveerd op ${baseFreq.toFixed(1)} Hz & ${(baseFreq * 11 / 8).toFixed(2)} Hz (11:8).`, 'info');
+      } catch (e) {
+        kernelLog('⚠️ AudioContext kon niet worden gestart.', 'warn');
+      }
+    }
+
+    /***************************************************************************
+     * 6. MODULE 2: PLACES, REISSCHEMA & TIJDCAPSULES
+     ***************************************************************************/
+    function selectGeodeticPlace(placeId) {
+      const p = VortexState.places[placeId];
+      if (!p) return;
+      setObserverLocation(p.code, p.name, p.lat, p.lon);
+      kernelLog(`📍 Waarnemingsplaats gewijzigd naar ${p.name} (${p.lat.toFixed(4)}°N, ${p.lon.toFixed(4)}°E).`, 'info');
+    }
+
+    function setObserverLocation(code, name, lat, lon) {
+      const rd = wgs84ToRD(lat, lon);
+      VortexState.observer.id = code;
+      VortexState.observer.name = name;
+      VortexState.observer.lat = lat;
+      VortexState.observer.lon = lon;
+      VortexState.observer.rdX = rd.x;
+      VortexState.observer.rdY = rd.y;
+
+      document.getElementById('active-place-code').textContent = code;
+      document.getElementById('inp-obs-lat').value = lat.toFixed(4);
+      document.getElementById('inp-obs-lon').value = lon.toFixed(4);
+      document.getElementById('inp-obs-rdx').value = rd.x;
+      document.getElementById('inp-obs-rdy').value = rd.y;
+
+      document.getElementById('hdr-location').textContent = `ANKER: ${name.toUpperCase()} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`;
+      document.getElementById('hdr-rd').textContent = `RD: ${rd.x} · ${rd.y}`;
+      document.getElementById('ap-readout').textContent = `${formatDMM(lat)}N, ${formatDMM(lon)}E`;
+
+      updateAllCalculations();
+    }
+
+    function updateCustomObserver() {
+      const lat = parseFloat(document.getElementById('inp-obs-lat').value) || 52.23;
+      const lon = parseFloat(document.getElementById('inp-obs-lon').value) || 5.18;
+      setObserverLocation('CUSTOM-OBS', 'Handmatig IJkpunt', lat, lon);
+    }
+
+    function renderVoyageTable() {
+      const tbody = document.getElementById('voyage-table-body');
+      const speedKnots = parseFloat(document.getElementById('inp-ship-speed').value) || 12.5;
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      let totalKm = 0;
+      let totalNM = 0;
+
+      const route = VortexState.voyageRoute;
+      for (let i = 0; i < route.length - 1; i++) {
+        const p1 = route[i];
+        const p2 = route[i + 1];
+        const gc = calcGreatCircle(p1.lat, p1.lon, p2.lat, p2.lon);
+        totalKm += gc.distKm;
+        totalNM += gc.distNM;
+        const hours = gc.distNM / speedKnots;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40';
+        tr.innerHTML = `
+          <td class="py-1.5 text-slate-500">${i + 1}</td>
+          <td class="py-1.5 font-medium text-slate-200">${p1.name} → <span class="text-vortex-cyan">${p2.name}</span></td>
+          <td class="py-1.5 text-vortex-amber">${gc.distKm.toFixed(1)} km</td>
+          <td class="py-1.5 text-vortex-emerald font-semibold">${gc.distNM.toFixed(1)} NM</td>
+          <td class="py-1.5 text-purple-300">${gc.bearingDeg.toFixed(1)}°</td>
+          <td class="py-1.5 text-slate-400">${hours.toFixed(1)}u</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      const totalHours = totalNM / speedKnots;
+      document.getElementById('voyage-totals').textContent =
+        `Totaal Reisschema: ${totalKm.toFixed(1)} km | ${totalNM.toFixed(1)} Zeemijl (NM) | Vaartijd @ ${speedKnots} kn: ${totalHours.toFixed(1)} uur`;
+    }
+
+    function addCurrentPlaceToVoyage() {
+      VortexState.voyageRoute.push({
+        name: VortexState.observer.name,
+        lat: VortexState.observer.lat,
+        lon: VortexState.observer.lon
+      });
+      renderVoyageTable();
+      renderCanvas();
+      kernelLog(`🗺️ Waypoint toegevoegd aan reisschema: ${VortexState.observer.name}`, 'success');
+    }
+
+    function resetDefaultVoyage() {
+      VortexState.voyageRoute = [
+        { name: 'Bourges Meridiaan', lat: 47.0844, lon: 2.3956 },
+        { name: 'Bol van Lodijke 369', lat: 51.4783, lon: 4.1375 },
+        { name: 'Tholen Kruittoren 23', lat: 51.5312, lon: 4.2201 },
+        { name: 'Scherpenisse Pluimpot', lat: 51.5475, lon: 4.1039 },
+        { name: 'Laren Tafelbergheide', lat: 52.2300, lon: 5.1800 }
+      ];
+      renderVoyageTable();
+      renderCanvas();
+    }
+
+    function renderTimeCapsulesList() {
+      const container = document.getElementById('time-capsules-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      VortexState.timeCapsules.forEach(cap => {
+        const card = document.createElement('div');
+        card.className = 'p-2.5 rounded bg-vortex-panel border border-slate-800 hover:border-vortex-cyan/60 transition flex flex-col gap-1';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-vortex-amber text-xs">${cap.title}</span>
+            <button onclick="loadTimeCapsule('${cap.id}')" class="px-2 py-0.5 rounded bg-vortex-cyan/20 border border-vortex-cyan/50 text-vortex-cyan text-[10px] font-bold">
+              Laad Capsule
+            </button>
+          </div>
+          <div class="text-[10px] text-slate-400 flex flex-wrap gap-2">
+            <span>UTC: <strong class="text-slate-200">${cap.utc}</strong></span>
+            <span>Anker: <strong class="text-emerald-300">${cap.placeId}</strong></span>
+            <span>Hash: <strong class="text-purple-300">${cap.hash}</strong></span>
+          </div>
+          <p class="text-[10px] text-slate-300">${cap.notes}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function loadTimeCapsule(capsuleId) {
+      const cap = VortexState.timeCapsules.find(c => c.id === capsuleId);
+      if (!cap) return false;
+
+      VortexState.liveClock = false;
+      updateLiveClockButtonUI();
+      VortexState.currentDate = new Date(cap.utc);
+
+      if (cap.placeId && VortexState.places[cap.placeId]) {
+        const p = VortexState.places[cap.placeId];
+        document.getElementById('place-preset-select').value = cap.placeId;
+        setObserverLocation(p.code, p.name, p.lat, p.lon);
+      }
+
+      if (cap.azimuth !== undefined) {
+        VortexState.sensors.azimuth = cap.azimuth;
+        VortexState.sensors.pitch = cap.pitch || 12.1;
+        VortexState.sensors.quaternion = eulerToQuaternion(VortexState.sensors.azimuth, VortexState.sensors.pitch, 0);
+        document.getElementById('slider-az').value = VortexState.sensors.azimuth;
+        document.getElementById('slider-pitch').value = VortexState.sensors.pitch;
+        syncSensorUI();
+      }
+
+      const sel = document.getElementById('quick-capsule-select');
+      if (sel) sel.value = cap.id;
+
+      updateAllCalculations();
+      kernelLog(`⏳ Tijdcapsule [${cap.id}] geladen: ${cap.title} (${cap.utc})`, 'success');
+      return true;
+    }
+
+    function createCustomTimeCapsule() {
+      const id = 'CAP-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const iso = VortexState.currentDate.toISOString();
+      const hash = '0x' + ((VortexState.sensors.raw26Bit ^ Math.floor(VortexState.observer.lat * 1000)) >>> 0).toString(16).toUpperCase();
+      const newCap = {
+        id,
+        title: `Veld-Capsule ${VortexState.observer.name} (${iso.slice(0, 10)})`,
+        utc: iso,
+        placeId: VortexState.observer.id,
+        azimuth: VortexState.sensors.azimuth,
+        pitch: VortexState.sensors.pitch,
+        hash: `${hash}·PROV-O`,
+        notes: `Verzegelde VORTEX status op φ=${VortexState.observer.lat.toFixed(4)}°N, λ=${VortexState.observer.lon.toFixed(4)}°E, Az=${VortexState.sensors.azimuth.toFixed(2)}°.`
+      };
+      VortexState.timeCapsules.unshift(newCap);
+      renderTimeCapsulesList();
+      kernelLog(`🔐 Nieuwe Tijdcapsule verzegeld met ID ${id} en cryptografische hash ${newCap.hash}.`, 'success');
+    }
+
+    /***************************************************************************
+     * 7. MODULE 3: NAVIGATIONAL STARS, HOUR ANGLE & MARCQ ST. HILAIRE LOP
+     ***************************************************************************/
+    function toggleStarInFix(starName) {
+      const idx = VortexState.selectedFixBodies.indexOf(starName);
+      if (idx >= 0) {
+        if (VortexState.selectedFixBodies.length > 1) {
+          VortexState.selectedFixBodies.splice(idx, 1);
+        }
+      } else {
+        if (VortexState.selectedFixBodies.length >= 3) {
+          VortexState.selectedFixBodies.shift();
+        }
+        VortexState.selectedFixBodies.push(starName);
+      }
+      updateAllCalculations();
+    }
+
+    function adjustSextantOffset(bodyName, deltaArcMin) {
+      const currentDeg = VortexState.sextantOffsets[bodyName] || 0;
+      VortexState.sextantOffsets[bodyName] = currentDeg + (deltaArcMin / 60.0);
+      updateAllCalculations();
+    }
+
+    function autoSimulateSextantFix() {
+      VortexState.selectedFixBodies = ['Polaris', 'Aldebaran', 'Vega'];
+      VortexState.sextantOffsets = {
+        'Polaris': 0.035,     // +2.1 NM
+        'Aldebaran': -0.028,  // -1.7 NM
+        'Vega': 0.022         // +1.3 NM
+      };
+      toggleLayer('sterren', true);
+      toggleLayer('uurhoek_grid', true);
+      toggleLayer('nautische_positielijnen', true);
+      updateAllCalculations();
+      kernelLog('🔭 Sextant waarnemingen (Ho) gekalibreerd voor Polaris, Aldebaran & Vega. Positielijnen (LOP) geplot.', 'success');
+    }
+
+    function updateAllCalculations() {
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      const sid = calcSiderealTime(jd, obs.lon);
+
+      // Update Header Chronometer
+      document.getElementById('hdr-utc').textContent = VortexState.currentDate.toISOString().replace('T', ' ').slice(0, 19);
+      document.getElementById('hdr-jd').textContent = jd.toFixed(5);
+      document.getElementById('hdr-lst').textContent = formatHMS(sid.lstHours);
+
+      // Update Module 3 Hour Angle Header
+      const ref12 = calcAtmosphericRefraction(12.1, obs.tempC, obs.pressureMb);
+      document.getElementById('naut-gha-aries').textContent = formatDMM(sid.gmstDeg);
+      document.getElementById('naut-lst-deg').textContent = `${formatDMM(sid.lstDeg)} (${formatHMS(sid.lstHours)})`;
+      document.getElementById('naut-refrac').textContent = `+${ref12.refracArcMin.toFixed(2)}' (AM ${ref12.airMass.toFixed(2)})`;
+
+      // Combine Stars + Dynamic Sun/Moon/Venus
+      const allBodies = [...CelestialCatalog, ...getDynamicSolarSystemBodies(jd)];
+      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+
+      // Populate Almanac Table
+      const tbody = document.getElementById('star-almanac-tbody');
+      if (tbody) {
+        tbody.innerHTML = '';
+        reductions.forEach(r => {
+          const isSelected = VortexState.selectedFixBodies.includes(r.name);
+          const tr = document.createElement('tr');
+          tr.className = isSelected ? 'bg-vortex-cyan/10 hover:bg-vortex-cyan/20 cursor-pointer' : 'hover:bg-slate-800/40 cursor-pointer';
+          tr.onclick = () => toggleStarInFix(r.name);
+          tr.innerHTML = `
+            <td class="py-1 font-bold ${isSelected ? 'text-vortex-amber' : 'text-slate-600'}">${isSelected ? '★' : '☆'}</td>
+            <td class="py-1 font-semibold" style="color:${r.color}">${r.name} <span class="text-slate-500 text-[9px]">(${r.constellation})</span></td>
+            <td class="py-1 text-slate-300">${formatHMS(r.raHours)} / ${r.decDeg >= 0 ? '+' : ''}${r.decDeg.toFixed(1)}°</td>
+            <td class="py-1 text-vortex-cyan font-semibold">${formatDMM(r.lhaDeg)}</td>
+            <td class="py-1 ${r.hcDeg >= 0 ? 'text-emerald-300' : 'text-red-400'}">${formatDMM(r.hcDeg, true)}</td>
+            <td class="py-1 text-amber-300">${r.znDeg.toFixed(1)}°</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Populate Marcq St. Hilaire LOP Cards & Least-Squares Fix
+      const lopContainer = document.getElementById('lop-cards-container');
+      const selectedReductions = reductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+      if (lopContainer) {
+        lopContainer.innerHTML = '';
+        selectedReductions.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'p-2 rounded bg-vortex-panel border border-slate-800 flex flex-col gap-1 text-[10px]';
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs" style="color:${r.color}">★ ${r.name} (LHA: ${formatDMM(r.lhaDeg)})</span>
+              <span class="px-1.5 py-0.5 rounded ${r.interceptNM >= 0 ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-amber-950 text-amber-300 border border-amber-700'} font-bold">
+                p = ${r.interceptNM >= 0 ? '+' : ''}${r.interceptNM.toFixed(2)} NM (${r.direction})
+              </span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-slate-300 pt-0.5">
+              <div>Hc (Berekend): <strong class="text-vortex-cyan">${formatDMM(r.hcDeg, true)}</strong></div>
+              <div>Ho (Sextant): <strong class="text-vortex-amber">${formatDMM(r.hoDeg, true)}</strong></div>
+              <div>Azimut Zn: <strong class="text-purple-300">${r.znDeg.toFixed(1)}° (LOP ⊥ ${mod360(r.znDeg + 90).toFixed(0)}°)</strong></div>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800/80">
+              <span class="text-slate-400">Verstel Sextant Hoogte (Ho):</span>
+              <div class="flex gap-1">
+                <button onclick="adjustSextantOffset('${r.name}', -1.0)" class="cyber-btn px-1.5 py-0.5 rounded bg-slate-900">-1.0'</button>
+                <button onclick="adjustSextantOffset('${r.name}', -0.2)" class="cyber-btn px-1.5 py-0.5 rounded bg-slate-900">-0.2'</button>
+                <button onclick="adjustSextantOffset('${r.name}', 0.2)" class="cyber-btn px-1.5 py-0.5 rounded bg-slate-900">+0.2'</button>
+                <button onclick="adjustSextantOffset('${r.name}', 1.0)" class="cyber-btn px-1.5 py-0.5 rounded bg-slate-900">+1.0'</button>
+              </div>
+            </div>
+          `;
+          lopContainer.appendChild(card);
+        });
+      }
+
+      // Compute 2D Least-Squares Astronomical Fix from selected LOPs
+      const fix = computeLeastSquaresFix(selectedReductions, obs.lat, obs.lon);
+      document.getElementById('fix-readout').textContent =
+        `${formatDMM(fix.fixLat)}N, ${formatDMM(fix.fixLon)}E (Δx=${fix.dxNM.toFixed(2)} NM, Δy=${fix.dyNM.toFixed(2)} NM)`;
+
+      renderVoyageTable();
+      renderCanvas(reductions, selectedReductions, fix);
+    }
+
+    // Solve 2x2 Normal Equations for Marcq St. Hilaire multi-star intersection
+    function computeLeastSquaresFix(selectedReductions, apLat, apLon) {
+      if (!selectedReductions || selectedReductions.length < 2) {
+        return { fixLat: apLat, fixLon: apLon, dxNM: 0, dyNM: 0 };
+      }
+      let sumAA = 0, sumAB = 0, sumBB = 0, sumAP = 0, sumBP = 0;
+      selectedReductions.forEach(r => {
+        const az = r.znDeg * DEG2RAD;
+        const a = Math.sin(az); // East component
+        const b = Math.cos(az); // North component
+        const p = r.interceptNM;
+        sumAA += a * a;
+        sumAB += a * b;
+        sumBB += b * b;
+        sumAP += a * p;
+        sumBP += b * p;
+      });
+
+      const det = sumAA * sumBB - sumAB * sumAB;
+      if (Math.abs(det) < 1e-5) {
+        return { fixLat: apLat, fixLon: apLon, dxNM: 0, dyNM: 0 };
+      }
+      const dxNM = (sumBB * sumAP - sumAB * sumBP) / det; // East offset in NM
+      const dyNM = (sumAA * sumBP - sumAB * sumAP) / det; // North offset in NM
+
+      const fixLat = apLat + (dyNM / 60.0);
+      const fixLon = apLon + (dxNM / (60.0 * Math.cos(apLat * DEG2RAD)));
+      return { fixLat, fixLon, dxNM, dyNM };
+    }
+
+    /***************************************************************************
+     * 8. INTERACTIVE CANVAS RENDERER (STRICT LAYER RESPECT)
+     ***************************************************************************/
+    const canvas = document.getElementById('vortex-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      updateAllCalculations();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    // Map (Azimuth, Altitude) to Stereographic Dome Canvas Coordinates
+    function skyToCanvas(azDeg, altDeg, cx, cy, maxR) {
+      const r = maxR * ((90 - Math.max(-15, altDeg)) / 90);
+      const theta = (azDeg - 90) * DEG2RAD; // North at top (0° -> -90° canvas angle)
+      return {
+        x: cx + r * Math.cos(theta),
+        y: cy + r * Math.sin(theta)
+      };
+    }
+
+    function renderCanvas(allReductions = null, selectedReductions = null, fixData = null) {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (!w || !h) return;
+
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      if (!allReductions) {
+        const allBodies = [...CelestialCatalog, ...getDynamicSolarSystemBodies(jd)];
+        allReductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+        selectedReductions = allReductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+        fixData = computeLeastSquaresFix(selectedReductions, obs.lat, obs.lon);
+      }
+
+      // 1. Base Calibrated Dark Tableau (#03060c)
+      ctx.clearRect(0, 0, w, h);
+      if (!VortexState.sensors.cameraActive) {
+        ctx.fillStyle = '#03060c';
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      const cx = w * 0.5;
+      const cy = h * 0.52;
+      const maxR = Math.min(w, h) * 0.41;
+
+      // Subtle Reference Reticle (Always present so the dark canvas looks like a calibrated instrument)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(30, 47, 77, 0.45)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, maxR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx - 12, cy);
+      ctx.lineTo(cx + 12, cy);
+      ctx.moveTo(cx, cy - 12);
+      ctx.lineTo(cx, cy + 12);
+      ctx.stroke();
+      ctx.restore();
+
+      // =======================================================================
+      // LAYER 1: UURHOEK_GRID (Local Hour Angle, Meridian & Horizon Circles)
+      // =======================================================================
+      if (VortexState.layers.uurhoek_grid) {
+        ctx.save();
+        // Altitude rings (0°, 30°, 60°)
+        [0, 30, 60].forEach(alt => {
+          const r = maxR * ((90 - alt) / 90);
+          ctx.strokeStyle = alt === 0 ? 'rgba(0, 240, 255, 0.55)' : 'rgba(0, 240, 255, 0.18)';
+          ctx.setLineDash(alt === 0 ? [] : [4, 4]);
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // Azimuth & Hour Angle radial lines every 15° (1 Hour of LHA = 15°)
+        for (let az = 0; az < 360; az += 15) {
+          const pEdge = skyToCanvas(az, 0, cx, cy, maxR);
+          ctx.strokeStyle = az % 90 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(51, 65, 85, 0.35)';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(pEdge.x, pEdge.y);
+          ctx.stroke();
+
+          if (az % 30 === 0) {
+            const pLbl = skyToCanvas(az, -6, cx, cy, maxR);
+            ctx.fillStyle = az % 90 === 0 ? '#00f0ff' : '#64748b';
+            ctx.font = 'bold 10px "JetBrains Mono"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const card = az === 0 ? 'N (0°)' : az === 90 ? 'O (90°)' : az === 180 ? 'Z (Meridiaan 0h)' : az === 270 ? 'W (6h LHA)' : `${az}°`;
+            ctx.fillText(card, pLbl.x, pLbl.y);
+          }
+        }
+
+        // VORTEX 245.91° Calibrated Orientation Vector
+        const pVortex = skyToCanvas(VortexState.sensors.azimuth, 0, cx, cy, maxR);
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.75)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 3]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(pVortex.x, pVortex.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '10px "JetBrains Mono"';
+        ctx.fillText(`VORTEX AS ${VortexState.sensors.azimuth.toFixed(2)}°`, pVortex.x - 30, pVortex.y - 8);
+        ctx.restore();
+      }
+
+      // =======================================================================
+      // LAYER 2: REISSCHEMA_VECTOREN (Geodetic Orthodrome & Anchors)
+      // =======================================================================
+      if (VortexState.layers.reisschema_vectoren) {
+        ctx.save();
+        // Project route waypoints relative to the center of the route (49.5°N, 4.2°E)
+        const refLat = 50.0;
+        const refLon = 4.2;
+        const scale = maxR / 4.2;
+
+        const geoToXY = (lat, lon) => ({
+          x: cx + (lon - refLon) * Math.cos(refLat * DEG2RAD) * scale * 1.35,
+          y: cy - (lat - refLat) * scale
+        });
+
+        // Draw connecting orthodrome segments
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        VortexState.voyageRoute.forEach((wp, idx) => {
+          const pt = geoToXY(wp.lat, wp.lon);
+          if (idx === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+
+        // Draw anchor nodes & RD labels
+        VortexState.voyageRoute.forEach((wp, idx) => {
+          const pt = geoToXY(wp.lat, wp.lon);
+          const rd = wgs84ToRD(wp.lat, wp.lon);
+          ctx.fillStyle = idx === VortexState.voyageRoute.length - 1 ? '#00f0ff' : '#f59e0b';
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '10px "JetBrains Mono"';
+          ctx.fillText(`${idx + 1}. ${wp.name}`, pt.x + 8, pt.y - 3);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '9px "JetBrains Mono"';
+          ctx.fillText(`${wp.lat.toFixed(2)}°N, ${wp.lon.toFixed(2)}°E | RD ${rd.x},${rd.y}`, pt.x + 8, pt.y + 9);
+        });
+        ctx.restore();
+      }
+
+      // =======================================================================
+      // LAYER 3: STERREN (Navigational Stars, Constellations & Planets)
+      // =======================================================================
+      if (VortexState.layers.sterren) {
+        ctx.save();
+        // Connect Taurus & Orion guide lines
+        const findBody = name => allReductions.find(b => b.name === name);
+        const pairs = [
+          ['Aldebaran', 'Plejaden (M45)'],
+          ['Betelgeuze', 'Rigel'],
+          ['Rigel', 'Sirius'],
+          ['Vega', 'Deneb']
+        ];
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+        ctx.lineWidth = 1;
+        pairs.forEach(([n1, n2]) => {
+          const b1 = findBody(n1);
+          const b2 = findBody(n2);
+          if (b1 && b2 && b1.hcDeg > -10 && b2.hcDeg > -10) {
+            const p1 = skyToCanvas(b1.znDeg, b1.hcDeg, cx, cy, maxR);
+            const p2 = skyToCanvas(b2.znDeg, b2.hcDeg, cx, cy, maxR);
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        });
+
+        // Plot each star/planet
+        allReductions.forEach(body => {
+          if (body.hcDeg < -12) return; // Below horizon margin
+          const pt = skyToCanvas(body.znDeg, body.hcDeg, cx, cy, maxR);
+          const isFixStar = VortexState.selectedFixBodies.includes(body.name);
+          const radius = body.name.includes('Zon') || body.name.includes('Maan') ? 6.5 : isFixStar ? 5 : 3.2;
+
+          // Glow for fix stars
+          if (isFixStar) {
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, radius + 4, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = body.color;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = body.hcDeg >= 0 ? '#f8fafc' : '#64748b';
+          ctx.font = isFixStar ? 'bold 10px "JetBrains Mono"' : '10px "JetBrains Mono"';
+          ctx.fillText(`${body.name} (LHA ${Math.round(body.lhaDeg)}°)`, pt.x + 8, pt.y + 3);
+        });
+        ctx.restore();
+      }
+
+      // =======================================================================
+      // LAYER 4: NAUTISCHE_POSITIELIJNEN (Marcq St. Hilaire LOPs & Fix Plot)
+      // =======================================================================
+      if (VortexState.layers.nautische_positielijnen && selectedReductions) {
+        ctx.save();
+        // Plot a dedicated Nautical Plotting Sheet centered on Assumed Position (cx, cy)
+        // Scale: 1 Nautical Mile (NM) = 18 pixels
+        const nmScale = 18.0;
+
+        // Draw Nautical Plotting Rose around AP (cx, cy)
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+        ctx.setLineDash([2, 4]);
+        [2, 4, 6].forEach(nmRing => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, nmRing * nmScale, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+          ctx.font = '9px "JetBrains Mono"';
+          ctx.fillText(`${nmRing} NM`, cx + nmRing * nmScale + 3, cy - 2);
+        });
+        ctx.setLineDash([]);
+
+        // Plot each selected body's Azimuth Vector + Perpendicular Line of Position (Sumner Line)
+        selectedReductions.forEach(r => {
+          const azRad = (r.znDeg - 90) * DEG2RAD;
+          const pDistPx = r.interceptNM * nmScale;
+
+          // Intercept Point I along Azimuth Zn from Assumed Position (cx, cy)
+          const ix = cx + pDistPx * Math.cos(azRad);
+          const iy = cy + pDistPx * Math.sin(azRad);
+
+          // Draw Azimuth bearing dashed vector from AP to Intercept Point I
+          ctx.strokeStyle = r.color;
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(ix, iy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Draw perpendicular Nautical Position Line (LOP = Zn ± 90°)
+          const perpRad = azRad + Math.PI / 2;
+          const lopHalfLen = 110;
+          const x1 = ix - lopHalfLen * Math.cos(perpRad);
+          const y1 = iy - lopHalfLen * Math.sin(perpRad);
+          const x2 = ix + lopHalfLen * Math.cos(perpRad);
+          const y2 = iy + lopHalfLen * Math.sin(perpRad);
+
+          ctx.strokeStyle = r.color;
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          // Label LOP
+          ctx.fillStyle = r.color;
+          ctx.font = 'bold 10px "JetBrains Mono"';
+          ctx.fillText(
+            `LOP ${r.name} (p=${r.interceptNM >= 0 ? '+' : ''}${r.interceptNM.toFixed(1)}NM, Zn=${r.znDeg.toFixed(0)}°)`,
+            x2 + 5,
+            y2
+          );
+        });
+
+        // Plot Resulting Least-Squares Astronomical Fix
+        if (fixData) {
+          const fx = cx + fixData.dxNM * nmScale;
+          const fy = cy - fixData.dyNM * nmScale;
+
+          // Uncertainty ellipse / circle
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.22)';
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(fx, fy, 11, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#00f0ff';
+          ctx.font = 'bold 11px "JetBrains Mono"';
+          ctx.fillText(`⚓ ASTRO FIX (${formatDMM(fixData.fixLat)}N, ${formatDMM(fixData.fixLon)}E)`, fx + 14, fy + 4);
+        }
+        ctx.restore();
+      }
+
+      // =======================================================================
+      // LAYER 5: FOTONISCH_ROOSTER (110nm Hexagonal Crystal Grating G1..G6)
+      // =======================================================================
+      if (VortexState.layers.fotonisch_rooster) {
+        ctx.save();
+        const hexR = maxR * 0.52;
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.7)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const ang = (i * 60 - 90) * DEG2RAD;
+          const hx = cx + hexR * Math.cos(ang);
+          const hy = cy + hexR * Math.sin(ang);
+          if (i === 0) ctx.moveTo(hx, hy);
+          else ctx.lineTo(hx, hy);
+        }
+        ctx.closePath();
+        ctx.stroke();
+
+        // G1..G6 Nodes & Spectral Diffraction Wave
+        for (let i = 0; i < 6; i++) {
+          const deg = i * 60;
+          const ang = (deg - 90) * DEG2RAD;
+          const hx = cx + hexR * Math.cos(ang);
+          const hy = cy + hexR * Math.sin(ang);
+
+          ctx.fillStyle = '#a855f7';
+          ctx.beginPath();
+          ctx.arc(hx, hy, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#e9d5ff';
+          ctx.font = 'bold 10px "JetBrains Mono"';
+          ctx.fillText(`G${i + 1} (${deg}°)`, hx + 7, hy + 3);
+        }
+
+        // Green Spectral Intensity Curve across center
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let x = cx - hexR; x <= cx + hexR; x += 4) {
+          const norm = (x - cx) / (hexR * 0.25);
+          const sinc = norm === 0 ? 1 : Math.sin(norm * Math.PI) / (norm * Math.PI);
+          const y = cy + 55 - (sinc * sinc) * 48;
+          if (x === cx - hexR) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.fillStyle = '#34d399';
+        ctx.font = '10px "JetBrains Mono"';
+        ctx.fillText('SiO₂/TiO₂ a=110nm | s=55nm | A=7859.14nm² | η₁=94.2%', cx - hexR * 0.75, cy + 72);
+        ctx.restore();
+      }
+
+      // =======================================================================
+      // LAYER 6: PLANIMETER_ARM (A. Ott Kempten Nr. 573 Poolplanimeter)
+      // =======================================================================
+      if (VortexState.layers.planimeter_arm) {
+        ctx.save();
+        const px = VortexState.planimeter.poleX * w;
+        const py = VortexState.planimeter.poleY * h;
+        const tx = VortexState.planimeter.tracerX * w;
+        const ty = VortexState.planimeter.tracerY * h;
+
+        // Elbow joint kinematics
+        const mx = (px + tx) * 0.5 - (ty - py) * 0.28;
+        const my = (py + ty) * 0.5 + (tx - px) * 0.28;
+
+        // Pole Weight
+        ctx.fillStyle = '#d97706';
+        ctx.strokeStyle = '#fef3c7';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Brass Arms
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(mx, my);
+        ctx.lineTo(tx, ty);
+        ctx.stroke();
+
+        // Tracer Loupe
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 12, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde68a';
+        ctx.font = 'bold 10px "JetBrains Mono"';
+        ctx.fillText(`A. OTT KEMPTEN Nr. 573 | Nonius: ${VortexState.planimeter.wheelCount.toFixed(2)} cm² (28.37 gemeten)`, mx + 10, my - 10);
+        ctx.restore();
+      }
+    }
+
+    // Canvas Mouse / Touch Interaction (Move Ott Planimeter Tracer or Read Sky Coordinates)
+    canvas.addEventListener('pointerdown', e => {
+      if (VortexState.layers.planimeter_arm) {
+        VortexState.planimeter.dragging = true;
+        updatePlanimeterPointer(e);
+      }
+    });
+    canvas.addEventListener('pointermove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width * 0.5;
+      const cy = rect.height * 0.52;
+      const maxR = Math.min(rect.width, rect.height) * 0.41;
+
+      const dx = x - cx;
+      const dy = y - cy;
+      const dist = Math.hypot(dx, dy);
+      const az = mod360(Math.atan2(dy, dx) * RAD2DEG + 90);
+      const alt = 90 - (dist / maxR) * 90;
+      const nm = dist / 18.0;
+
+      document.getElementById('cursor-readout').textContent =
+        `Az ${az.toFixed(1)}° | Alt ${alt >= 0 ? '+' : ''}${alt.toFixed(1)}° | ΔNM ${nm.toFixed(2)}`;
+
+      if (VortexState.planimeter.dragging) {
+        updatePlanimeterPointer(e);
+      }
+    });
+    window.addEventListener('pointerup', () => {
+      VortexState.planimeter.dragging = false;
+    });
+
+    function updatePlanimeterPointer(e) {
+      const rect = canvas.getBoundingClientRect();
+      VortexState.planimeter.tracerX = Math.max(0.08, Math.min(0.92, (e.clientX - rect.left) / rect.width));
+      VortexState.planimeter.tracerY = Math.max(0.08, Math.min(0.92, (e.clientY - rect.top) / rect.height));
+      VortexState.planimeter.wheelCount = 120 + (VortexState.planimeter.tracerX * 80 + VortexState.planimeter.tracerY * 45);
+      renderCanvas();
+    }
+
+    /***************************************************************************
+     * 9. TIME CONTROLS
+     ***************************************************************************/
+    function stepTime(seconds) {
+      VortexState.currentDate = new Date(VortexState.currentDate.getTime() + seconds * 1000);
+      updateAllCalculations();
+    }
+
+    function setNowTime() {
+      VortexState.currentDate = new Date('2026-11-05T14:54:00Z');
+      updateAllCalculations();
+      kernelLog('⏱️ Klok gesynchroniseerd met VORTEX Referentietijd: 5 november 2026 15:54 CET.', 'info');
+    }
+
+    function toggleLiveClock() {
+      VortexState.liveClock = !VortexState.liveClock;
+      updateLiveClockButtonUI();
+    }
+
+    function updateLiveClockButtonUI() {
+      const btn = document.getElementById('btn-live-clock');
+      if (!btn) return;
+      if (VortexState.liveClock) {
+        btn.textContent = '▶️ LIVE (1s)';
+        btn.className = 'cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan font-semibold';
+      } else {
+        btn.textContent = '⏸️ PAUZE';
+        btn.className = 'cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 font-semibold';
+      }
+    }
+
+    setInterval(() => {
+      if (VortexState.liveClock) {
+        stepTime(1);
+      }
+    }, 1000);
+
+    /***************************************************************************
+     * 10. MODULE 4: VORTEX KERNEL PROGRAMMABLE IDE & PUBLIC API
+     ***************************************************************************/
+    function kernelLog(msg, level = 'info') {
+      const out = document.getElementById('kernel-console-output');
+      if (!out) return;
+      const line = document.createElement('div');
+      const ts = new Date().toISOString().slice(11, 19);
+      const colorClass =
+        level === 'success' ? 'text-emerald-400' :
+        level === 'warn' ? 'text-amber-400' :
+        level === 'error' ? 'text-red-400' : 'text-cyan-300';
+      line.className = `${colorClass} leading-relaxed`;
+      line.textContent = `[${ts}] ${msg}`;
+      out.appendChild(line);
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function clearKernelConsole() {
+      const out = document.getElementById('kernel-console-output');
+      if (out) out.innerHTML = '';
+    }
+
+    // Global Programmable API exposed to user scripts inside the Kernel IDE
+    window.VortexKernel = {
+      setLayer: (name, state) => {
+        const res = toggleLayer(name, state);
+        kernelLog(`Layer [${name}] -> ${res ? 'ON' : 'OFF'}`, 'info');
+        return res;
+      },
+      setObserver: (name, lat, lon) => {
+        setObserverLocation('KERNEL-SET', name, lat, lon);
+        kernelLog(`Observer ingesteld op ${name} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E | RD ${VortexState.observer.rdX}·${VortexState.observer.rdY})`, 'success');
+        return VortexState.observer;
+      },
+      setTime: (isoString) => {
+        VortexState.currentDate = new Date(isoString);
+        updateAllCalculations();
+        kernelLog(`Kernel UTC Tijd ingesteld op ${VortexState.currentDate.toISOString()}`, 'info');
+      },
+      loadTimeCapsule: (id) => loadTimeCapsule(id),
+      calcHourAngle: (starName) => {
+        const jd = dateToJulianDate(VortexState.currentDate);
+        const allBodies = [...CelestialCatalog, ...getDynamicSolarSystemBodies(jd)];
+        const body = allBodies.find(b => b.name.toLowerCase().includes(starName.toLowerCase()));
+        if (!body) {
+          kernelLog(`Ster/Planeet "${starName}" niet gevonden in catalogus.`, 'warn');
+          return null;
+        }
+        const red = calcSightReduction(body, VortexState.observer.lat, VortexState.observer.lon, jd);
+        kernelLog(`★ ${red.name}: LHA=${formatDMM(red.lhaDeg)} (${red.lhaHours.toFixed(3)}u) | Hc=${formatDMM(red.hcDeg, true)} | Zn=${red.znDeg.toFixed(1)}°`, 'success');
+        return red;
+      },
+      plotPositionLine: (starName, observedAltDeg) => {
+        const jd = dateToJulianDate(VortexState.currentDate);
+        const allBodies = [...CelestialCatalog, ...getDynamicSolarSystemBodies(jd)];
+        const body = allBodies.find(b => b.name.toLowerCase().includes(starName.toLowerCase()));
+        if (!body) return null;
+        const red = calcSightReduction(body, VortexState.observer.lat, VortexState.observer.lon, jd);
+        const offset = observedAltDeg - red.hcDeg;
+        VortexState.sextantOffsets[body.name] = offset;
+        if (!VortexState.selectedFixBodies.includes(body.name)) {
+          VortexState.selectedFixBodies.push(body.name);
+        }
+        toggleLayer('nautische_positielijnen', true);
+        updateAllCalculations();
+        const pNM = offset * 60;
+        kernelLog(`⚓ LOP geplot voor ${body.name}: Ho=${observedAltDeg.toFixed(3)}°, Hc=${red.hcDeg.toFixed(3)}° -> Intercept p=${pNM >= 0 ? '+' : ''}${pNM.toFixed(2)} NM`, 'success');
+        return { body: body.name, hc: red.hcDeg, ho: observedAltDeg, interceptNM: pNM, azimuth: red.znDeg };
+      },
+      addWaypoint: (name, lat, lon) => {
+        VortexState.voyageRoute.push({ name, lat, lon });
+        toggleLayer('reisschema_vectoren', true);
+        renderVoyageTable();
+        renderCanvas();
+        kernelLog(`🗺️ Waypoint toegevoegd: ${name} (${lat}°N, ${lon}°E)`, 'success');
+      },
+      getQuaternion: () => {
+        const q = VortexState.sensors.quaternion;
+        kernelLog(`Quaternion Attitude: [${q.w.toFixed(4)}, ${q.x.toFixed(4)}, ${q.y.toFixed(4)}, ${q.z.toFixed(4)}]`, 'info');
+        return q;
+      },
+      playPututu: (freq = 110) => triggerPututuResonance(freq),
+      log: (msg) => kernelLog(String(msg), 'info')
+    };
+
+    const KernelTemplates = {
+      tpl_full_nav: `// VORTEX KERNEL SCRIPT 1: Sterrennavigatie, Uurhoek (LHA) & 3-Sterren Positielijnen
+VortexKernel.setObserver("Laren / Tafelbergheide", 52.2300, 5.1800);
+VortexKernel.setTime("2026-11-05T14:54:00Z");
+
+// Activeer de sterren-, uurhoek- en nautische positielijn-lagen op het canvas
+VortexKernel.setLayer("uurhoek_grid", true);
+VortexKernel.setLayer("sterren", true);
+VortexKernel.setLayer("nautische_positielijnen", true);
+
+// Bereken Uurhoek (LHA = LST - RK) en plot Marcq St. Hilaire Positielijnen (LOP)
+const s1 = VortexKernel.calcHourAngle("Polaris");
+const s2 = VortexKernel.calcHourAngle("Aldebaran");
+const s3 = VortexKernel.calcHourAngle("Vega");
+
+VortexKernel.plotPositionLine("Polaris", s1.hcDeg + 0.035);    // +2.1 NM Toward
+VortexKernel.plotPositionLine("Aldebaran", s2.hcDeg - 0.028);  // -1.7 NM Away
+VortexKernel.plotPositionLine("Vega", s3.hcDeg + 0.022);       // +1.3 NM Toward`,
+
+      tpl_vangogh_1889: `// VORTEX KERNEL SCRIPT 2: Tijdcapsule Reconstructie Van Gogh (22 Juli 1889 04:00 UT)
+VortexKernel.loadTimeCapsule("CAP-1889-VANGOGH");
+
+// Schakel de sterrenhemel en het uurhoek-grid in voor Saint-Rémy-de-Provence
+VortexKernel.setLayer("sterren", true);
+VortexKernel.setLayer("uurhoek_grid", true);
+
+// Inspecteer de samenstand van Venus, de Maansikkel, Aldebaran en de Plejaden (M45)
+VortexKernel.calcHourAngle("Venus");
+VortexKernel.calcHourAngle("Maan");
+VortexKernel.calcHourAngle("Plejaden");
+VortexKernel.calcHourAngle("Aldebaran");`,
+
+      tpl_lodijke_reis: `// VORTEX KERNEL SCRIPT 3: Geodetisch Reisschema Bourges -> Lodijke -> Tholen -> Laren
+VortexKernel.loadTimeCapsule("CAP-1530-LODIJKE");
+VortexKernel.setLayer("reisschema_vectoren", true);
+VortexKernel.setLayer("planimeter_arm", true);
+
+// Voeg Domburg (Nehalennia) toe aan het actieve reisschema
+VortexKernel.addWaypoint("Domburg Nehalennia", 51.5641, 3.4982);
+VortexKernel.log("Orthodroom & RD-coördinaten (EPSG:28992) berekend voor de Zeeuwse Delta.");`,
+
+      tpl_sensor_quat: `// VORTEX KERNEL SCRIPT 4: 4D Quaternion Kinematica, 110nm Rooster & 110 Hz Pututu
+VortexKernel.setLayer("fotonisch_rooster", true);
+VortexKernel.setLayer("uurhoek_grid", true);
+
+const q = VortexKernel.getQuaternion();
+VortexKernel.playPututu(110.0);
+VortexKernel.log("Fotonisch kristalrooster G1-G6 (a=110nm, s=55nm) en Pututu 110Hz actief.");`,
+
+      tpl_rust_export: `// VORTEX KERNEL SCRIPT 5: Genereer C++99 LFSR & Rust Axum GeoParcel Struct
+const cppHeader = [
+  "// lfsr_kernel.h — VORTEX 39-Bit Gray & E8 Fase-Integratie",
+  "#include <stdint.h>",
+  "static inline uint64_t vortex_gray39(uint64_t n) { return n ^ (n >> 1ULL); }",
+  "static inline uint32_t vortex_hex_addr(uint8_t hex6) { return 0x2000000UL | ((uint32_t)hex6 << 16); }"
+].join("\\n");
+
+VortexKernel.log("\\n" + cppHeader);`
+    };
+
+    function loadKernelTemplate(tplKey) {
+      const editor = document.getElementById('kernel-code-editor');
+      if (editor && KernelTemplates[tplKey]) {
+        editor.value = KernelTemplates[tplKey];
+      }
+    }
+
+    function runKernelScript() {
+      const code = document.getElementById('kernel-code-editor').value;
+      const statusEl = document.getElementById('editor-status');
+      try {
+        statusEl.textContent = 'EXECUTING...';
+        statusEl.className = 'text-vortex-amber';
+        const fn = new Function('VortexKernel', code);
+        fn(window.VortexKernel);
+        statusEl.textContent = 'OK (EXECUTED)';
+        statusEl.className = 'text-vortex-emerald';
+      } catch (err) {
+        statusEl.textContent = 'KERNEL ERROR';
+        statusEl.className = 'text-red-400';
+        kernelLog(`❌ Syntax/Runtime Fout: ${err.message}`, 'error');
+      }
+    }
+
+    function copyKernelCode() {
+      const editor = document.getElementById('kernel-code-editor');
+      if (!editor) return;
+      editor.select();
+      document.execCommand('copy');
+      kernelLog('📋 Kernel broncode gekopieerd naar klembord.', 'info');
+    }
+
+    /***************************************************************************
+     * 11. INITIALIZATION ON WINDOW LOAD (STRICTLY ALL LAYERS OFF)
+     ***************************************************************************/
+    window.onload = function () {
+      // Auto-detect mobile screen width for optimal default ergonomic layout
+      if (window.innerWidth < 768) {
+        setLayoutMode('mobile');
+      }
+
+      // Ensure all layers are strictly OFF at startup
+      syncLayerButtonsUI();
+      syncSensorUI();
+      renderTimeCapsulesList();
+      loadKernelTemplate('tpl_full_nav');
+      resizeCanvas();
+
+      kernelLog('VORTEX KERNEL IDE v26.8 geïnitialiseerd. Alle projectielagen staan op [OFF].', 'info');
+      kernelLog('Klik op "▶ RUN KERNEL" of schakel lagen in via de bovenbalk om sterren, uurhoeken en positielijnen te plotten.', 'success');
+    };
+  </script>
+</body>
+</html>
