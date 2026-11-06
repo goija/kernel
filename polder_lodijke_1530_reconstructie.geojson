@@ -1,0 +1,116 @@
+{
+  "type": "FeatureCollection",
+  "name": "Reconstructie_Polder_Lodijke_1530",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "POL-1530-LOD",
+        "naam": "Polder Lodijke (Historische Ommuring 1530)",
+        "oppervlakte_ha": 845.2,
+        "status": "Verdronken tijdens Sint-Felixvloed (5 nov 1530)",
+        "ambacht": "Lodijke / Reimerswaal",
+        "dijkbeheerder": "Adriaan van Reimerswale"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              4.135,
+              51.482
+            ],
+            [
+              4.148,
+              51.502
+            ],
+            [
+              4.175,
+              51.508
+            ],
+            [
+              4.192,
+              51.495
+            ],
+            [
+              4.185,
+              51.478
+            ],
+            [
+              4.16,
+              51.475
+            ],
+            [
+              4.135,
+              51.482
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GAT-1530-LOD",
+        "naam": "Het Gat van Lodijke (Dijkbreuk 1530)",
+        "type": "Spuigeul / Doorbraakgat",
+        "diepte_m": 18.5,
+        "notitie": "In 1530 ontstaan door hettian schuren van de vliet ('laet het havenken schueren')"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            4.175,
+            51.508
+          ],
+          [
+            4.168,
+            51.492
+          ],
+          [
+            4.162,
+            51.489
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KASTEEL-LOD",
+        "naam": "Kasteel van Lodijke",
+        "type": "Adellijke Hofstede / Slot",
+        "eigenaar": "Heer Adriaan van Reimerswale"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.162,
+          51.489
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "STAD-REIMERSWAAL",
+        "naam": "Stad Reimerswaal (Verdronken 2e stad van Zeeland)",
+        "type": "Versterkte Stad"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.183,
+          51.498
+        ]
+      }
+    }
+  ]
+}
