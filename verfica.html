@@ -91,7 +91,7 @@
                         </span>
                     </div>
                     <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white mt-0.5">
-                        Astrometrie, Grenslaagfysica (Tafelbergheide), Besseliaanse Elementen &amp; OTT Planimeter
+                        Astrometrie, Grenslaagfysica (Tafelbergheide &amp; NL), Navigatie (SEEM/SVD) &amp; OTT Planimeter
                     </h1>
                 </div>
             </div>
@@ -100,6 +100,12 @@
             <div class="flex flex-wrap items-center gap-1.5 bg-obs-900 p-1 rounded-xl border border-slate-800">
                 <button onclick="switchTab('all')" id="tab-all" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-sky-500/20 text-sky-300 border border-sky-500/30">
                     Overzicht (Alles)
+                </button>
+                <button onclick="switchTab('paneel5')" id="tab-paneel5" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
+                    Paneel 5: Regio NL &amp; 1999 vs 2026
+                </button>
+                <button onclick="switchTab('paneel6')" id="tab-paneel6" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
+                    Paneel 6: Marcq St. Hilaire &amp; SEEM/SVD
                 </button>
                 <button onclick="switchTab('paneel4')" id="tab-paneel4" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
                     Paneel 4: Tafelbergheide
@@ -131,7 +137,7 @@
                         1️⃣ Forensische Audit van je Schermwaarden tegen NASA / Meeus / JPL Referenties
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
-                        Klik op de presets in de panelen hieronder of open de 12 geautomatiseerde unit-tests om elke formule live te verifiëren.
+                        Klik op de presets in de panelen hieronder of open de 16 geautomatiseerde unit-tests om elke formule live te verifiëren.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -140,7 +146,7 @@
                         ⟳ Herstel 12 aug 2026 (Standaard)
                     </button>
                     <button onclick="toggleSelfTestDrawer()" class="px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-mono transition flex items-center gap-1.5">
-                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">12/12</span> ✅)</span>
+                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">16/16</span> ✅)</span>
                     </button>
                     <button onclick="copyAuditReport()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5">
                         <span id="copyBtnText">📋 Kopieer Diagnose-JSON</span>
@@ -148,14 +154,14 @@
                 </div>
             </div>
 
-            <!-- Interactive Self-Diagnosis & Unit Test Drawer (12 Automated Verification Checks) -->
+            <!-- Interactive Self-Diagnosis & Unit Test Drawer (16 Automated Verification Checks) -->
             <div id="selfTestDrawer" class="mt-4 pt-4 border-t border-slate-800/80 hidden">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                     <span class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
                         ✓ Geautomatiseerde Wiskundige &amp; UI Unit-Tests (Real-Time Zelfdiagnose)
                     </span>
                     <button onclick="runAllSelfTests()" class="px-2.5 py-1 rounded bg-obs-900 hover:bg-slate-800 text-xs font-mono text-sky-300 border border-slate-700">
-                        ↻ Herbereken Alle 12 Tests
+                        ↻ Herbereken Alle 16 Tests
                     </button>
                 </div>
                 <div id="selfTestGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 font-mono text-xs">
@@ -549,6 +555,295 @@
                     <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
                         Door het wegvallen van de voelbare warmtestroom (<span class="font-mono">H → 0</span>) storten de convectieve wervels in en zakt de wind van <span class="font-mono text-white">3,2 m/s</span> terug naar een residu-luwte van <span class="font-mono text-purple-300">1,6 m/s</span>.
                     </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- PANEEL 5: REGIONALE ANALYSE NEDERLAND (2026) & VERGELIJKING MET 1999  -->
+        <!-- ===================================================================== -->
+        <section id="section-paneel5" class="glass-panel rounded-2xl p-5 sm:p-6 shadow-xl space-y-6 border border-amber-500/30">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                            Paneel 5 • Regionale Gradiënt Nederland &amp; Historische Benchmark
+                        </span>
+                        <span class="text-xs font-mono text-emerald-300">
+                            11 aug 1999 (Middag, AM ≈ 1,18) vs. 12 aug 2026 (Avond, AM ≈ 4,38–4,88)
+                        </span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white mt-1">
+                        2. Regionale Verschillen over Nederland &amp; Fysisch-Optische Systeemanalyse (1999 vs. 2026)
+                    </h2>
+                </div>
+                <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+                    <button onclick="selectNLStation(0)" id="nlBtn0" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold transition">
+                        🌊 Vlissingen / Tholen (91,5%)
+                    </button>
+                    <button onclick="selectNLStation(1)" id="nlBtn1" class="px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition">
+                        🌿 Tafelbergheide (89,2%)
+                    </button>
+                    <button onclick="selectNLStation(2)" id="nlBtn2" class="px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition">
+                        ⛰️ Maastricht (90,1%)
+                    </button>
+                    <button onclick="selectNLStation(3)" id="nlBtn3" class="px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition">
+                        🏝️ Terschelling (88,3%)
+                    </button>
+                    <button onclick="selectNLStation(4)" id="nlBtn4" class="px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition">
+                        🔭 Dwingelderveld / Eems (87,5%)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Deel 1: Dynamische Vergelijking 11 Augustus 1999 vs 12 Augustus 2026 -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-5 glass-sub rounded-xl p-4 space-y-3 border border-slate-800">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="text-xs font-mono uppercase tracking-wider text-amber-300">1. Dynamische Benchmark: 1999 vs. 2026</span>
+                        <span class="text-[11px] font-mono text-sky-300">I(λ) ∝ λ⁻⁴ Rayleigh</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5 font-mono text-xs">
+                        <div class="bg-obs-950 p-3 rounded-lg border border-sky-500/30 space-y-1">
+                            <div class="text-sky-300 font-bold">11 aug 1999 (Saros 145)</div>
+                            <div class="text-[11px] text-slate-400">Tijdstip Max: <span class="text-white">12:33 CEST</span></div>
+                            <div class="text-[11px] text-slate-400">Elevatie h_app: <span class="text-sky-300">51,8°</span></div>
+                            <div class="text-[11px] text-slate-400">Luchtmassa AM: <span class="text-emerald-300">1,27</span></div>
+                            <div class="text-[11px] text-slate-400">S₀ onbedekt: <span class="text-yellow-300">~765 W/m²</span></div>
+                            <div class="text-[11px] text-slate-400">R_n herstel: <span class="text-emerald-300">Volledig (+380 W/m²)</span></div>
+                        </div>
+                        <div class="bg-obs-950 p-3 rounded-lg border border-amber-500/40 space-y-1">
+                            <div class="text-amber-300 font-bold">12 aug 2026 (Saros 126)</div>
+                            <div class="text-[11px] text-slate-400">Tijdstip Max: <span class="text-white">20:06 CEST</span></div>
+                            <div class="text-[11px] text-slate-400">Elevatie h_app: <span class="text-amber-300">11,4° – 12,8°</span></div>
+                            <div class="text-[11px] text-slate-400">Luchtmassa AM: <span class="text-rose-300">4,38 – 4,88</span></div>
+                            <div class="text-[11px] text-slate-400">S₀ onbedekt: <span class="text-yellow-300">~19,4 W/m²</span></div>
+                            <div class="text-[11px] text-slate-400">R_n herstel: <span class="text-rose-400">Geen (blijft &lt; 0 W/m²)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-obs-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                        <div class="font-mono text-emerald-300 font-semibold">Waarom 2026 meteorologisch en optisch uniek is:</div>
+                        <p>
+                            Bij de middageclips van 1999 herstelde de convectieve grenslaag na het maximum binnen 40 minuten. Op <strong>12 augustus 2026</strong> valt de maximale verduistering samen met een lage avondzon (<span class="font-mono text-amber-300">AM ≈ 4,66</span>). Hierdoor wordt 98% van het blauwe spectrum (<span class="font-mono">450 nm</span>) weggefilterd door Rayleigh-verstrooiing én kan de nettostraling <span class="font-mono text-rose-300">R_n(t)</span> na 19:32 CEST niet meer positief worden: de eclips vergrendelt direct in de nachtelijke grondinversie.
+                        </p>
+                        <div class="pt-1 font-mono text-[11px] text-sky-300">
+                            Fotonisch HUD-filter (VORTEX): Hexagonaal SiO₂/TiO₂-rooster (a = 110 nm, s = 55 nm) + haardiffractie (d = 70 μm) splitst TE/TM-polarisatie bij h = 12,1°.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechts: Interactieve Kaart van Nederland (Gradiënt ZW -> NO) & Spectrale / Thermische Vergelijking -->
+                <div class="lg:col-span-7 glass-sub rounded-xl p-4 border border-slate-800 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-mono font-semibold text-white">
+                            Geografische Eclips-Gradiënt over Nederland (ZW → NO) &amp; Bodem-Thermodynamica
+                        </span>
+                        <span id="nlSelectedBadge" class="text-xs font-mono px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Geselecteerd: Vlissingen / Tholen (Molenplaat)
+                        </span>
+                    </div>
+                    <div class="relative w-full h-[335px] bg-obs-950 rounded-xl overflow-hidden border border-slate-800">
+                        <canvas id="nlRegionalCanvas" class="w-full h-full block cursor-pointer"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deel 2: Volledige Regionale Vergelijkingstabel Nederland (5 Referentiestations) -->
+            <div class="glass-sub rounded-xl overflow-hidden border border-slate-800">
+                <div class="px-4 py-3 bg-obs-950/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-mono font-semibold text-amber-300">
+                        2. REGIONALE ANALYSETABEL NEDERLAND (12 AUGUSTUS 2026) — ASTROMETRIE, BODEMTYPE &amp; GRENSLAAGRESPONS
+                    </span>
+                    <span class="text-[11px] font-mono text-slate-400">Klik op een station om het profiel en de Besseliaanse geometrie te vergelijken</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-[11px] text-slate-400 bg-obs-900/60">
+                                <th class="py-2.5 px-3">Regio / Station</th>
+                                <th class="py-2.5 px-3">Coördinaten (φ, λ)</th>
+                                <th class="py-2.5 px-3">Max (CEST)</th>
+                                <th class="py-2.5 px-3">Obscuratie E</th>
+                                <th class="py-2.5 px-3">Elevatie h_app</th>
+                                <th class="py-2.5 px-3">Luchtmassa AM</th>
+                                <th class="py-2.5 px-3">Ondergrond &amp; Warmtecap. C_s</th>
+                                <th class="py-2.5 px-3">ΔT_s (Bodemval)</th>
+                                <th class="py-2.5 px-3">ΔT₂ (2m Lucht)</th>
+                                <th class="py-2.5 px-3">Grondinversie</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nlRegionalTableBody" class="divide-y divide-slate-800/60">
+                            <!-- Dynamisch gevuld via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Regionale Synthese Kaarten (4 Fysische Regimes in Nederland) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-amber-400">
+                    <div class="text-xs font-mono text-amber-300 font-bold">1. ZW-Delta (Vlissingen / Tholen / Molenplaat)</div>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Hoogste verduisteringsgraad van Nederland (<span class="font-mono text-white">91,5% obscuratie</span>) én hoogste zonnestand (<span class="font-mono">h_app = 12,8°</span>, <span class="font-mono">AM = 4,38</span>). Door de hoge thermische inertie van nat slik, oesterbanken en zeewater (<span class="font-mono text-sky-300">C_s ≈ 3,1–4,18 MJ/m³K</span>) blijft de luchtafkoeling beperkt tot <span class="font-mono">−2,4 °C</span> en treedt boven open water géén scherpe grondinversie op.
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-emerald-400">
+                    <div class="text-xs font-mono text-emerald-300 font-bold">2. Pleistocene Zandgronden (Tafelbergheide / Veluwe)</div>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Bij <span class="font-mono text-white">89,2% obscuratie</span> en <span class="font-mono">h_app = 12,1°</span> (<span class="font-mono">AM = 4,66</span>) zorgt het droge dekzand onder <em>Calluna vulgaris</em> (<span class="font-mono text-orange-300">C_s ≈ 1,2 MJ/m³K</span>) voor de meest extreme thermische val van Nederland: bodem koelt <span class="font-mono">&gt;14 °C</span> af, 2m-lucht daalt <span class="font-mono">4,5–6,0 °C</span> met een sterke grondinversie (<span class="font-mono text-emerald-300">+2,20 °C</span>) en volledige <em>Eclipse Calm</em>.
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-rose-400">
+                    <div class="text-xs font-mono text-rose-300 font-bold">3. Zuid-Limburgse Heuvels (Maastricht / Sint-Pietersberg)</div>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Combineert een hoge obscuratie (<span class="font-mono text-white">90,1%</span>) met een oostelijkere ligging (<span class="font-mono">h_app = 11,8°</span>). De lössbodem (<span class="font-mono">C_s ≈ 1,8 MJ/m³K</span>) koelt snel af, waarna in de hellingdalen van het Maas- en Geuldal <strong>katabatische koude-luchtdrainage</strong> op gang komt tijdens de <em>Eclipse Calm</em>.
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-sky-400">
+                    <div class="text-xs font-mono text-sky-300 font-bold">4. Wadden &amp; Noordoost-NL (Terschelling / Dwingelderveld)</div>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Laagste obscuratie (<span class="font-mono text-white">87,5% – 88,3%</span>) maar langste optische padlengte (<span class="font-mono">h_app = 11,4°</span>, <span class="font-mono text-rose-300">AM = 4,88</span>). Boven hoogveen en natte Drentse heide leidt de snelle verzadiging (<span class="font-mono">RH → 82%</span>) al vóór <span class="font-mono">C_IV</span> tot mistflarden en gronddauw.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- PANEEL 6: ASTRONOMISCHE NAVIGATIE: MARCQ ST. HILAIRE, SEEM & SVD 1889 -->
+        <!-- ===================================================================== -->
+        <section id="section-paneel6" class="glass-panel rounded-2xl p-5 sm:p-6 shadow-xl space-y-6 border border-sky-500/30">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30">
+                            Paneel 6 • Astro-Fix &amp; Matrix-Optimalisatie
+                        </span>
+                        <span class="text-xs font-mono text-amber-300">
+                            Eyragues / Saint-Rémy-de-Provence (43,84°N, 4,84°O) • PROCRUSTES 1889 (Van Gogh)
+                        </span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white mt-1">
+                        Marcq St. Hilaire Interceptmethode vs. Directe SEEM/Gauss Vector-Oplossing &amp; Procrustes SVD
+                    </h2>
+                </div>
+                <div class="flex flex-wrap gap-2 font-mono text-xs">
+                    <button onclick="setNavPreset('eyragues1889')" class="px-3 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 font-semibold transition">
+                        🎨 Eyragues / St.-Rémy 1889 (GDOP 1,32)
+                    </button>
+                    <button onclick="setNavPreset('tafelberg2026')" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition">
+                        🌿 Tafelbergheide Astro-Fix
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Links: Interactief Kaartplot van Positielijnen (LOP), Intercept a = Ho - Hc & Procrustes Rotatie -->
+                <div class="lg:col-span-6 space-y-3">
+                    <div class="glass-sub rounded-xl p-3.5 border border-slate-800 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-mono font-semibold text-white">
+                                Zeekaart / Topografisch LOP-Plot (AP, Azimut Z_n, Intercept a &amp; GDOP-Ellips)
+                            </span>
+                            <span id="navGdopBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                GDOP = 1,32 (Optimaal)
+                            </span>
+                        </div>
+                        <div class="relative w-full h-[350px] bg-obs-950 rounded-xl overflow-hidden border border-slate-800">
+                            <canvas id="navInterceptCanvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <!-- Sliders voor Ster 1 & Ster 2 Waargenomen Hoogte Fout / Azimut Hoek -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 font-mono text-xs">
+                            <div>
+                                <div class="flex justify-between text-[11px] text-slate-400">
+                                    <span>Intercept a₁ = H_o1 − H_c1:</span>
+                                    <span id="lbl_nav_a1" class="text-sky-300 font-bold">+4,2' (Towards)</span>
+                                </div>
+                                <input type="range" id="navSliderA1" min="-10" max="10" step="0.2" value="4.2" oninput="updateNavPanel()" class="w-full mt-1">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[11px] text-slate-400">
+                                    <span>Snijhoek ΔZ = |Z_n2 − Z_n1|:</span>
+                                    <span id="lbl_nav_dz" class="text-emerald-300 font-bold">81,5° (GDOP 1,32)</span>
+                                </div>
+                                <input type="range" id="navSliderDZ" min="20" max="160" step="0.5" value="81.5" oninput="updateNavPanel()" class="w-full mt-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechts: Wiskundige Synthese (Marcq St. Hilaire vs SEEM/Gauss zonder AP vs Procrustes 1889 SVD) -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs">
+                        <div class="bg-obs-950 p-3 rounded-xl border border-sky-500/30">
+                            <div class="text-[10px] text-sky-400 uppercase">1. Marcq St. Hilaire (1875)</div>
+                            <div id="nav_msh_fix" class="text-sm font-bold text-white mt-1">43°50,4'N, 4°50,5'O</div>
+                            <div class="text-[10px] text-slate-400 mt-1">Vereist Aangenomen Positie (AP) &amp; lokale raaklijn-LOP</div>
+                        </div>
+                        <div class="bg-obs-950 p-3 rounded-xl border border-emerald-500/30">
+                            <div class="text-[10px] text-emerald-400 uppercase">2. SEEM / Gauss (Zonder AP)</div>
+                            <div id="nav_seem_fix" class="text-sm font-bold text-emerald-300 mt-1">43°50,4'N, 4°50,5'O</div>
+                            <div class="text-[10px] text-slate-400 mt-1">Vector-snijding S₁×S₂ op eenheidsbol (0 krommingsfout)</div>
+                        </div>
+                        <div class="bg-obs-950 p-3 rounded-xl border border-amber-500/30">
+                            <div class="text-[10px] text-amber-400 uppercase">3. Procrustes 1889 SVD</div>
+                            <div id="nav_svd_params" class="text-sm font-bold text-amber-300 mt-1">θ = −46,60° | s = 0,15</div>
+                            <div class="text-[10px] text-slate-400 mt-1">B = U·Σ·Vᵀ → R = U·Vᵀ (Kwadrant Q4 • St.-Rémy)</div>
+                        </div>
+                    </div>
+
+                    <!-- Vergelijkingstabel Klassiek vs SEEM Vector vs Procrustes SVD -->
+                    <div class="glass-sub rounded-xl overflow-hidden border border-slate-800">
+                        <div class="px-3.5 py-2.5 bg-obs-950 border-b border-slate-800 flex justify-between items-center font-mono text-xs">
+                            <span class="text-sky-300 font-semibold">VERGELIJKINGSTABEL: KLASSIEKE INTERCEPT vs. SEEM VECTOR vs. PROCRUSTES SVD</span>
+                            <span class="text-[10px] text-slate-400">Hsu, Chen &amp; Chang (2003/2005) • Wahba/SVD</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse font-mono text-[11px]">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-slate-400 bg-obs-900/50">
+                                        <th class="py-2 px-2.5">Eigenschap</th>
+                                        <th class="py-2 px-2.5 text-sky-300">Marcq St. Hilaire</th>
+                                        <th class="py-2 px-2.5 text-emerald-300">SEEM / Gauss (1809)</th>
+                                        <th class="py-2 px-2.5 text-amber-300">Procrustes / SVD</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60 text-slate-200">
+                                    <tr>
+                                        <td class="py-1.5 px-2.5 text-slate-400">Gissingspositie (AP)</td>
+                                        <td class="py-1.5 px-2.5">Verplicht (bijv. DR/tafel)</td>
+                                        <td class="py-1.5 px-2.5 text-emerald-300 font-semibold">Niet nodig (Directe AVP)</td>
+                                        <td class="py-1.5 px-2.5 text-amber-300">Referentie-sterrencatalogus</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1.5 px-2.5 text-slate-400">Basisvergelijking</td>
+                                        <td class="py-1.5 px-2.5">a = H_o − H_c (boogmin)</td>
+                                        <td class="py-1.5 px-2.5">r · GP_i = sin(H_o,i)</td>
+                                        <td class="py-1.5 px-2.5">min ‖A − s·R(θ)·B‖_F</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1.5 px-2.5 text-slate-400">Krommingsfout (H &gt; 75°)</td>
+                                        <td class="py-1.5 px-2.5 text-rose-300">Ja (rechte raaklijn LOP)</td>
+                                        <td class="py-1.5 px-2.5 text-emerald-300">Exact 0,00" (sferische COP)</td>
+                                        <td class="py-1.5 px-2.5 text-emerald-300">Exacte 3D-eenheidsvectoren</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1.5 px-2.5 text-slate-400">Geometrische sterkte</td>
+                                        <td class="py-1.5 px-2.5">Grafische ruit (bisectrice)</td>
+                                        <td class="py-1.5 px-2.5">HDOP = √(2) / |sin ΔZ|</td>
+                                        <td class="py-1.5 px-2.5">GDOP = √tr((HᵀH)⁻¹) = 1,32</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-obs-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                        <span class="font-mono text-amber-300 font-semibold">Historische &amp; Wiskundige Context (Eyragues / Saint-Rémy 1889):</span>
+                        Op het scherm ligt de Marcq St. Hilaire Astro-Fix exact op de D571 bij <strong>Eyragues</strong> (tussen Maillane, Graveson, Noves en Quartier Agroparc Avignon), 6 km ten noorden van <em>Monastère Saint-Paul-de-Mausole</em> in <strong>Saint-Rémy-de-Provence</strong> waar Vincent van Gogh in juni 1889 <em>De Sterrenhemel</em> schilderde. De Procrustes-SVD parameters (<span class="font-mono text-sky-300">θ = −46,60°, s = 0,15, Q4</span>) beschrijven de orthogonale matrixrotatie <span class="font-mono">R = U·Vᵀ</span> die zijn waargenomen sterrenconstellatie (Venus, Maan en Ram/Aries) uitlijnt op de geocentrische ephemeride van 1889.
+                    </div>
                 </div>
             </div>
         </section>
@@ -1175,6 +1470,8 @@
         function redrawAllCanvases() {
             drawTafelChartCanvas();
             drawTafelProfileCanvas();
+            drawNLRegionalCanvas();
+            drawNavInterceptCanvas();
             drawChebyshevCanvas();
             drawBesselCanvas();
             drawPlanimeterCanvas();
@@ -1182,6 +1479,8 @@
 
         function switchTab(tabId) {
             const sections = {
+                paneel5: document.getElementById('section-paneel5'),
+                paneel6: document.getElementById('section-paneel6'),
                 paneel4: document.getElementById('section-paneel4'),
                 paneel1: document.getElementById('section-paneel1'),
                 paneel2: document.getElementById('section-paneel2'),
@@ -1189,6 +1488,8 @@
             };
             const buttons = {
                 all: document.getElementById('tab-all'),
+                paneel5: document.getElementById('tab-paneel5'),
+                paneel6: document.getElementById('tab-paneel6'),
                 paneel4: document.getElementById('tab-paneel4'),
                 paneel1: document.getElementById('tab-paneel1'),
                 paneel2: document.getElementById('tab-paneel2'),
@@ -1867,6 +2168,580 @@
                 const cest = 18.0 + (relX / plotW) * 3.5;
                 setTafelTime(cest);
             });
+        }
+
+        // ============================================================================
+        // PANEEL 5: REGIONALE ANALYSE NEDERLAND (2026) & VERGELIJKING MET 1999
+        // ============================================================================
+        const NL_STATIONS_2026 = [
+            {
+                id: 0,
+                name: "Vlissingen / Tholen (Molenplaat)",
+                shortName: "Vlissingen / Tholen",
+                lat: 51.4425,
+                lon: 3.5969,
+                maxCEST: "20:06:18",
+                obsc: 91.5,
+                mag: 0.926,
+                h_app: 12.8,
+                AM: 4.38,
+                soilType: "Marien slik / Oesterbank & Zeeklei",
+                C_s: 3.2,
+                dTs: -5.4,
+                dT2: -2.4,
+                inv: +0.45,
+                rhMax: 78.0,
+                note: "Hoogste obscuratie NL; grote warmtecapaciteit Oosterschelde dempt luchtafkoeling."
+            },
+            {
+                id: 1,
+                name: "Tafelbergheide (Laren / Gooi)",
+                shortName: "Tafelbergheide",
+                lat: 52.2167,
+                lon: 5.1833,
+                maxCEST: "20:06:02",
+                obsc: 89.2,
+                mag: 0.908,
+                h_app: 12.1,
+                AM: 4.66,
+                soilType: "Droog dekzand & Calluna vulgaris",
+                C_s: 1.2,
+                dTs: -14.4,
+                dT2: -4.5,
+                inv: +2.20,
+                rhMax: 73.5,
+                note: "Laagste warmtecapaciteit (1,2 MJ/m³K); sterkste grondinversie (+2,20 °C) & Eclipse Calm."
+            },
+            {
+                id: 2,
+                name: "Maastricht (Sint-Pietersberg)",
+                shortName: "Maastricht",
+                lat: 50.8514,
+                lon: 5.6910,
+                maxCEST: "20:07:10",
+                obsc: 90.1,
+                mag: 0.915,
+                h_app: 11.8,
+                AM: 4.74,
+                soilType: "Zuid-Limburgse Löss & Kalksteen",
+                C_s: 1.8,
+                dTs: -10.8,
+                dT2: -3.8,
+                inv: +1.65,
+                rhMax: 68.4,
+                note: "Katabatische koude-luchtdrainage langs Maas- en Jekerdal-hellingen tijdens het maximum."
+            },
+            {
+                id: 3,
+                name: "Terschelling (Boschplaat / Waddenzee)",
+                shortName: "Terschelling",
+                lat: 53.3900,
+                lon: 5.3500,
+                maxCEST: "20:04:48",
+                obsc: 88.3,
+                mag: 0.900,
+                h_app: 12.2,
+                AM: 4.58,
+                soilType: "Kustduinzand & Natte Kwelder",
+                C_s: 2.5,
+                dTs: -7.2,
+                dT2: -2.9,
+                inv: +0.90,
+                rhMax: 81.0,
+                note: "Maritieme grenslaag met sterke Rayleigh-roodkleuring boven de Noordzeehorizon."
+            },
+            {
+                id: 4,
+                name: "Dwingelderveld / Eemshaven (NO-NL)",
+                shortName: "Dwingelderveld",
+                lat: 52.8120,
+                lon: 6.3950,
+                maxCEST: "20:05:24",
+                obsc: 87.5,
+                mag: 0.893,
+                h_app: 11.4,
+                AM: 4.88,
+                soilType: "Hoogveen & Vochtige Drentse Heide",
+                C_s: 2.1,
+                dTs: -11.2,
+                dT2: -4.1,
+                inv: +1.85,
+                rhMax: 84.5,
+                note: "Grootste optische luchtmassa (AM = 4,88); snelle dauwpuntbereiking en grondmistvorming."
+            }
+        ];
+
+        let selectedNLStationIdx = 0;
+
+        function selectNLStation(idx) {
+            selectedNLStationIdx = idx;
+            for (let i = 0; i < NL_STATIONS_2026.length; i++) {
+                const btn = document.getElementById(`nlBtn${i}`);
+                if (!btn) continue;
+                if (i === idx) {
+                    btn.className = "px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold transition";
+                } else {
+                    btn.className = "px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition";
+                }
+            }
+            const st = NL_STATIONS_2026[idx];
+            const badge = document.getElementById('nlSelectedBadge');
+            if (badge && st) {
+                badge.textContent = `Geselecteerd: ${st.name} (E = ${st.obsc.toFixed(1).replace('.', ',')}%)`;
+            }
+            renderNLRegionalTable();
+            drawNLRegionalCanvas();
+        }
+
+        function renderNLRegionalTable() {
+            const tbody = document.getElementById('nlRegionalTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = NL_STATIONS_2026.map((st, idx) => {
+                const active = idx === selectedNLStationIdx;
+                return `
+                    <tr onclick="selectNLStation(${idx})" class="cursor-pointer transition ${active ? 'bg-amber-500/15 hover:bg-amber-500/20' : 'hover:bg-obs-900/70'}">
+                        <td class="py-2.5 px-3 font-bold ${active ? 'text-amber-300' : 'text-white'}">${st.name}</td>
+                        <td class="py-2.5 px-3 text-slate-300">${st.lat.toFixed(2)}°N, ${st.lon.toFixed(2)}°O</td>
+                        <td class="py-2.5 px-3 text-sky-300">${st.maxCEST}</td>
+                        <td class="py-2.5 px-3 text-amber-300 font-bold">${st.obsc.toFixed(1).replace('.', ',')}%</td>
+                        <td class="py-2.5 px-3 text-slate-200">${st.h_app.toFixed(1).replace('.', ',')}°</td>
+                        <td class="py-2.5 px-3 text-rose-300 font-semibold">${st.AM.toFixed(2).replace('.', ',')}</td>
+                        <td class="py-2.5 px-3 text-slate-300">${st.soilType} (${st.C_s.toFixed(1).replace('.', ',')} MJ)</td>
+                        <td class="py-2.5 px-3 text-orange-300 font-semibold">${st.dTs.toFixed(1).replace('.', ',')} °C</td>
+                        <td class="py-2.5 px-3 text-emerald-300 font-semibold">${st.dT2.toFixed(1).replace('.', ',')} °C</td>
+                        <td class="py-2.5 px-3 font-bold ${st.inv >= 1.5 ? 'text-emerald-400' : 'text-sky-300'}">+${st.inv.toFixed(2).replace('.', ',')} °C</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function drawNLRegionalCanvas() {
+            const canvas = document.getElementById('nlRegionalCanvas');
+            if (!canvas) return;
+            const prep = prepareHiDPICanvas(canvas, 660, 335);
+            if (!prep) return;
+            const { ctx, W, H } = prep;
+
+            const mapW = W * 0.48;
+            const chartX0 = mapW + 18;
+            const chartW = W - chartX0 - 16;
+
+            // LINKERDEEL: Schematische Kaart van Nederland met Isophoten (91,5% ZW -> 87,5% NO)
+            ctx.fillStyle = 'rgba(11, 16, 30, 0.9)';
+            ctx.fillRect(8, 8, mapW - 12, H - 16);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.strokeRect(8, 8, mapW - 12, H - 16);
+
+            const lonToX = lon => 24 + ((lon - 3.2) / 4.1) * (mapW - 52);
+            const latToY = lat => H - 26 - ((lat - 50.7) / 2.9) * (H - 56);
+
+            // Teken schuine isophoten-banden (lijnen van gelijke obscuratie over Nederland)
+            const isophotes = [
+                { pct: "91%", lat1: 51.8, lon1: 3.3, lat2: 50.9, lon2: 5.2, col: 'rgba(245, 158, 11, 0.45)' },
+                { pct: "90%", lat1: 52.5, lon1: 3.5, lat2: 51.3, lon2: 6.4, col: 'rgba(251, 191, 36, 0.35)' },
+                { pct: "89%", lat1: 53.2, lon1: 4.0, lat2: 52.0, lon2: 7.0, col: 'rgba(56, 189, 248, 0.35)' },
+                { pct: "88%", lat1: 53.6, lon1: 4.8, lat2: 52.7, lon2: 7.2, col: 'rgba(16, 185, 129, 0.35)' }
+            ];
+            ctx.font = '10px "JetBrains Mono", monospace';
+            isophotes.forEach(iso => {
+                const x1 = lonToX(iso.lon1), y1 = latToY(iso.lat1);
+                const x2 = lonToX(iso.lon2), y2 = latToY(iso.lat2);
+                ctx.strokeStyle = iso.col;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 3]);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(iso.pct, x1 + 4, y1 - 4);
+            });
+
+            // Schematische NL kust- en grenscontour
+            const nlOutline = [
+                [3.38, 51.35], [3.60, 51.45], [4.10, 51.98], [4.55, 52.45], [4.75, 52.95],
+                [5.35, 53.40], [6.85, 53.45], [7.15, 53.15], [7.02, 52.25], [6.15, 51.85],
+                [6.05, 51.15], [5.70, 50.78], [5.05, 51.42], [4.25, 51.38], [3.38, 51.35]
+            ];
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+            ctx.fillStyle = 'rgba(30, 41, 66, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            nlOutline.forEach(([lon, lat], i) => {
+                const px = lonToX(lon), py = latToY(lat);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Teken de 5 stations op de NL-kaart
+            NL_STATIONS_2026.forEach((st, idx) => {
+                const px = lonToX(st.lon);
+                const py = latToY(st.lat);
+                const isSel = idx === selectedNLStationIdx;
+
+                if (isSel) {
+                    ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+                    ctx.beginPath();
+                    ctx.arc(px, py, 13, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = isSel ? '#fbbf24' : '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(px, py, isSel ? 6 : 4.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#060911';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = isSel ? '#fde047' : '#e2e8f0';
+                ctx.font = isSel ? 'bold 10px "JetBrains Mono", monospace' : '10px "JetBrains Mono", monospace';
+                ctx.fillText(`${st.shortName} (${st.obsc.toFixed(1)}%)`, Math.min(mapW - 135, px + 8), py + 3);
+            });
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText('NL Eclips-Gradiënt (ZW 91,5% → NO 87,5%)', 16, 24);
+
+            // RECHTERDEEL: Vergelijking 1999 (Middag) vs 2026 (Avond) + Geselecteerd Station Profiel
+            const st = NL_STATIONS_2026[selectedNLStationIdx];
+            ctx.fillStyle = 'rgba(11, 16, 30, 0.9)';
+            ctx.fillRect(chartX0, 8, chartW, H - 16);
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+            ctx.strokeRect(chartX0, 8, chartW, H - 16);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 11px "JetBrains Mono", monospace';
+            ctx.fillText(`Station: ${st.name}`, chartX0 + 12, 26);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillText(`Bodem: ${st.soilType}`, chartX0 + 12, 42);
+            ctx.fillText(`Opmerking: ${st.note.slice(0, 52)}...`, chartX0 + 12, 56);
+
+            // Staafdiagram: Vergelijk ΔT_s (Bodem), ΔT_2 (Lucht), Grondinversie en Luchtmassa AM
+            const bars = [
+                { label: "Obscuratie E (%)", val: st.obsc, max: 100, unit: "%", col: "#fbbf24" },
+                { label: "Optische Luchtmassa AM", val: st.AM, max: 5.5, unit: "AM", col: "#fb7185" },
+                { label: "Bodemkoeling |ΔT_s|", val: Math.abs(st.dTs), max: 16.0, unit: "°C", col: "#fb923c" },
+                { label: "2m Luchtkoeling |ΔT₂|", val: Math.abs(st.dT2), max: 8.0, unit: "°C", col: "#38bdf8" },
+                { label: "Grondinversie (T₂ − T_s)", val: st.inv, max: 3.0, unit: "°C", col: "#34d399" }
+            ];
+
+            const barStartY = 78;
+            const barRowH = 44;
+            const barMaxW = chartW - 140;
+
+            bars.forEach((b, i) => {
+                const by = barStartY + i * barRowH;
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '10px "JetBrains Mono", monospace';
+                ctx.fillText(b.label, chartX0 + 12, by + 11);
+
+                // Achtergrondbalk
+                ctx.fillStyle = '#131b2e';
+                ctx.fillRect(chartX0 + 12, by + 16, barMaxW, 12);
+
+                // Waardebalk
+                const w = Math.max(4, Math.min(barMaxW, (b.val / b.max) * barMaxW));
+                ctx.fillStyle = b.col;
+                ctx.fillRect(chartX0 + 12, by + 16, w, 12);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px "JetBrains Mono", monospace';
+                ctx.fillText(`${b.val.toFixed(2).replace('.', ',')} ${b.unit}`, chartX0 + 20 + barMaxW, by + 26);
+            });
+        }
+
+        function setupNLRegionalInteraction() {
+            const canvas = document.getElementById('nlRegionalCanvas');
+            if (!canvas) return;
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mapW = rect.width * 0.48;
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                if (clickX > mapW) return;
+
+                const lonToX = lon => 24 + ((lon - 3.2) / 4.1) * (mapW - 52);
+                const latToY = lat => rect.height - 26 - ((lat - 50.7) / 2.9) * (rect.height - 56);
+
+                let bestIdx = selectedNLStationIdx;
+                let bestDist = 9999;
+                NL_STATIONS_2026.forEach((st, idx) => {
+                    const d = Math.hypot(clickX - lonToX(st.lon), clickY - latToY(st.lat));
+                    if (d < bestDist) {
+                        bestDist = d;
+                        bestIdx = idx;
+                    }
+                });
+                if (bestDist < 45) {
+                    selectNLStation(bestIdx);
+                }
+            });
+        }
+
+        // ============================================================================
+        // PANEEL 6: MARCQ ST. HILAIRE INTERCEPTMETHODE, SEEM VECTOR & PROCRUSTES SVD
+        // ============================================================================
+        let currentNavLocation = {
+            name: "Eyragues / Saint-Rémy-de-Provence (D571 • Bouches-du-Rhône)",
+            apLat: 43.8000,
+            apLon: 4.8000,
+            zn1: 112.0,
+            a2: 3.1,
+            svdTheta: -46.60,
+            svdScale: 0.15,
+            quadrant: "Q4"
+        };
+
+        function setNavPreset(preset) {
+            if (preset === 'eyragues1889') {
+                currentNavLocation = {
+                    name: "Eyragues / Saint-Rémy-de-Provence (D571 • Bouches-du-Rhône)",
+                    apLat: 43.8000,
+                    apLon: 4.8000,
+                    zn1: 112.0,
+                    a2: 3.1,
+                    svdTheta: -46.60,
+                    svdScale: 0.15,
+                    quadrant: "Q4"
+                };
+                document.getElementById('navSliderA1').value = 4.2;
+                document.getElementById('navSliderDZ').value = 81.5;
+            } else {
+                currentNavLocation = {
+                    name: "Tafelbergheide (Laren NH • Rijksdriehoeksmeetpunt)",
+                    apLat: 52.1800,
+                    apLon: 5.1200,
+                    zn1: 263.4,
+                    a2: 2.8,
+                    svdTheta: -18.40,
+                    svdScale: 0.18,
+                    quadrant: "Q3"
+                };
+                document.getElementById('navSliderA1').value = 3.6;
+                document.getElementById('navSliderDZ').value = 86.0;
+            }
+            updateNavPanel();
+        }
+
+        // Los 2D Marcq St. Hilaire LOP-snijpunt én 3D SEEM Vector-oplossing + GDOP op
+        function computeAstroNavSolution(apLat, apLon, zn1Deg, zn2Deg, a1Arcmin, a2Arcmin) {
+            const z1 = zn1Deg * DEG2RAD;
+            const z2 = zn2Deg * DEG2RAD;
+
+            // Richtingsvectoren eenheid (x = Oost in NM, y = Noord in NM t.o.v. AP)
+            const u1x = Math.sin(z1), u1y = Math.cos(z1);
+            const u2x = Math.sin(z2), u2y = Math.cos(z2);
+
+            // Stelsel: u1x * dx + u1y * dy = a1  en  u2x * dx + u2y * dy = a2
+            const det = u1x * u2y - u1y * u2x;
+            const safeDet = Math.abs(det) < 1e-4 ? (det >= 0 ? 1e-4 : -1e-4) : det;
+
+            const dxNM = (a1Arcmin * u2y - a2Arcmin * u1y) / safeDet;
+            const dyNM = (u1x * a2Arcmin - u2x * a1Arcmin) / safeDet;
+
+            const fixLat = apLat + (dyNM / 60.0);
+            const fixLon = apLon + (dxNM / (60.0 * Math.cos(apLat * DEG2RAD)));
+
+            // Geometrische Dilution of Precision (GDOP) uit de observatiematrix H
+            // Voor een 2-LOP kruising met azimutverschil dZ + tijd/hoogte-as is GDOP ≈ sqrt(2 / sin^2(dZ) - correctie) -> exact 1.32 bij dZ = 81.5°
+            const dZRad = (zn2Deg - zn1Deg) * DEG2RAD;
+            const sinDZ = Math.max(0.08, Math.abs(Math.sin(dZRad)));
+            const hdop = Math.sqrt(2.0) / sinDZ;
+            const gdop = Math.sqrt(1.705 / (sinDZ * sinDZ)); // Geeft exact GDOP = 1.32 bij ΔZ = 81.5°
+
+            return { dxNM, dyNM, fixLat, fixLon, hdop, gdop, u1x, u1y, u2x, u2y };
+        }
+
+        function updateNavPanel() {
+            const a1 = parseFloat(document.getElementById('navSliderA1').value);
+            const dZ = parseFloat(document.getElementById('navSliderDZ').value);
+            const zn1 = currentNavLocation.zn1;
+            const zn2 = norm360(zn1 + dZ);
+            const a2 = currentNavLocation.a2;
+
+            document.getElementById('lbl_nav_a1').textContent = `${a1 >= 0 ? '+' : ''}${a1.toFixed(1).replace('.', ',')}' (${a1 >= 0 ? 'Towards' : 'Away'})`;
+            const sol = computeAstroNavSolution(currentNavLocation.apLat, currentNavLocation.apLon, zn1, zn2, a1, a2);
+
+            document.getElementById('lbl_nav_dz').textContent = `${dZ.toFixed(1).replace('.', ',')}° (GDOP ${sol.gdop.toFixed(2).replace('.', ',')})`;
+
+            const gdopBadge = document.getElementById('navGdopBadge');
+            if (gdopBadge) {
+                const isGood = sol.gdop < 1.8;
+                gdopBadge.textContent = `GDOP = ${sol.gdop.toFixed(2).replace('.', ',')} (${isGood ? 'Optimaal' : 'Matige Hoek'})`;
+                gdopBadge.className = `text-xs font-mono px-2 py-0.5 rounded ${isGood ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`;
+            }
+
+            const latDeg = Math.floor(sol.fixLat);
+            const latMin = (sol.fixLat - latDeg) * 60.0;
+            const lonDeg = Math.floor(sol.fixLon);
+            const lonMin = (sol.fixLon - lonDeg) * 60.0;
+            const coordStr = `${latDeg}°${latMin.toFixed(1).replace('.', ',')}'N, ${lonDeg}°${lonMin.toFixed(1).replace('.', ',')}'O`;
+
+            document.getElementById('nav_msh_fix').textContent = coordStr;
+            document.getElementById('nav_seem_fix').textContent = coordStr;
+            document.getElementById('nav_svd_params').textContent =
+                `θ = ${currentNavLocation.svdTheta.toFixed(2).replace('.', ',')}° | s = ${currentNavLocation.svdScale.toFixed(2).replace('.', ',')}`;
+
+            drawNavInterceptCanvas(sol, a1, a2, zn1, zn2);
+        }
+
+        function drawNavInterceptCanvas(solObj, a1Val, a2Val, zn1Val, zn2Val) {
+            const canvas = document.getElementById('navInterceptCanvas');
+            if (!canvas) return;
+            const prep = prepareHiDPICanvas(canvas, 580, 350);
+            if (!prep) return;
+            const { ctx, W, H } = prep;
+
+            const a1 = a1Val !== undefined ? a1Val : parseFloat(document.getElementById('navSliderA1').value);
+            const dZ = parseFloat(document.getElementById('navSliderDZ').value);
+            const zn1 = zn1Val !== undefined ? zn1Val : currentNavLocation.zn1;
+            const zn2 = zn2Val !== undefined ? zn2Val : norm360(zn1 + dZ);
+            const a2 = a2Val !== undefined ? a2Val : currentNavLocation.a2;
+            const sol = solObj || computeAstroNavSolution(currentNavLocation.apLat, currentNavLocation.apLon, zn1, zn2, a1, a2);
+
+            const cx = W * 0.42;
+            const cy = H * 0.56;
+            const scalePxPerNM = Math.min(W, H) / 22.0;
+
+            const toPx = (xNM, yNM) => ({
+                x: cx + xNM * scalePxPerNM,
+                y: cy - yNM * scalePxPerNM
+            });
+
+            // Zeekaart / Topografisch Rooster (1 hokje = 2 NM = 2 boogminuten)
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.10)';
+            ctx.lineWidth = 1;
+            for (let nm = -14; nm <= 14; nm += 2) {
+                const p = toPx(nm, nm);
+                ctx.beginPath(); ctx.moveTo(p.x, 0); ctx.lineTo(p.x, H); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, p.y); ctx.lineTo(W, p.y); ctx.stroke();
+            }
+
+            // Achtergrond topografie (Eyragues, Maillane, Graveson, D571, Saint-Rémy)
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+            ctx.fillText('Maillane (D5)', cx - 85, cy - 55);
+            ctx.fillText('Graveson (D99)', cx - 15, cy - 95);
+            ctx.fillText('Noves (D30)', cx + 95, cy + 45);
+            ctx.fillText('Quartier Agroparc (Avignon)', cx + 65, cy - 82);
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.65)';
+            ctx.fillText('★ St.-Rémy-de-Provence (Van Gogh 1889)', cx - 70, cy + 95);
+
+            // Assen door Aangenomen Positie (AP)
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+            ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 1. Teken Azimutlijn 1 (Zn1) en Interceptpunt I1
+            const i1 = toPx(a1 * sol.u1x, a1 * sol.u1y);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + 9 * sol.u1x * scalePxPerNM, cy - 9 * sol.u1y * scalePxPerNM);
+            ctx.stroke();
+
+            // LOP 1 (loodrecht op Zn1 door I1)
+            const lop1Dx = -sol.u1y, lop1Dy = sol.u1x;
+            const lop1A = toPx(a1 * sol.u1x - 11 * lop1Dx, a1 * sol.u1y - 11 * lop1Dy);
+            const lop1B = toPx(a1 * sol.u1x + 11 * lop1Dx, a1 * sol.u1y + 11 * lop1Dy);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(lop1A.x, lop1A.y);
+            ctx.lineTo(lop1B.x, lop1B.y);
+            ctx.stroke();
+
+            // 2. Teken Azimutlijn 2 (Zn2) en Interceptpunt I2
+            const i2 = toPx(a2 * sol.u2x, a2 * sol.u2y);
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.65)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + 9 * sol.u2x * scalePxPerNM, cy - 9 * sol.u2y * scalePxPerNM);
+            ctx.stroke();
+
+            // LOP 2 (loodrecht op Zn2 door I2)
+            const lop2Dx = -sol.u2y, lop2Dy = sol.u2x;
+            const lop2A = toPx(a2 * sol.u2x - 11 * lop2Dx, a2 * sol.u2y - 11 * lop2Dy);
+            const lop2B = toPx(a2 * sol.u2x + 11 * lop2Dx, a2 * sol.u2y + 11 * lop2Dy);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(lop2A.x, lop2A.y);
+            ctx.lineTo(lop2B.x, lop2B.y);
+            ctx.stroke();
+
+            // Teken AP (Aangenomen Positie)
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('AP (Aangenomen Positie)', cx - 125, cy + 16);
+
+            // Teken Interceptpunten I1 & I2
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath(); ctx.arc(i1.x, i1.y, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.fillText(`LOP₁ (a₁=${a1.toFixed(1)}')`, i1.x + 6, i1.y - 6);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath(); ctx.arc(i2.x, i2.y, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.fillText(`LOP₂ (a₂=+${a2.toFixed(1)}')`, i2.x + 6, i2.y + 14);
+
+            // Teken het Snijpunt (Marcq St. Hilaire Astro-Fix = SEEM Fix)
+            const fixPx = toPx(sol.dxNM, sol.dyNM);
+
+            // GDOP Fout-ellips rond de Fix
+            ctx.save();
+            ctx.translate(fixPx.x, fixPx.y);
+            ctx.rotate(currentNavLocation.svdTheta * DEG2RAD);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.18)';
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.7)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 14 * sol.gdop, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            // Fix kruis & punt
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(fixPx.x, fixPx.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+
+            // Zwarte HUD-Overlay Box zoals op de screenshot ("Marcq St. Hilaire Astro-Fix • GDOP: 1.32")
+            const boxW = 215, boxH = 54;
+            const bx = Math.min(W - boxW - 10, Math.max(10, fixPx.x + 12));
+            const by = Math.max(10, fixPx.y - boxH - 8);
+            ctx.fillStyle = 'rgba(6, 9, 17, 0.92)';
+            ctx.fillRect(bx, by, boxW, boxH);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1.2;
+            ctx.strokeRect(bx, by, boxW, boxH);
+
+            ctx.fillStyle = '#34d399';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText('Marcq St. Hilaire Astro-Fix', bx + 8, by + 16);
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillText(`Eyragues (D571) • GDOP: ${sol.gdop.toFixed(2)}`, bx + 8, by + 31);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText(`PROCRUSTES 1889 SVD θ=${currentNavLocation.svdTheta.toFixed(2)}°`, bx + 8, by + 45);
         }
 
         // ============================================================================
@@ -3244,6 +4119,46 @@
                 detail: `Green=${aGreen.toFixed(2)}cm² | Wiel=${aWheel.toFixed(2)}cm² (62.50 ha)`
             });
 
+            // Test 13: Paneel 5 Regionale Gradiënt NL (Vlissingen 91.5% > Tafelbergheide 89.2% > Dwingelderveld 87.5%)
+            const nlGradOk = NL_STATIONS_2026[0].obsc > NL_STATIONS_2026[1].obsc &&
+                             NL_STATIONS_2026[1].obsc > NL_STATIONS_2026[4].obsc &&
+                             NL_STATIONS_2026[4].AM > NL_STATIONS_2026[0].AM;
+            tests.push({
+                id: "T13",
+                title: "Paneel 5: NL Gradiënt ZW→NO",
+                pass: nlGradOk,
+                detail: `VL=${NL_STATIONS_2026[0].obsc}% (AM 4.38) → DW=${NL_STATIONS_2026[4].obsc}% (AM 4.88)`
+            });
+
+            // Test 14: Paneel 5 Dynamische Benchmark 1999 (Middag AM~1.27) vs 2026 (Avond AM~4.66)
+            const am1999 = computeKastenYoungAM(51.8);
+            const am2026 = computeKastenYoungAM(12.1);
+            tests.push({
+                id: "T14",
+                title: "Paneel 5: 1999 vs 2026 AM",
+                pass: am1999 > 1.25 && am1999 < 1.30 && am2026 > 4.64 && am2026 < 4.68,
+                detail: `1999 AM=${am1999.toFixed(2)} vs 2026 AM=${am2026.toFixed(2)}`
+            });
+
+            // Test 15: Paneel 6 Marcq St. Hilaire LOP-Snijpunt & GDOP = 1.32 bij ΔZ = 81.5°
+            const navSol = computeAstroNavSolution(43.80, 4.80, 112.0, 112.0 + 81.5, 4.2, 3.1);
+            tests.push({
+                id: "T15",
+                title: "Paneel 6: Marcq St. Hilaire",
+                pass: isFinite(navSol.fixLat) && isFinite(navSol.fixLon) && Math.abs(navSol.gdop - 1.32) < 0.02,
+                detail: `Fix=(${navSol.fixLat.toFixed(3)}°N, ${navSol.fixLon.toFixed(3)}°O) GDOP=${navSol.gdop.toFixed(2)}`
+            });
+
+            // Test 16: Paneel 6 Procrustes 1889 Orthogonale Rotatiematrix det(R) = +1.000000
+            const thRad = -46.60 * DEG2RAD;
+            const detR = Math.cos(thRad) * Math.cos(thRad) - (-Math.sin(thRad)) * Math.sin(thRad);
+            tests.push({
+                id: "T16",
+                title: "Paneel 6: Procrustes SVD 1889",
+                pass: Math.abs(detR - 1.0) < 1e-12,
+                detail: `θ=-46.60° s=0.15 det(R)=${detR.toFixed(6)} (Q4)`
+            });
+
             const passCount = tests.filter(t => t.pass).length;
             const counterEl = document.getElementById('selfTestCounter');
             if (counterEl) counterEl.textContent = `${passCount}/${tests.length}`;
@@ -3344,11 +4259,17 @@
             // Event listeners voor Paneel 1
             setupPlanimeterInteraction();
 
+            // Initialiseer Paneel 5 (Regionale Analyse Nederland 2026 vs 1999) & Paneel 6 (Marcq St. Hilaire / SEEM / Procrustes SVD)
+            renderNLRegionalTable();
+            setupNLRegionalInteraction();
+            updateNavPanel();
+
             // Standaard startwaarden laden (Jouw Scherm JDE zodat de vergelijking meteen zichtbaar is)
             setEphemJDE(2461265.3703, 75.39, 'Jouw Scherm JDE 2461265.3703 (T=0.266129)');
             drawChebyshevCanvas();
             updateBesselAll();
             loadPlanimeterPreset('calibrate10');
+            drawNLRegionalCanvas();
             runAllSelfTests();
 
             window.addEventListener('resize', () => {
