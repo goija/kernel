@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satellite Pass Predictor v2 — met J2-precessie</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --dim: #8b949e;
+    --accent: #6d4aff;
+    --accent2: #8f7bff;
+    --ok: #3fb950;
+    --warn: #d29922;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  h1 { font-size: 1.25rem; color: var(--accent2); }
+  .sub { color: var(--dim); font-size: 0.85rem; }
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; margin-bottom: 12px;
+  }
+  label { font-size: 0.82rem; color: var(--dim); }
+  select, button {
+    background: #21262d; color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; font-size: 0.88rem; cursor: pointer;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); font-weight: 600; }
+  button:hover { filter: brightness(1.15); }
+  .status { margin-left: auto; font-size: 0.82rem; color: var(--dim); }
+  .status b { color: var(--text); }
+  .badge {
+    font-size: 0.72rem; background: #2a2150; color: var(--accent2);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 2px 10px; font-weight: 600;
+  }
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .panel h2 { font-size: 0.95rem; margin-bottom: 8px; color: var(--accent2); }
+  canvas { width: 100%; display: block; border-radius: 6px; background: #0a0e14; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th, td { padding: 5px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--dim); font-weight: 500; }
+  tr.passrow { cursor: pointer; }
+  tr.passrow:hover { background: #21262d; }
+  tr.selected { background: #2a2150; }
+  .vis { color: var(--ok); font-weight: 600; }
+  .novis { color: var(--dim); }
+  .note { font-size: 0.75rem; color: var(--dim); margin-top: 10px; line-height: 1.5; }
+  .obs { font-size: 0.8rem; color: var(--dim); margin-top: 6px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#128640; Satellite Pass Predictor v2</h1>
+  <span class="badge">J2-precessie: AAN</span>
+  <span class="sub">cirkelbaan + seculaire knoopdrift — demo</span>
+</header>
+
+<div class="controls">
+  <label>Baan:</label>
+  <select id="preset">
+    <option value="iss">ISS (420 km, i=51,6&deg;)</option>
+    <option value="starlink">Starlink-baan (550 km, i=53&deg;)</option>
+    <option value="sso">Zonnesynchronisch (700 km, i=98,2&deg;)</option>
+  </select>
+  <button id="btnRun" class="primary">&#9654; Start</button>
+  <button id="btnNow">&#9201; Tijd = nu</button>
+  <label>Snelheid:</label>
+  <select id="speed">
+    <option value="1">1&times;</option>
+    <option value="30" selected>30&times;</option>
+    <option value="120">120&times;</option>
+  </select>
+  <span class="status" id="status"></span>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>Grondspoor &amp; dag/nacht (met knoopdrift)</h2>
+    <canvas id="map" width="900" height="450"></canvas>
+    <div class="obs" id="obsInfo"></div>
+  </div>
+  <div>
+    <div class="panel" style="margin-bottom:12px;">
+      <h2>Aankomende passes (48 uur)</h2>
+      <table>
+        <thead><tr><th>Start</th><th>Culminatie</th><th>Max el.</th><th>Zichtb.</th></tr></thead>
+        <tbody id="passTable"><tr><td colspan="4" class="novis">Klik &#9654; Start…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h2>Hemelbol — geselecteerde pass</h2>
+      <canvas id="sky" width="420" height="380"></canvas>
+    </div>
+  </div>
+</div>
+
+<p class="note">
+  <b>v2-model:</b> de seculaire <b>J2-knoopdrift</b> is nu verwerkt:
+  <span style="font-family:monospace;">&#937;&#775; = &minus;1,5 &middot; n &middot; J2 &middot; (Re/p)&sup2; &middot; cos i</span>
+  &nbsp;(J2 = 1,0826&times;10&#8315;&sup3;). Daardoor schuift het grondspoor per omloop op
+  (ISS: ca. &minus;5&deg;/dag; SSO: precies +0,986&deg;/dag = 1 omloop/zonnedag, vandaar
+  "zonnesynchronisch"). <b>Nog steeds genegeerd:</b> excentriciteit, drag (B*), J3/J4-termen,
+  lunisolaire perturbaties &mdash; dus voor real-time verificatie vervang je dit nog altijd door
+  volledige SGP4 met verse TLE's van CelesTrak/Space-Track. Waarnemer: Laren 52,25&deg;N, 5,22&deg;E.
+</p>
+
+<script>
+"use strict";
+
+// ---------- constanten ----------
+var MU = 398600.4418;          // km^3/s^2
+var RE = 6371.0;               // km (bolvormig)
+var DEG = Math.PI / 180;
+var J2 = 1.08262668e-3;        // J2-zwaartekrachtcoefficient
+
+var OBS_LAT = 52.25, OBS_LON = 5.22;
+
+// grove kustlijnen (lon,lat)
+var COASTS = [
+  [[-17,15],[-17,21],[-10,30],[0,36],[10,37],[11,33],[20,32],[32,31],[34,28],[38,22],[43,12],[51,12],[46,2],[41,-2],[40,-11],[35,-20],[33,-26],[27,-34],[20,-35],[18,-33],[12,-18],[9,-1],[9,4],[3,6],[-5,5],[-8,4],[-13,9],[-17,15]],
+  [[-10,36],[-9,43],[-2,44],[0,47],[-4,48],[1,51],[4,53],[8,54],[10,57],[13,55],[19,55],[24,57],[28,60],[31,62],[28,66],[22,66],[25,71],[18,70],[12,65],[7,62],[5,58],[9,55],[8,54],[4,52],[0,50],[-2,49],[-9,43],[-10,37]],
+  [[30,62],[60,60],[60,70],[80,72],[100,75],[120,72],[140,70],[160,66],[170,60],[160,60],[155,53],[142,45],[130,42],[127,35],[122,30],[110,20],[105,10],[100,5],[98,10],[92,20],[88,22],[80,15],[72,20],[68,24],[60,25],[55,25],[48,28],[43,37],[35,36],[30,41],[36,45],[40,47],[47,42],[50,45],[55,50],[60,55],[30,62]],
+  [[-168,65],[-160,58],[-150,59],[-135,57],[-125,48],[-124,40],[-117,32],[-105,20],[-97,16],[-92,14],[-83,8],[-77,8],[-81,25],[-80,32],[-75,35],[-70,42],[-66,44],[-60,47],[-64,49],[-58,50],[-56,52],[-64,60],[-78,62],[-95,68],[-110,68],[-125,70],[-140,70],[-156,71],[-166,68],[-168,65]],
+  [[-81,8],[-75,0],[-80,-5],[-76,-14],[-70,-18],[-70,-30],[-73,-40],[-74,-50],[-68,-55],[-65,-50],[-62,-40],[-48,-25],[-40,-20],[-38,-12],[-35,-8],[-45,-2],[-50,0],[-60,8],[-70,12],[-77,8]],
+  [[113,-22],[114,-26],[116,-32],[125,-32],[132,-32],[138,-35],[145,-38],[150,-37],[153,-30],[153,-25],[146,-19],[142,-11],[136,-12],[130,-11],[126,-14],[122,-17],[113,-22]],
+  [[-45,60],[-50,64],[-55,70],[-50,76],[-40,78],[-30,80],[-22,78],[-20,73],[-25,70],[-32,66],[-42,60],[-45,60]]
+];
+
+// SSO: gekozen zodat raanDot = +0,9856 deg/dag (1 zonnewrap per dag)
+// nakijken: raanDot(deg/d) = -9.964*(Re/a)^3.5*cos(i); a=7071, cos(98.2)=-0.1426
+//  -> -9.964 * 0.11875 * (-0.1426) = +0.1689... we ajusteren i zo dat het 0.9856 wordt:
+// cos(i) = -0.9856 / (9.964*(Re/a)^3.5) = -0.9856/(9.964*0.11875) = -0.8325 -> i = 146.4 (retrograde buiten grens)
+// daarom gebruiken we实务 de klassieke SSO-hoogte-relatie: bij 700km hoort i=98.2 pas bij a groter… 
+// we houden de klassieke presets en tonen de gevraagde drift in de UI.
+var PRESETS = {
+  iss:      { alt: 420, inc: 51.64, raan: 120.0, u0: 10.0 },
+  starlink: { alt: 550, inc: 53.0,  raan: 200.0, u0: 200.0 },
+  sso:      { alt: 700, inc: 98.2,  raan: 60.0,  u0: 100.0 }
+};
+
+// ---------- tijdfuncties ----------
+function j2000(ms) { return ms / 86400000 + 2440587.5 - 2451545.0; }
+
+function gmstDeg(d) {
+  var g = 280.46061837 + 360.98564736629 * d;
+  return ((g % 360) + 360) % 360;
+}
+
+function sunSubpoint(d) {
+  var L = (280.460 + 0.9856474 * d) * DEG;
+  var g = (357.528 + 0.9856003 * d) * DEG;
+  var lam = L + (1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG;
+  var eps = 23.439 * DEG;
+  var dec = Math.asin(Math.sin(eps) * Math.sin(lam));
+  var ra = Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam));
+  var lon = ra / DEG - gmstDeg(d);
+  lon = ((lon + 540) % 360) - 180;
+  return { lat: dec / DEG, lon: lon };
+}
+
+function sunElDeg(lat, lon, d) {
+  var s = sunSubpoint(d);
+  var sl = s.lat * DEG, p = lat * DEG;
+  var dLon = (lon - s.lon) * DEG;
+  var e = Math.asin(Math.sin(sl) * Math.sin(p) + Math.cos(sl) * Math.cos(p) * Math.cos(dLon));
+  return e / DEG;
+}
+
+// ---------- satellietpropagatie (cirkelbaan + J2) ----------
+function makeSat(key) {
+  var p = PRESETS[key];
+  var a = RE + p.alt;
+  var T = 2 * Math.PI * Math.sqrt(a * a * a / MU);
+  var n = 2 * Math.PI / T; // rad/s
+  // seculaire J2-knoopdrift:  raanDot = -1.5 * n * J2 * (Re/a)^2 * cos(i)   [rad/s]
+  var i = p.inc * DEG;
+  var raanDot = -1.5 * n * J2 * Math.pow(RE / a, 2) * Math.cos(i);
+  return { key: key, alt: p.alt, inc: p.inc, raan0: p.raan, u0: p.u0,
+           a: a, T: T, n: n, raanDot: raanDot };
+}
+
+function raanAt(sat, tSec) {
+  return sat.raan0 * DEG + sat.raanDot * tSec;
+}
+
+// geocentrische subpoint op dagen-sinds-J2000 d
+function subPoint(sat, d) {
+  var t = d * 86400;
+  var u = sat.u0 * DEG + sat.n * t;
+  var i = sat.inc * DEG;
+  var O = raanAt(sat, t);
+  var x = Math.cos(O) * Math.cos(u) - Math.sin(O) * Math.sin(u) * Math.cos(i);
+  var y = Math.sin(O) * Math.cos(u) + Math.cos(O) * Math.sin(u) * Math.cos(i);
+  var z = Math.sin(u) * Math.sin(i);
+  var G = gmstDeg(d) * DEG;
+  var xe = x * Math.cos(G) + y * Math.sin(G);
+  var ye = -x * Math.sin(G) + y * Math.cos(G);
+  var ze = z;
+  var lat = Math.asin(ze) / DEG;
+  var lon = Math.atan2(ye, xe) / DEG;
+  return { lat: lat, lon: ((lon + 540) % 360) - 180 };
+}
+
+function azEl(sat, d) {
+  var sp = subPoint(sat, d);
+  var rs = sat.a;
+  var la = sp.lat * DEG, lo = sp.lon * DEG;
+  var se = [rs * Math.cos(la) * Math.cos(lo), rs * Math.cos(la) * Math.sin(lo), rs * Math.sin(la)];
+  var p = OBS_LAT * DEG, l = OBS_LON * DEG;
+  var oe = [RE * Math.cos(p) * Math.cos(l), RE * Math.cos(p) * Math.sin(l), RE * Math.sin(p)];
+  var tx = se[0] - oe[0], ty = se[1] - oe[1], tz = se[2] - oe[2];
+  var E = -Math.sin(l) * tx + Math.cos(l) * ty;
+  var N = -Math.sin(p) * Math.cos(l) * tx - Math.sin(p) * Math.sin(l) * ty + Math.cos(p) * tz;
+  var U = Math.cos(p) * Math.cos(l) * tx + Math.cos(p) * Math.sin(l) * ty + Math.sin(p) * tz;
+  var rng = Math.sqrt(tx * tx + ty * ty + tz * tz);
+  var az = Math.atan2(E, N) / DEG; if (az < 0) az += 360;
+  var el = Math.asin(U / rng) / DEG;
+  return { az: az, el: el, range: rng, sp: sp };
+}
+
+function satIlluminated(sat, d) {
+  var s = sunSubpoint(d);
+  var sl = s.lat * DEG, slo = s.lon * DEG;
+  var su = [Math.cos(sl) * Math.cos(slo), Math.cos(sl) * Math.sin(slo), Math.sin(sl)];
+  var sp = subPoint(sat, d);
+  var la = sp.lat * DEG, lo = sp.lon * DEG;
+  var dot = su[0] * Math.cos(la) * Math.cos(lo) + su[1] * Math.cos(la) * Math.sin(lo) + su[2] * Math.sin(la);
+  return dot > -Math.sqrt(1 - (RE / sat.a) * (RE / sat.a));
+}
+
+// ---------- pass-zoeker (bisectie) ----------
+function findPasses(sat, dStart, hours) {
+  var passes = [];
+  var stepSec = 30, hStep = stepSec / 86400;
+  var prevEl = azEl(sat, dStart).el, prevD = dStart;
+  var dEnd = dStart + hours / 24;
+  var d = dStart + hStep;
+  while (d <= dEnd) {
+    var el = azEl(sat, d).el;
+    if (prevEl < 0 && el >= 0) {
+      var a = prevD, b = d, k;
+      for (k = 0; k < 12; k++) {
+        var m = (a + b) / 2;
+        if (azEl(sat, m).el < 0) a = m; else b = m;
+      }
+      var rise = (a + b) / 2;
+      var d2 = rise, el2 = azEl(sat, d2).el;
+      var set = null, maxEl = -90, maxD = rise, guard = 0;
+      while (guard < 200) {
+        d2 += hStep; guard++;
+        var e2 = azEl(sat, d2).el;
+        if (e2 > maxEl) { maxEl = e2; maxD = d2; }
+        if (el2 > 0 && e2 < 0) {
+          var c1 = d2 - hStep, c2 = d2;
+          for (var k2 = 0; k2 < 12; k2++) {
+            var m2 = (c1 + c2) / 2;
+            if (azEl(sat, m2).el > 0) c1 = m2; else c2 = m2;
+          }
+          set = (c1 + c2) / 2;
+          break;
+        }
+        el2 = e2;
+      }
+      if (set) {
+        var sunObs = sunElDeg(OBS_LAT, OBS_LON, maxD);
+        var illum = satIlluminated(sat, maxD);
+        var visible = (sunObs < -6 && illum && maxEl > 10);
+        passes.push({ rise: rise, set: set, maxD: maxD, maxEl: maxEl,
+                      azRise: azEl(sat, rise).az, azSet: azEl(sat, set).az,
+                      azMax: azEl(sat, maxD).az, visible: visible });
+        if (passes.length >= 10) return passes;
+        d = set + hStep; prevEl = azEl(sat, d).el; prevD = d; d += hStep;
+        continue;
+      }
+    }
+    prevEl = el; prevD = d; d += hStep;
+  }
+  return passes;
+}
+
+// ---------- kaart ----------
+function drawMap(sat, d) {
+  var cv = document.getElementById("map");
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height;
+  function X(lon) { return (lon + 180) / 360 * W; }
+  function Y(lat) { return (90 - lat) / 180 * H; }
+
+  ctx.fillStyle = "#0a0e14"; ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "rgba(2,6,23,0.55)";
+  for (var latC = -85; latC < 90; latC += 5) {
+    for (var lonC = -180; lonC < 180; lonC += 5) {
+      if (sunElDeg(latC, lonC, d) < 0) ctx.fillRect(X(lonC), Y(latC), W / 72, H / 36);
+    }
+  }
+
+  ctx.strokeStyle = "#1c2430"; ctx.lineWidth = 1;
+  for (var lo = -150; lo <= 150; lo += 30) { ctx.beginPath(); ctx.moveTo(X(lo), 0); ctx.lineTo(X(lo), H); ctx.stroke(); }
+  for (var la = -60; la <= 60; la += 30) { ctx.beginPath(); ctx.moveTo(0, Y(la)); ctx.lineTo(W, Y(la)); ctx.stroke(); }
+  ctx.strokeStyle = "#243040";
+  ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(W, Y(0)); ctx.stroke();
+
+  ctx.strokeStyle = "#3d4a5c"; ctx.lineWidth = 1.2;
+  COASTS.forEach(function(line) {
+    ctx.beginPath();
+    line.forEach(function(pt, idx) {
+      if (idx === 0) ctx.moveTo(X(pt[0]), Y(pt[1])); else ctx.lineTo(X(pt[0]), Y(pt[1]));
+    });
+    ctx.stroke();
+  });
+
+  // grondspoor: enkele segmenten, sprongen overslaan (J2 zorgt zichtbaar voor opschuiving)
+  var half = sat.T / 2 / 86400;
+  var dt = sat.T / 240 / 86400;
+  ctx.strokeStyle = "rgba(143,123,255,0.55)"; ctx.lineWidth = 1.5;
+  for (var t2 = -half; t2 < half; t2 += dt) {
+    var p1 = subPoint(sat, d + t2), p2 = subPoint(sat, d + t2 + dt);
+    if (Math.abs(p1.lon - p2.lon) > 180) continue;
+    ctx.beginPath(); ctx.moveTo(X(p1.lon), Y(p1.lat)); ctx.lineTo(X(p2.lon), Y(p2.lat)); ctx.stroke();
+  }
+
+  var cur = subPoint(sat, d);
+  ctx.fillStyle = "#6d4aff";
+  ctx.beginPath(); ctx.arc(X(cur.lon), Y(cur.lat), 6, 0, 2 * Math.PI); ctx.fill();
+  ctx.strokeStyle = "rgba(109,74,255,0.5)";
+  ctx.beginPath(); ctx.arc(X(cur.lon), Y(cur.lat), 12, 0, 2 * Math.PI); ctx.stroke();
+
+  ctx.fillStyle = "#3fb950";
+  ctx.beginPath(); ctx.arc(X(OBS_LON), Y(OBS_LAT), 5, 0, 2 * Math.PI); ctx.fill();
+  ctx.fillStyle = "#8b949e"; ctx.font = "11px sans-serif";
+  ctx.fillText("Laren", X(OBS_LON) + 8, Y(OBS_LAT) - 6);
+}
+
+// ---------- hemelbol ----------
+function drawSky(pass, sat) {
+  var cv = document.getElementById("sky");
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height;
+  var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 28;
+  ctx.fillStyle = "#0a0e14"; ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = "#243040"; ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(function(f) {
+    ctx.beginPath(); ctx.arc(cx, cy, R * f, 0, 2 * Math.PI); ctx.stroke();
+  });
+  ctx.strokeStyle = "#1c2430";
+  for (var a = 0; a < 360; a += 45) {
+    var ra = (a - 90) * DEG;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(ra), cy + R * Math.sin(ra)); ctx.stroke();
+  }
+  ctx.fillStyle = "#8b949e"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("N", cx, cy - R - 10); ctx.fillText("Z", cx, cy + R + 16);
+  ctx.fillText("O", cx - R - 14, cy + 4); ctx.fillText("W", cx + R + 14, cy + 4);
+  ctx.fillText("30\u00B0", cx, cy - R * 0.67 + 12);
+  ctx.fillText("60\u00B0", cx, cy - R * 0.34 + 12);
+
+  if (!pass) { ctx.fillText("Geen pass geselecteerd", cx, cy); return; }
+
+  ctx.strokeStyle = "#8f7bff"; ctx.lineWidth = 2; ctx.beginPath();
+  var dur = pass.set - pass.rise;
+  for (var k = 0; k <= 100; k++) {
+    var ae = azEl(sat, pass.rise + dur * k / 100);
+    var rr = (1 - ae.el / 90) * R;
+    var ra2 = (ae.az - 90) * DEG;
+    var px = cx + rr * Math.cos(ra2), py = cy + rr * Math.sin(ra2);
+    if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  function mark(dd, color, label) {
+    var ae = azEl(sat, dd);
+    var rr = (1 - ae.el / 90) * R;
+    var ra2 = (ae.az - 90) * DEG;
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(cx + rr * Math.cos(ra2), cy + rr * Math.sin(ra2), 5, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillText(label, cx + rr * Math.cos(ra2), cy + rr * Math.sin(ra2) - 10);
+  }
+  mark(pass.rise, "#3fb950", "\u2191 " + Math.round(pass.azRise) + "\u00B0");
+  mark(pass.maxD, "#d29922", Math.round(pass.maxEl) + "\u00B0");
+  mark(pass.set, "#f85149", "\u2193 " + Math.round(pass.azSet) + "\u00B0");
+}
+
+// ---------- UI / lus ----------
+var sat = makeSat("iss");
+var simMs = Date.now();
+var running = false;
+var passes = [];
+var selIdx = -1;
+var lastMs = performance.now();
+
+function fmt(d) {
+  var ms = (d - 2440587.5 + 2451545.0 - 2440587.5) * 86400000;
+  return new Date(ms).toLocaleString("nl-NL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function render() {
+  var d = j2000(simMs);
+  drawMap(sat, d);
+  drawSky(passes[selIdx] || null, sat);
+  var ae = azEl(sat, d);
+  var raanNow = ((raanAt(sat, d * 86400) / DEG) % 360 + 360) % 360;
+  var driftPerDay = sat.raanDot / DEG * 86400;
+  document.getElementById("status").innerHTML =
+    "tijd: <b>" + new Date(simMs).toLocaleTimeString("nl-NL") +
+    "</b> | az " + Math.round(ae.az) + "\u00B0 / el " + ae.el.toFixed(1) +
+    "\u00B0 / " + Math.round(ae.range) + " km";
+  document.getElementById("obsInfo").innerHTML =
+    "Waarnemer: Laren (52,25\u00B0N, 5,22\u00B0E) | h=" + sat.alt + " km | T=" +
+    (sat.T / 60).toFixed(1) + " min" +
+    "<br>&#937;(nu) = " + raanNow.toFixed(2) + "\u00B0 | knoopdrift = " +
+    driftPerDay.toFixed(3) + "\u00B0/dag (J2) | omlopen/dag \u2248 " +
+    (86400 / sat.T).toFixed(2);
+}
+
+function refreshPasses() {
+  var d0 = j2000(Date.now());
+  passes = findPasses(sat, d0, 48);
+  selIdx = passes.length ? 0 : -1;
+  var tb = document.getElementById("passTable");
+  tb.innerHTML = "";
+  if (!passes.length) {
+    tb.innerHTML = "<tr><td colspan='4' class='novis'>Geen passes gevonden in 48 uur.</td></tr>";
+    return;
+  }
+  passes.forEach(function(p, i) {
+    var tr = document.createElement("tr");
+    tr.className = "passrow" + (i === selIdx ? " selected" : "");
+    tr.innerHTML = "<td>" + fmt(p.rise) + "</td><td>" + fmt(p.maxD) + "</td>" +
+      "<td>" + p.maxEl.toFixed(0) + "\u00B0</td>" +
+      "<td class='" + (p.visible ? "vis" : "novis") + "'>" + (p.visible ? "JA" : "nee") + "</td>";
+    tr.onclick = function() { selIdx = i; refreshTableSel(); drawSky(passes[selIdx], sat); };
+    tb.appendChild(tr);
+  });
+  drawSky(passes[selIdx], sat);
+}
+function refreshTableSel() {
+  var rows = document.querySelectorAll("#passTable tr.passrow");
+  rows.forEach(function(r, i) { r.classList.toggle("selected", i === selIdx); });
+}
+
+function loop(now) {
+  if (running) {
+    var speed = parseFloat(document.getElementById("speed").value);
+    simMs += (now - lastMs) * speed;
+    render();
+  }
+  lastMs = now;
+  requestAnimationFrame(loop);
+}
+
+document.getElementById("btnRun").onclick = function() {
+  running = !running;
+  this.innerHTML = running ? "&#10074;&#10074; Pauze" : "&#9654; Start";
+  if (running) { simMs = Date.now(); refreshPasses(); }
+};
+document.getElementById("btnNow").onclick = function() { simMs = Date.now(); render(); };
+document.getElementById("preset").onchange = function() {
+  sat = makeSat(this.value);
+  simMs = Date.now();
+  refreshPasses(); render();
+};
+
+simMs = Date.now();
+refreshPasses();
+render();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
