@@ -1,0 +1,3276 @@
+<!DOCTYPE html>
+<html lang="nl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VORTEX KERNEL IDE v35.0 // Harmonisch Getij (M2/S2/N2/K1), NAP Bathymetrie Pluimpot-Lodijke, R/Scilab & 3D STL</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Official MapLibre GL JS v4.7.1 -->
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <!-- Google Fonts: JetBrains Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vortex: {
+              bg: '#03060c',
+              panel: '#0b1322',
+              panelAlt: '#0f1b31',
+              border: '#1e2f4d',
+              cyan: '#00f0ff',
+              amber: '#f59e0b',
+              emerald: '#10b981',
+              purple: '#a855f7',
+              crimson: '#ef4444'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      background-color: #03060c;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #03060c; }
+    ::-webkit-scrollbar-thumb { background: #1e2f4d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+    .cyber-panel {
+      background: rgba(11, 19, 34, 0.94);
+      border: 1px solid #1e2f4d;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
+    }
+    .cyber-btn {
+      transition: all 0.15s ease;
+      border: 1px solid #1e2f4d;
+    }
+    .cyber-btn:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+    }
+    .cyber-btn-active {
+      background: rgba(0, 240, 255, 0.16) !important;
+      border-color: #00f0ff !important;
+      color: #00f0ff !important;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+    }
+    .layer-pill-on {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      color: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+    .layer-pill-off {
+      background: rgba(15, 23, 42, 0.7);
+      border-color: #1e293b;
+      color: #64748b;
+    }
+    input[type="range"] { accent-color: #00f0ff; }
+    .code-editor { font-family: 'JetBrains Mono', monospace; tab-size: 2; line-height: 1.45; }
+    .maplibregl-popup-content {
+      background: #0b1322 !important;
+      color: #e2e8f0 !important;
+      border: 1px solid #00f0ff !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 11px !important;
+      padding: 8px 12px !important;
+    }
+    .maplibregl-ctrl-group {
+      background: #0b1322 !important;
+      border: 1px solid #1e2f4d !important;
+    }
+    .maplibregl-ctrl-group button {
+      filter: invert(1) hue-rotate(180deg);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col select-none">
+
+  <!-- TOP TELEMETRY & OPENSEAMAP NAUTICAL HEADER -->
+  <header class="cyber-panel border-b border-vortex-border px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 sticky top-0">
+    <div class="flex items-center gap-2.5">
+      <div id="rt-pulse-dot" class="w-3 h-3 rounded-full bg-vortex-emerald animate-ping shadow-[0_0_12px_#10b981]"></div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-xs sm:text-sm tracking-wider text-vortex-cyan">VORTEX KERNEL IDE v35.0</span>
+          <span class="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-vortex-cyan/20 border border-vortex-cyan/50 text-vortex-cyan font-bold">🌊 HARMONISCH GETIJ (M2/S2/N2/K1) · NAP BATHYMETRIE · R &amp; SCILAB</span>
+        </div>
+        <div class="text-[10px] text-slate-400 flex items-center gap-2">
+          <span id="hdr-location">ZEE-ANKER: BOL VAN LODIJKE / OOSTERSCHELDE (51.4783°N, 4.1375°E)</span>
+          <span class="text-vortex-amber hidden sm:inline" id="hdr-rd">RD: 68120 · 388050</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Chronometer, Tide NAP & Planimeter Readout -->
+    <div class="flex items-center gap-2 sm:gap-3 bg-[#050a14] px-3 py-1 rounded border border-vortex-border text-[11px]">
+      <div>
+        <span class="text-slate-500">UTC:</span>
+        <span id="hdr-utc" class="text-slate-200 font-semibold">2026-11-06 11:27:00</span>
+      </div>
+      <div class="border-l border-slate-800 pl-2.5">
+        <span class="text-slate-500">GETIJ NAP:</span>
+        <span id="hdr-tide-nap" class="text-vortex-cyan font-bold">+1.18 m (VLOED)</span>
+      </div>
+      <div class="hidden sm:block border-l border-slate-800 pl-2.5">
+        <span class="text-slate-500">LOOD M369:</span>
+        <span id="hdr-sounding" class="text-vortex-emerald font-bold">1.63 m water</span>
+      </div>
+      <div class="hidden xl:block border-l border-slate-800 pl-2.5">
+        <span class="text-slate-500">OTT 573:</span>
+        <span id="hdr-planimeter" class="text-vortex-amber font-bold">11.13 ha (28.37 gem.)</span>
+      </div>
+    </div>
+
+    <!-- Quick Action & Export Buttons -->
+    <div class="flex items-center gap-1.5">
+      <button onclick="bootOpenSeaMapAndZeegrid()" title="Hercentreer op OpenSeaMap Oosterschelde + Nautisch Zeegrid + Getij" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-cyan/25 border-vortex-cyan text-vortex-cyan font-bold flex items-center gap-1">
+        <span>⚓</span><span class="hidden sm:inline">ZEEGRID &amp; GETIJ</span>
+      </button>
+      <button onclick="downloadRScriptFile()" title="Download R-script (.R) met Homografie-, Procrustes- en Getijden-matrices" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 font-bold flex items-center gap-1">
+        <span>📊</span><span class="hidden sm:inline">Export .R</span>
+      </button>
+      <button onclick="downloadScilabScriptFile()" title="Download Scilab-script (.sce) voor matrix- en foutenanalyse" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-purple/20 border-vortex-purple text-purple-300 font-bold flex items-center gap-1">
+        <span>🧮</span><span class="hidden sm:inline">Scilab .sce</span>
+      </button>
+      <button onclick="downloadBinarySTLFile()" title="Download Binaire .STL inclusief 3D-Voetstuk met gegraveerde Perceelnaam, Gemeten & RD" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-amber/20 border-vortex-amber text-amber-300 font-bold flex items-center gap-1">
+        <span>🧊</span><span class="hidden sm:inline">.STL</span>
+      </button>
+      <button id="btn-view-split" onclick="setViewportSplit('split')" class="cyber-btn cyber-btn-active px-2 py-1 rounded text-[11px] font-bold">
+        <span>🗺️+✨</span>
+      </button>
+      <button onclick="panicResetAllLayers()" title="Zet alle projectielagen op OFF" class="cyber-btn px-2 py-1 rounded text-[11px] bg-red-950/50 border-red-800/70 text-red-300 hover:bg-red-900/60">
+        🛑 UIT
+      </button>
+    </div>
+  </header>
+
+  <!-- HARMONIC TIDE, BATHYMETRY & MULTI-CALENDAR RIBBON -->
+  <section class="bg-[#040914] border-b border-vortex-border px-3 py-1 flex flex-wrap items-center justify-between gap-2 text-[10px] z-20">
+    <div class="flex flex-wrap items-center gap-2.5">
+      <span>🌊 <strong class="text-vortex-cyan">Oosterschelde Getij (M2/S2/N2/K1):</strong> <span id="cal-tide-ribbon" class="text-emerald-300 font-semibold">H(t) = +1.18m NAP (+2.83m LAT) | Perceel M 369 (-0.45m NAP): ONDER WATER (1.63m)</span></span>
+      <span class="text-slate-600">|</span>
+      <span>⚓ <strong class="text-vortex-amber">Dieptelood Transect:</strong> <span id="cal-bathy-ribbon" class="text-slate-200">Pluimpot (-1.8m) → Gorishoek → Geul Lodijkse Gat (-18.4m) → Bol van Lodijke (-0.45m)</span></span>
+      <span class="text-slate-600">|</span>
+      <span>🏛️ <strong class="text-rose-400">Frans Rep.:</strong> <span id="cal-french" class="text-slate-200 font-semibold">16 Brumaire An CCXXXV</span></span>
+    </div>
+  </section>
+
+  <!-- LAYER CONTROL BAR -->
+  <section class="bg-[#060b16] border-b border-vortex-border px-3 py-1.5 flex items-center justify-between gap-2 overflow-x-auto z-20">
+    <div class="flex items-center gap-1.5 shrink-0">
+      <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mr-1">Lagen:</span>
+
+      <button id="layer-btn-openseamap_seamarks" onclick="toggleLayer('openseamap_seamarks')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>⚓</span><span>openseamap</span><span class="font-bold text-[9px]" id="state-openseamap_seamarks">[ON]</span>
+      </button>
+
+      <button id="layer-btn-nautisch_zeegrid" onclick="toggleLayer('nautisch_zeegrid')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🌐</span><span>zeegrid_nm</span><span class="font-bold text-[9px]" id="state-nautisch_zeegrid">[ON]</span>
+      </button>
+
+      <button id="layer-btn-harmonisch_getij" onclick="toggleLayer('harmonisch_getij')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🌊</span><span>getij_m2_s2_n2_k1</span><span class="font-bold text-[9px]" id="state-harmonisch_getij">[ON]</span>
+      </button>
+
+      <button id="layer-btn-bathymetrie_profiel" onclick="toggleLayer('bathymetrie_profiel')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>📉</span><span>nap_bathymetrie</span><span class="font-bold text-[9px]" id="state-bathymetrie_profiel">[ON]</span>
+      </button>
+
+      <button id="layer-btn-kadastrale_percelen" onclick="toggleLayer('kadastrale_percelen')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🏛️</span><span>3d_kadaster</span><span class="font-bold text-[9px]" id="state-kadastrale_percelen">[ON]</span>
+      </button>
+
+      <button id="layer-btn-nautische_positielijnen" onclick="toggleLayer('nautische_positielijnen')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🧭</span><span>marcq_lop</span><span class="font-bold text-[9px]" id="state-nautische_positielijnen">[ON]</span>
+      </button>
+
+      <button id="layer-btn-sterren" onclick="toggleLayer('sterren')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>✨</span><span>57_sterren</span><span class="font-bold text-[9px]" id="state-sterren">[ON]</span>
+      </button>
+
+      <button id="layer-btn-repro_kaart_kalibratie" onclick="toggleLayer('repro_kaart_kalibratie')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>📷</span><span>homografie_4pt</span><span class="font-bold text-[9px]" id="state-repro_kaart_kalibratie">[OFF]</span>
+      </button>
+
+      <button id="layer-btn-procrustes_vangogh" onclick="toggleLayer('procrustes_vangogh')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🎨</span><span>procrustes_1889</span><span class="font-bold text-[9px]" id="state-procrustes_vangogh">[OFF]</span>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button onclick="enableAllLayers()" class="px-2 py-0.5 rounded text-[10px] bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/60">
+        + Alles AAN
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <main id="main-workspace" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
+
+    <!-- LEFT / TOP VIEWPORT: OPENSEAMAP + NAUTICAL ZEEGRID + TIDE & BATHYMETRY (Cols 1-7) -->
+    <section id="viewport-section" class="lg:col-span-7 flex flex-col gap-2 min-h-[470px] lg:h-[calc(100vh-134px)]">
+      
+      <!-- REALTIME NAUTICAL, TIDE & BATHYMETRY TELEMETRY RIBBON -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 shrink-0">
+        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-cyan-400">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-vortex-cyan">🌊 OOSTERSCHELDE GETIJ</span>
+            <span id="pipe-tide-phase" class="text-[9px] px-1 rounded bg-cyan-500/20 text-vortex-cyan">Opkomend</span>
+          </div>
+          <div id="pipe-tide-level" class="text-[11px] font-bold text-slate-100 mt-0.5">+1.18 m NAP (+2.83 m LAT)</div>
+          <div id="pipe-tide-sub" class="text-[9px] text-slate-400">M2=1.36m · S2=0.36m · N2=0.25m · K1=0.08m</div>
+        </div>
+
+        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-emerald-400">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-vortex-emerald">⚓ DIEPTELOOD &amp; PLAAT</span>
+            <span id="pipe-bathy-status" class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300">Sublitoraal</span>
+          </div>
+          <div id="pipe-bathy-depth" class="text-[11px] font-bold text-slate-100 mt-0.5">M 369: 1.63 m water</div>
+          <div id="pipe-bathy-sub" class="text-[9px] text-slate-400">Geul: 19.58 m | Pluimpot: -0.90m NAP</div>
+        </div>
+
+        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-amber-400">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-vortex-amber">📐 OTT 573 + HOMOGRAFIE</span>
+            <span class="text-[9px] px-1 rounded bg-amber-500/20 text-amber-300">Green ∮xdy</span>
+          </div>
+          <div id="pipe-plan-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">11.13 ha | 28.37 gem.</div>
+          <div id="pipe-plan-sub" class="text-[9px] text-slate-400">Perceel M 369 | Nonius 178.12 cm²</div>
+        </div>
+
+        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-purple-400">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-purple-300">📊 R / SCILAB / STL</span>
+            <span id="pipe-stl-badge" class="text-[9px] px-1 rounded bg-purple-500/20 text-purple-300">Matrices</span>
+          </div>
+          <div id="pipe-proc-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">.R + .SCE + Voetstuk .STL</div>
+          <div id="pipe-proc-sub" class="text-[9px] text-slate-400">Homografie H · Procrustes · Getij</div>
+        </div>
+      </div>
+
+      <!-- DUAL VIEWPORT CONTAINER: PANE 1 = OPENSEAMAP + ZEEGRID | PANE 2 = ASTRO & HOMOGRAPHY CANVAS -->
+      <div id="dual-viewport-grid" class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-[340px] overflow-hidden">
+
+        <!-- PANE 1 (PRIMARY): MAPLIBRE GL JS + OPENSEAMAP + NAUTICAL ZEEGRID & TIDAL 3D PARCELS -->
+        <div id="map-pane-wrapper" class="relative cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border min-h-[280px]">
+          
+          <!-- MapLibre Spatial AI & OpenSeaMap Command Bar -->
+          <div class="bg-[#050a14] border-b border-vortex-border px-2 py-1.5 flex items-center gap-1.5 z-20">
+            <span class="text-[10px] font-bold text-vortex-cyan shrink-0">⚓ ZeeGrid AI:</span>
+            <input id="maplibre-ai-input" type="text" placeholder="Bijv: 'springtij', 'laagwater droogval', 'pluimpot profiel', 'export r', 'lodijke 369'..." onkeydown="if(event.key==='Enter') executeMapLibreAICommand()" class="flex-1 bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-slate-100 focus:outline-none focus:border-vortex-cyan" />
+            <button onclick="executeMapLibreAICommand()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+              Voer Uit
+            </button>
+          </div>
+
+          <div id="vortex-maplibre" class="w-full h-full flex-1 bg-[#030914]"></div>
+
+          <!-- MapLibre Floating Quick Nautical & Cadastral Anchors -->
+          <div class="absolute top-10 left-2 right-2 z-20 flex flex-wrap items-center justify-between gap-1 pointer-events-none">
+            <div class="flex flex-wrap items-center gap-1 pointer-events-auto">
+              <button onclick="flyToCadastralParcel('LODIJKE-369')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-cyan font-bold">⚓ Lodijke 365/369</button>
+              <button onclick="flyToCadastralParcel('SCHERPENISSE-PLATTEWEG')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-emerald font-bold">🌊 Pluimpot / Platteweg</button>
+              <button onclick="flyToCadastralParcel('THOLEN-KRUITTOREN')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-amber font-bold">🗼 Tholen</button>
+              <button onclick="jumpToLowWaterExposure()" class="cyber-btn px-2 py-0.5 rounded bg-amber-950/95 border-amber-500 text-[9px] text-amber-300 font-bold">🦪 Droogval LW</button>
+            </div>
+            <div class="pointer-events-auto flex items-center gap-1">
+              <select id="zeegrid-step-select" onchange="setZeegridStep(this.value)" class="bg-[#03060c]/95 border border-vortex-cyan/60 rounded px-1.5 py-0.5 text-[9px] text-vortex-cyan font-bold">
+                <option value="0.0166667">Grid: 1.0' (1.0 NM)</option>
+                <option value="0.0083333" selected>Grid: 0.5' (0.5 NM)</option>
+                <option value="0.05">Grid: 3.0' (3.0 NM)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between bg-[#03060c]/90 border border-vortex-border px-2.5 py-1 rounded text-[9px] pointer-events-none">
+            <span>AP: <strong id="ap-readout" class="text-vortex-amber">51°28.7'N, 004°08.3'E</strong></span>
+            <span id="map-parcel-readout" class="text-vortex-cyan font-semibold">Transect: Scherpenisse Pluimpot ↔ Bol van Lodijke</span>
+          </div>
+        </div>
+
+        <!-- PANE 2: ASTROMETRIC SKY, HOMOGRAPHY QUAD & TIDAL BATHYMETRY CROSS-SECTION CANVAS -->
+        <div id="sky-pane-wrapper" class="relative cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border min-h-[280px]">
+          <canvas id="vortex-canvas" class="relative z-10 w-full h-full block cursor-crosshair"></canvas>
+
+          <!-- Floating Top-Left HUD Overlay on Sky/Bathymetry Canvas -->
+          <div class="absolute top-2 left-2 z-20 pointer-events-none flex flex-col gap-0.5 bg-[#03060c]/88 border border-vortex-border/80 px-2.5 py-1.5 rounded text-[10px] max-w-[295px]">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-vortex-cyan font-bold">2. ASTRO, GETIJ &amp; NAP-PROFIEL</span>
+              <span class="text-[9px] px-1 bg-emerald-500/20 text-emerald-300 rounded font-bold">60 FPS</span>
+            </div>
+            <div id="canvas-layer-notice" class="text-emerald-400 text-[9px] leading-tight">
+              Harmonisch getij (M2/S2/N2/K1) + NAP-dwarsprofiel actief onderin canvas.
+            </div>
+            <div class="grid grid-cols-2 gap-x-2 text-[9px] text-slate-300 pt-0.5 border-t border-slate-800/80">
+              <div>Getij H(t): <span id="hud-tide" class="text-vortex-cyan font-semibold">+1.18 m NAP</span></div>
+              <div>GDOP: <span id="hud-gdop" class="text-vortex-amber font-bold">1.38</span></div>
+              <div>Ott 573: <span id="hud-ott-val" class="text-emerald-300 font-bold">28.37 gem.</span></div>
+              <div>Klik-Actie: <span id="hud-click-mode" class="text-purple-300">Inspecteer Lood</span></div>
+            </div>
+          </div>
+
+          <div class="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between bg-[#03060c]/90 border border-vortex-border px-2.5 py-1 rounded text-[9px]">
+            <span>LOODLIJN CURSOR: <strong id="cursor-readout" class="text-vortex-cyan">Km 4.2 | Bodem -0.45m NAP</strong></span>
+            <span>FIX: <strong id="fix-readout" class="text-vortex-emerald">51°28.88'N, 004°08.52'E</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Time, Speed & Tidal Scrubber Bar under Dual Viewport -->
+      <div class="cyber-panel rounded-lg p-2 flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
+        <div class="flex flex-wrap items-center gap-1">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold mr-1">Getij &amp; Tijd-Motor:</span>
+          <button onclick="stepTime(-22350)" title="-6u 12.5m (Halve M2 Getijdencyclus: van Hoogwater naar Laagwater)" class="cyber-btn px-2 py-1 rounded text-[10px] bg-cyan-950/60 border-cyan-700 text-vortex-cyan font-bold">-½ M2 (6u12m)</button>
+          <button onclick="stepTime(-3600)" class="cyber-btn px-2 py-1 rounded text-[10px] bg-slate-900">-1u</button>
+          <button id="btn-live-clock" onclick="toggleLiveClock()" class="cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan font-bold">
+            ▶️ REAL-TIME ACTIEF
+          </button>
+          <button onclick="stepTime(3600)" class="cyber-btn px-2 py-1 rounded text-[10px] bg-slate-900">+1u</button>
+          <button onclick="stepTime(22350)" title="+6u 12.5m (Halve M2 Getijdencyclus)" class="cyber-btn px-2 py-1 rounded text-[10px] bg-cyan-950/60 border-cyan-700 text-vortex-cyan font-bold">+½ M2 (6u12m)</button>
+          <select id="time-warp-select" onchange="setTimeWarp(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-1.5 py-1 text-[10px] text-emerald-300">
+            <option value="1">1× (Echte Sekonde)</option>
+            <option value="60">60× (1 min/sec)</option>
+            <option value="900">900× (15 min/sec Getij-Animatie)</option>
+            <option value="3600">3600× (1 uur/sec)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <select id="quick-epoch-select" onchange="loadTimeCapsule(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[10px] text-vortex-amber">
+            <option value="CAP-2026-OOSTERSCHELDE">⚓ 2026-11-06 — OpenSeaMap &amp; Zeegrid Oosterschelde (Bol van Lodijke 369)</option>
+            <option value="CAP-1953-WATERSNOOD">🌊 1953-02-01 03:00 UT — Springtij + Stormopzet (+4.55m NAP Sint-Maartensdijk)</option>
+            <option value="CAP-1901-SCHOT">🦪 1901-09-15 12:00 UT — Laagwater Oesterinspectie B.W. Schot (Lodijke 369)</option>
+            <option value="CAP-1889-VANGOGH">🎨 1889-06-19 03:35 UT — Van Gogh Sterrennacht Procrustes</option>
+            <option value="CAP-2026-ECLIPSE">🌑 2026-08-12 18:08 UT — Saros 126 Totale Eclips (Bourges)</option>
+            <option value="CAP-1530-LODIJKE">🌊 1530-11-05 12:00 UT — Sint-Felixvloed (Kasteel Lodijke)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT / BOTTOM CONTROL & RESEARCH DECK (Cols 8-12) -->
+    <section id="control-section" class="lg:col-span-5 flex flex-col gap-2 lg:h-[calc(100vh-134px)] overflow-hidden">
+      
+      <!-- 5-Module Navigation Tabs -->
+      <nav class="cyber-panel rounded-lg p-1 grid grid-cols-5 gap-1 shrink-0">
+        <button id="tab-btn-tide_bathy" onclick="switchModuleTab('tide_bathy')" class="cyber-btn cyber-btn-active px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>🌊</span><span>1. Getij &amp; NAP-Lood</span>
+        </button>
+        <button id="tab-btn-r_scilab" onclick="switchModuleTab('r_scilab')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>📊</span><span>2. R &amp; Scilab</span>
+        </button>
+        <button id="tab-btn-kadaster" onclick="switchModuleTab('kadaster')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>📐</span><span>3. Homografie/573</span>
+        </button>
+        <button id="tab-btn-scad_solid" onclick="switchModuleTab('scad_solid')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>🧊</span><span>4. 3D Voetstuk STL</span>
+        </button>
+        <button id="tab-btn-kernel" onclick="switchModuleTab('kernel')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>💻</span><span>5. Kernel IDE</span>
+        </button>
+      </nav>
+
+      <!-- MODULE PANELS CONTAINER -->
+      <div class="flex-1 cyber-panel rounded-lg p-3 overflow-y-auto space-y-3">
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 1: HARMONISCHE GETIJDEN (M2/S2/N2/K1) & NAP BATHYMETRIE        -->
+        <!-- ===================================================================== -->
+        <div id="mod-tide_bathy" class="space-y-3">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 1 // HARMONISCH GETIJ ($M_2, S_2, N_2, K_1$) &amp; NAP BATHYMETRIE</h2>
+              <p class="text-[11px] text-slate-400">Oosterschelde getijdenconstituënten &amp; NAP-dwarsprofiel Pluimpot ↔ Bol van Lodijke</p>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="jumpToLowWaterExposure()" class="px-2 py-1 rounded bg-amber-500/20 border border-amber-500 text-amber-300 text-[10px] font-bold">
+                🦪 Droogval LW
+              </button>
+              <button onclick="jumpToHighWaterFlood()" class="px-2 py-1 rounded bg-vortex-cyan/20 border border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+                🌊 Hoogwater HW
+              </button>
+            </div>
+          </div>
+
+          <!-- 1. Harmonic Tidal Constituents Table & Station Selector -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-vortex-cyan">🌊 1. HARMONISCHE GETIJDEN-ANALYSE (RWS / OOSTERSCHELDE)</span>
+              <select id="tide-station-select" onchange="selectTideStation(this.value)" class="bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-vortex-amber font-bold">
+                <option value="BERGSE_DIEPSLUIS">Station: Bergse Diepsluis / Bol van Lodijke (Oosterschelde-Kom)</option>
+                <option value="STAVENISSE">Station: Stavenisse / Gorishoek / Pluimpot-Monding</option>
+                <option value="YERSEKE">Station: Yerseke Oesterbank (Referentiebekken)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Waterstand NAP</div>
+                <div id="tide-card-nap" class="text-xs font-bold text-vortex-cyan">+1.18 m NAP</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">T.o.v. LAT (Kaartdiepte)</div>
+                <div id="tide-card-lat" class="text-xs font-bold text-vortex-emerald">+2.83 m LAT</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Stroomsnelheid (dH/dt)</div>
+                <div id="tide-card-rate" class="text-xs font-bold text-vortex-amber">+0.64 m/u (Vloed)</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Perceel M 369 (-0.45m)</div>
+                <div id="tide-card-m369" class="text-xs font-bold text-purple-300">1.63 m onder water</div>
+              </div>
+            </div>
+
+            <!-- Storm Surge / Wind Set-up Slider (e.g., 1953 Watersnood +3.10m surge) -->
+            <div class="pt-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="text-slate-400">Meteorologische Stormopzet ($\Delta h_{\text{wind}}$ boven astronomisch getij):</span>
+                <span id="lbl-storm-surge" class="text-rose-400 font-bold">+0.00 m</span>
+              </div>
+              <input id="slider-storm-surge" type="range" min="-1.0" max="3.5" step="0.05" value="0.00" oninput="updateStormSurge(this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer mt-1" />
+            </div>
+
+            <!-- Constituents Breakdown Table (M2, S2, N2, K1, O1, M4) -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-[10px]">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400">
+                    <th class="py-1">Constituënt</th>
+                    <th class="py-1">Hoeksnelheid ω (°/uur)</th>
+                    <th class="py-1">Amplitude A (m)</th>
+                    <th class="py-1">Fase κ (°)</th>
+                    <th class="py-1">Actuele Bijdrage (m)</th>
+                  </tr>
+                </thead>
+                <tbody id="tide-constituents-tbody" class="divide-y divide-slate-800/60"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Interactive Bathymetry & Sounding Profile (Pluimpot -> Gorishoek -> Lodijke) -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-emerald">📉 2. INTERACTIEF NAP-DWARSPROFIEL &amp; DIEPTELOOD (PLUIMPOT ↔ LODIJKE)</span>
+              <span id="sounding-probe-readout" class="text-[10px] text-vortex-amber font-bold">Loodpunt: Km 6.8 (M 369)</span>
+            </div>
+
+            <!-- Dedicated Interactive Hydrographic Cross-Section Canvas -->
+            <div class="relative h-40 bg-[#030710] border border-slate-800 rounded overflow-hidden">
+              <canvas id="bathymetrie-canvas" class="w-full h-full block cursor-ew-resize"></canvas>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[10px]">
+                <span class="text-slate-400">Verplaats Peillood langs Transect (0.0 km Scherpenisse Pluimpot → 8.5 km Reimerswaal):</span>
+                <span id="lbl-probe-km" class="text-vortex-cyan font-bold">6.80 km (Bol van Lodijke M 369)</span>
+              </div>
+              <input id="slider-probe-km" type="range" min="0" max="8.5" step="0.05" value="6.80" oninput="updateBathymetryProbe(this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer mt-1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 2: R & SCILAB STATISTISCHE MATRIX EXPORT                       -->
+        <!-- ===================================================================== -->
+        <div id="mod-r_scilab" class="hidden space-y-3">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-emerald">MODULE 2 // R &amp; SCILAB MATRIX- EN FOUTENANALYSE GENERATOR</h2>
+              <p class="text-[11px] text-slate-400">Exporteer de 3×3 Homografie-matrix $\mathbf{H}$, Procrustes SVD (1889), Marcq LOP &amp; Harmonisch Getij</p>
+            </div>
+          </div>
+
+          <!-- R Script Generator -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-vortex-cyan">📊 1. R STATISTISCH VALIDATIE-SCRIPT (`vortex_matrices.R`)</span>
+              <div class="flex gap-1.5">
+                <button onclick="generateRAndScilabScripts()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+                  Ververs R Code
+                </button>
+                <button onclick="downloadRScriptFile()" class="cyber-btn px-2.5 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                  💾 Download .R
+                </button>
+              </div>
+            </div>
+            <textarea id="r-script-output-box" rows="7" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-cyan-200 select-text"></textarea>
+          </div>
+
+          <!-- Scilab Script Generator -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-purple-300">🧮 2. SCILAB NUMERIEK MATRIX-SCRIPT (`vortex_matrices.sce`)</span>
+              <div class="flex gap-1.5">
+                <button onclick="generateRAndScilabScripts()" class="cyber-btn px-2 py-0.5 rounded bg-purple-950/80 border-purple-500 text-purple-200 text-[10px] font-bold">
+                  Ververs Scilab
+                </button>
+                <button onclick="downloadScilabScriptFile()" class="cyber-btn px-2.5 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                  💾 Download .sce
+                </button>
+              </div>
+            </div>
+            <textarea id="scilab-script-output-box" rows="7" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-purple-200 select-text"></textarea>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 3: OPENSEAMAP ZEEGRID, 3x3 HOMOGRAFIE & OTT NR. 573            -->
+        <!-- ===================================================================== -->
+        <div id="mod-kadaster" class="hidden space-y-3">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 3 // OPENSEAMAP ZEEGRID, 3×3 HOMOGRAFIE &amp; OTT 573</h2>
+              <p class="text-[11px] text-slate-400">Nautisch Zeegrid, Zeeuwse 3D-percelen (Stelling van Green) &amp; 4-punts kaartkalibratie</p>
+            </div>
+            <button onclick="loadSyntheticArchiveMap()" class="px-2 py-1 rounded bg-vortex-cyan/20 border border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+              📜 Kalibratiekaart
+            </button>
+          </div>
+
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-vortex-emerald">🏛️ 1. ZEEUWSE PERCELEN IN OPENSEAMAP &amp; OTT NR. 573 TELWERK</span>
+              <select id="parcel-select-dropdown" onchange="flyToCadastralParcel(this.value)" class="bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-vortex-cyan">
+                <option value="LODIJKE-369">Poortvliet / Bol van Lodijke — Sectie M 369 (B.W. Schot)</option>
+                <option value="LODIJKE-365">Poortvliet / Bol van Lodijke — Sectie M 365 (Verdronken Land)</option>
+                <option value="SCHERPENISSE-PLATTEWEG">Scherpenisse — Platteweg 3, 5, 7 (Sectie E 1551/1552)</option>
+                <option value="THOLEN-KRUITTOREN">Tholen — Kruittoren 23 / Contr'Escarpe (Sectie A 107)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center pt-1">
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Green ∮(X dY - Y dX)</div>
+                <div id="ott-area-m2" class="text-xs font-bold text-vortex-cyan">111,324 m²</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Hectare (ha)</div>
+                <div id="ott-area-ha" class="text-xs font-bold text-vortex-emerald">11.1324 ha</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Zeeuwse Gemeten</div>
+                <div id="ott-area-gemeten" class="text-xs font-bold text-vortex-amber">28.37 gemeten</div>
+              </div>
+              <div class="bg-vortex-panel p-2 rounded border border-slate-800">
+                <div class="text-[9px] text-slate-400">Ott Nr. 573 Nonius</div>
+                <div id="ott-wheel-cm2" class="text-xs font-bold text-purple-300">178.12 cm²</div>
+              </div>
+            </div>
+
+            <div id="parcel-vertices-log" class="text-[10px] text-slate-300 bg-vortex-panel/70 p-2 rounded border border-slate-800/80 font-mono"></div>
+          </div>
+
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-vortex-amber">📷 2. 4-PUNTS PROJECTIEVE HOMOGRAFIE KALIBRATIE (3×3 MATRIX H)</span>
+              <div class="flex gap-1">
+                <button id="btn-pick-homography" onclick="toggleHomographyQuadPickMode()" class="cyber-btn px-2 py-0.5 rounded bg-purple-950/70 border-purple-500 text-purple-200 text-[10px] font-bold">
+                  🎯 Klik 4 Kaderhoeken (Q1–Q4)
+                </button>
+                <button onclick="resetHomographyQuad()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-300 text-[10px]">
+                  Reset Quad
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="text-[9px] text-slate-400">Doelbreedte W (cm)</label>
+                <input id="homog-target-w" type="number" step="0.5" value="20.0" onchange="recalcReproPlanimeter()" class="w-full bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-[9px] text-slate-400">Doelhoogte H (cm)</label>
+                <input id="homog-target-h" type="number" step="0.5" value="16.0" onchange="recalcReproPlanimeter()" class="w-full bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-[9px] text-slate-400">Kaartschaal (1 : M)</label>
+                <input id="repro-map-scale" type="number" value="2500" onchange="recalcReproPlanimeter()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-xs text-vortex-amber font-bold mt-0.5" />
+              </div>
+            </div>
+
+            <div id="homography-matrix-readout" class="bg-vortex-panel/80 border border-slate-800 rounded p-2 font-mono text-[10px] text-vortex-cyan">
+              [ +25.000, +0.000, -2.500 | +0.000, +20.000, -2.000 | +0.000, +0.000, 1.000 ]
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 4: 3D VOETSTUK MET RELIËFGRAVURE (.STL / .SCAD) & SOLID POD    -->
+        <!-- ===================================================================== -->
+        <div id="mod-scad_solid" class="hidden space-y-3">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 4 // 3D VOETSTUK MET RELIËFGRAVURE (.STL &amp; .SCAD)</h2>
+              <p class="text-[11px] text-slate-400">Parametrische sokkel waarop Perceelnaam, Zeeuwse Gemeten &amp; RD in 3D-reliëf worden meegeprint</p>
+            </div>
+          </div>
+
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <span class="font-bold text-vortex-amber">🧊 1. PARAMETRISCH 3D-VOETSTUK &amp; RELIËF-TEKST GENERATOR</span>
+              <div class="flex gap-1.5">
+                <button onclick="downloadBinarySTLFile()" class="cyber-btn px-2.5 py-1 rounded bg-vortex-amber/25 border-vortex-amber text-amber-300 text-[10px] font-bold">
+                  📐 Download Binaire .STL
+                </button>
+                <button onclick="downloadOpenSCADFile()" class="cyber-btn px-2.5 py-1 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                  💾 Download .SCAD
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px]">
+              <div>
+                <label class="text-slate-400">Regel 1 (Perceelnaam):</label>
+                <input id="ped-line-1" type="text" value="BOL VAN LODIJKE M 369" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Regel 2 (Hectare &amp; Gemeten):</label>
+                <input id="ped-line-2" type="text" value="11.13 HA - 28.37 GEMETEN" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-emerald font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Regel 3 (RD-Coördinaten):</label>
+                <input id="ped-line-3" type="text" value="RD 68120 388050 OTT 573" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-amber font-bold mt-0.5" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 text-[10px]">
+              <div>
+                <label class="text-slate-400">Sokkel Hoogte (mm)</label>
+                <input id="ped-height-mm" type="number" step="1" value="14.0" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Letter-Reliëf (mm)</label>
+                <input id="ped-text-depth" type="number" step="0.2" value="1.6" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Koepel Straal (mm)</label>
+                <input id="scad-dome-r" type="number" step="5" value="58" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-amber mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">STL Facetten</label>
+                <div id="stl-mesh-stats" class="bg-vortex-panel border border-slate-800 rounded px-2 py-1 text-xs text-emerald-300 font-bold mt-0.5">1,420 Δ</div>
+              </div>
+            </div>
+
+            <textarea id="openscad-output-box" rows="6" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-cyan-200 select-text"></textarea>
+          </div>
+
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <span class="font-bold text-purple-300">🔗 2. SOLID POD LINKED DATA + GRAMPS GENEALOGIE (.TTL)</span>
+              <button onclick="downloadSolidTurtleFile()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                💾 Download .ttl
+              </button>
+            </div>
+            <input id="solid-pod-base-uri" type="text" value="https://vanvrijberghe.solidcommunity.net/vortex/lodijke#" onchange="generateSolidPodTurtle()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-[10px] text-purple-200" />
+            <textarea id="solid-turtle-output-box" rows="4" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-purple-200 select-text"></textarea>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 5: KERNEL IDE (GETIJ, BATHYMETRIE, R/SCILAB & VOETSTUK STL)    -->
+        <!-- ===================================================================== -->
+        <div id="mod-kernel" class="hidden space-y-2.5 flex flex-col h-full">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2 shrink-0">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 5 // VORTEX KERNEL IDE v35.0</h2>
+              <p class="text-[11px] text-slate-400">Programmeer Harmonisch Getij ($M_2/S_2/N_2/K_1$), NAP-Bathymetrie, R/Scilab &amp; Voetstuk STL</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="runKernelScript()" class="cyber-btn px-3 py-1 rounded bg-vortex-emerald/25 border-vortex-emerald text-emerald-300 text-xs font-bold flex items-center gap-1 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                <span>▶</span><span>RUN KERNEL</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 shrink-0 text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-400 text-[10px]">Script:</span>
+              <select id="ide-template-select" onchange="loadKernelTemplate(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[11px] text-vortex-cyan">
+                <option value="tpl_tide_bathymetry">1. Harmonische Getijdenvoorspelling (M2/S2/N2/K1) &amp; NAP-Dieptelood Lodijke/Pluimpot</option>
+                <option value="tpl_r_scilab_export">2. Exporteer Homografie H, Procrustes SVD &amp; Getij naar R (.R) en Scilab (.sce)</option>
+                <option value="tpl_openseamap_pedestal">3. OpenSeaMap Zeegrid + 3D Voetstuk (.STL &amp; .SCAD met Reliëftekst)</option>
+                <option value="tpl_1953_storm_surge">4. Reconstructie Stormvloed 1 Februari 1953 (+3.10m Stormopzet Sint-Maartensdijk)</option>
+                <option value="tpl_procrustes_1889">5. Wiskundige Procrustes-Analyse: Van Gogh De Sterrennacht (1889)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button onclick="clearKernelConsole()" class="cyber-btn px-2 py-0.5 rounded text-[10px] text-slate-400">Wis Log</button>
+              <button onclick="copyKernelCode()" class="cyber-btn px-2 py-0.5 rounded text-[10px] text-vortex-cyan">📋 Kopieer</button>
+            </div>
+          </div>
+
+          <div class="relative flex-1 min-h-[185px] flex flex-col bg-[#040811] border border-vortex-border rounded-lg overflow-hidden">
+            <div class="bg-[#081020] px-3 py-1 border-b border-vortex-border flex items-center justify-between text-[10px] text-slate-400">
+              <span>vortex_kernel_main.js — API: VortexKernel.{calcHarmonicTide, probeBathymetry, exportRScript, exportScilabScript, exportBinarySTL}</span>
+              <span id="editor-status" class="text-vortex-emerald">READY</span>
+            </div>
+            <textarea id="kernel-code-editor" spellcheck="false" class="code-editor flex-1 w-full bg-transparent text-cyan-100 p-3 text-xs focus:outline-none resize-none"></textarea>
+          </div>
+
+          <div class="bg-[#03060c] border border-vortex-border rounded-lg p-2.5 h-44 flex flex-col shrink-0">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 pb-1 border-b border-slate-800">
+              <span class="font-bold text-vortex-amber">VORTEX KERNEL REPL, GETIJ (M2/S2/N2/K1), BATHYMETRIE &amp; R/SCILAB LOG</span>
+              <span>PURE JS / ZERO-RUST</span>
+            </div>
+            <div id="kernel-console-output" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 pt-1.5 text-slate-300 select-text"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- VORTEX KERNEL ENGINE v35.0 — HARMONIC TIDE, NAP BATHYMETRY & R/SCILAB     -->
+  <!-- ========================================================================= -->
+  <script>
+    /***************************************************************************
+     * 1. OOSTERSCHELDE HARMONIC TIDAL CONSTITUENTS & BATHYMETRY TRANSECT DATA
+     ***************************************************************************/
+    const HarmonicTideStations = {
+      BERGSE_DIEPSLUIS: {
+        name: 'Bergse Diepsluis / Bol van Lodijke (Oosterschelde-Kom)',
+        z0NapM: 0.08,     // Mean Sea Level offset relative to NAP
+        latOffsetM: -1.65,// Lowest Astronomical Tide (LAT) relative to NAP
+        constituents: [
+          { code: 'M2', desc: 'Hoofdmaansgetij ( dubbeldaags )', speedDegHr: 28.9841042, ampM: 1.38, phaseDeg: 142.5 },
+          { code: 'S2', desc: 'Hoofdzonsgetij ( spring/doodtij )', speedDegHr: 30.0000000, ampM: 0.36, phaseDeg: 198.0 },
+          { code: 'N2', desc: 'Elliptisch maansgetij (perigeum)', speedDegHr: 28.4397295, ampM: 0.25, phaseDeg: 118.2 },
+          { code: 'K1', desc: 'Luni-solair enkeldaags getij',     speedDegHr: 15.0410686, ampM: 0.08, phaseDeg: 18.5 },
+          { code: 'O1', desc: 'Enkeldaags maansdeclinatie-getij', speedDegHr: 13.9430356, ampM: 0.07, phaseDeg: 172.0 },
+          { code: 'M4', desc: 'Ondiepwater-overgetij (Oosterschelde)', speedDegHr: 57.9682084, ampM: 0.14, phaseDeg: 224.0 }
+        ]
+      },
+      STAVENISSE: {
+        name: 'Stavenisse / Gorishoek / Pluimpot-Monding',
+        z0NapM: 0.04,
+        latOffsetM: -1.55,
+        constituents: [
+          { code: 'M2', desc: 'Hoofdmaansgetij ( dubbeldaags )', speedDegHr: 28.9841042, ampM: 1.26, phaseDeg: 124.0 },
+          { code: 'S2', desc: 'Hoofdzonsgetij ( spring/doodtij )', speedDegHr: 30.0000000, ampM: 0.33, phaseDeg: 181.5 },
+          { code: 'N2', desc: 'Elliptisch maansgetij (perigeum)', speedDegHr: 28.4397295, ampM: 0.22, phaseDeg: 102.0 },
+          { code: 'K1', desc: 'Luni-solair enkeldaags getij',     speedDegHr: 15.0410686, ampM: 0.07, phaseDeg: 12.0 },
+          { code: 'O1', desc: 'Enkeldaags maansdeclinatie-getij', speedDegHr: 13.9430356, ampM: 0.06, phaseDeg: 165.0 },
+          { code: 'M4', desc: 'Ondiepwater-overgetij',            speedDegHr: 57.9682084, ampM: 0.11, phaseDeg: 198.0 }
+        ]
+      },
+      YERSEKE: {
+        name: 'Yerseke Oesterbank (Referentiebekken)',
+        z0NapM: 0.06,
+        latOffsetM: -1.60,
+        constituents: [
+          { code: 'M2', desc: 'Hoofdmaansgetij ( dubbeldaags )', speedDegHr: 28.9841042, ampM: 1.34, phaseDeg: 136.0 },
+          { code: 'S2', desc: 'Hoofdzonsgetij ( spring/doodtij )', speedDegHr: 30.0000000, ampM: 0.35, phaseDeg: 192.0 },
+          { code: 'N2', desc: 'Elliptisch maansgetij (perigeum)', speedDegHr: 28.4397295, ampM: 0.24, phaseDeg: 112.5 },
+          { code: 'K1', desc: 'Luni-solair enkeldaags getij',     speedDegHr: 15.0410686, ampM: 0.08, phaseDeg: 16.0 },
+          { code: 'O1', desc: 'Enkeldaags maansdeclinatie-getij', speedDegHr: 13.9430356, ampM: 0.07, phaseDeg: 169.0 },
+          { code: 'M4', desc: 'Ondiepwater-overgetij',            speedDegHr: 57.9682084, ampM: 0.13, phaseDeg: 215.0 }
+        ]
+      }
+    };
+
+    // Hydrographic NAP Bathymetry Transect (0.0 km Scherpenisse / Pluimpot -> 8.5 km Bol van Lodijke / Reimerswaal)
+    const BathymetryTransectNodes = [
+      { km: 0.0, name: 'Scherpenisse / Platteweg Dijk',    napBedM: +3.80, lat: 51.5475, lon: 4.1039 },
+      { km: 0.8, name: 'Afgedamde Pluimpot Geul',          napBedM: -1.85, lat: 51.5410, lon: 4.1070 },
+      { km: 1.6, name: 'Gorishoekse Dijk (Oosterschelde)', napBedM: +4.50, lat: 51.5310, lon: 4.1110 },
+      { km: 2.3, name: 'Slikken van Gorishoek',            napBedM: -0.90, lat: 51.5240, lon: 4.1150 },
+      { km: 3.6, name: 'Vaargeul Oosterschelde / Lodijkse Gat', napBedM: -18.40, lat: 51.5090, lon: 4.1220 },
+      { km: 4.9, name: 'Speelmansplaten (Wantelplaat)',    napBedM: -0.65, lat: 51.4950, lon: 4.1290 },
+      { km: 5.8, name: 'Kreek Bol van Lodijke (M 365)',    napBedM: -3.20, lat: 51.4850, lon: 4.1335 },
+      { km: 6.8, name: 'Bol van Lodijke Oesterbank (M 369)', napBedM: -0.45, lat: 51.4783, lon: 4.1375 },
+      { km: 7.7, name: 'Kasteelberg Lodijke (Restant 1530)', napBedM: -0.15, lat: 51.4710, lon: 4.1420 },
+      { km: 8.5, name: 'Verdronken Land van Reimerswaal',  napBedM: -1.10, lat: 51.4620, lon: 4.1480 }
+    ];
+
+    /***************************************************************************
+     * 2. ZEEUWSE KADASTRALE PERCELEN & GRAMPS GENEALOGISCHE KENNISGRAAF
+     ***************************************************************************/
+    const CadastralParcelsCatalog = {
+      'LODIJKE-369': {
+        id: 'LODIJKE-369',
+        gemeente: 'Poortvliet / Bol van Lodijke',
+        sectie: 'M',
+        nummer: '369',
+        shortLabel: 'BOL VAN LODIJKE M 369',
+        title: 'Bol van Lodijke — Perceel Sectie M 369 (B.W. Schot Oesterperceel)',
+        color: '#00f0ff',
+        bedNapM: -0.45,
+        extrusionHeight: 18,
+        mapScale: 2500,
+        center: [4.1375, 51.4783],
+        grampsPersonIds: ['GRAMPS-I01-SCHOT', 'GRAMPS-I02-BOUT'],
+        coordsWGS84: [
+          [4.13510, 51.47680],
+          [4.13990, 51.47680],
+          [4.13990, 51.47980],
+          [4.13510, 51.47980],
+          [4.13510, 51.47680]
+        ]
+      },
+      'LODIJKE-365': {
+        id: 'LODIJKE-365',
+        gemeente: 'Poortvliet / Bol van Lodijke',
+        sectie: 'M',
+        nummer: '365',
+        shortLabel: 'BOL VAN LODIJKE M 365',
+        title: 'Bol van Lodijke — Perceel Sectie M 365 (Verdronken Land van Reimerswaal)',
+        color: '#10b981',
+        bedNapM: -0.75,
+        extrusionHeight: 14,
+        mapScale: 2500,
+        center: [4.1322, 51.4795],
+        grampsPersonIds: ['GRAMPS-I01-SCHOT', 'GRAMPS-I02-BOUT'],
+        coordsWGS84: [
+          [4.13010, 51.47820],
+          [4.13450, 51.47820],
+          [4.13450, 51.48090],
+          [4.13010, 51.48090],
+          [4.13010, 51.47820]
+        ]
+      },
+      'SCHERPENISSE-PLATTEWEG': {
+        id: 'SCHERPENISSE-PLATTEWEG',
+        gemeente: 'Scherpenisse (Tholen)',
+        sectie: 'E',
+        nummer: '1551 / 1552 (Platteweg 3, 5, 7)',
+        shortLabel: 'SCHERPENISSE E 1551',
+        title: 'Scherpenisse — Platteweg 3, 5, 7 & Pluimpot Dijkstrook (Wbb/Woo-archief)',
+        color: '#f59e0b',
+        bedNapM: +1.20,
+        extrusionHeight: 22,
+        mapScale: 1000,
+        center: [4.1039, 51.5475],
+        grampsPersonIds: ['GRAMPS-I03-GUILJAM-CM', 'GRAMPS-I04-GUILJAM-HEIN'],
+        coordsWGS84: [
+          [4.10290, 51.54695],
+          [4.10495, 51.54695],
+          [4.10510, 51.54805],
+          [4.10280, 51.54805],
+          [4.10290, 51.54695]
+        ]
+      },
+      'THOLEN-KRUITTOREN': {
+        id: 'THOLEN-KRUITTOREN',
+        gemeente: 'Tholen',
+        sectie: 'A',
+        nummer: '107 (Kruittoren 23 / Contr\'Escarpe)',
+        shortLabel: 'THOLEN SECTIE A 107',
+        title: 'Tholen — Kruittoren 23 / Contr\'Escarpe & Oesterputten Eendracht',
+        color: '#a855f7',
+        bedNapM: +2.10,
+        extrusionHeight: 20,
+        mapScale: 1000,
+        center: [4.2201, 51.5312],
+        grampsPersonIds: ['GRAMPS-I01-SCHOT', 'GRAMPS-I02-BOUT'],
+        coordsWGS84: [
+          [4.21910, 51.53060],
+          [4.22110, 51.53060],
+          [4.22110, 51.53180],
+          [4.21910, 51.53180],
+          [4.21910, 51.53060]
+        ]
+      }
+    };
+
+    const GrampsGenealogyCatalog = [
+      {
+        id: 'GRAMPS-I01-SCHOT',
+        name: 'Benjamin Willem Schot',
+        birthDate: '1840',
+        deathDate: '1935',
+        place: 'Tholen / Oosterschelde (Bol van Lodijke)',
+        role: 'Tholens visser en oesterkweker (oesterloods & concessie Perceel M 369)',
+        linkedParcels: ['LODIJKE-369', 'LODIJKE-365', 'THOLEN-KRUITTOREN'],
+        linkedCapsule: 'CAP-1901-SCHOT'
+      },
+      {
+        id: 'GRAMPS-I02-BOUT',
+        name: 'Bastiaen Bout',
+        birthDate: '1684-02',
+        deathDate: '1748',
+        place: 'Tholen, Zeeland',
+        role: 'Stamvader te Tholen (zoon van Cornelis Bastiaanse Bout en Lijntje Adriaens Lonke)',
+        linkedParcels: ['THOLEN-KRUITTOREN', 'LODIJKE-365'],
+        linkedCapsule: 'CAP-1530-LODIJKE'
+      },
+      {
+        id: 'GRAMPS-I03-GUILJAM-CM',
+        name: 'Catharina Machalina (C.M.) Guiljam',
+        birthDate: '1944-08-07',
+        deathDate: '2021-09-11',
+        place: 'Sint-Maartensdijk (Tholen)',
+        role: 'Overlevende van de Watersnoodramp van 1 februari 1953 te Sint-Maartensdijk als 9-jarig meisje',
+        linkedParcels: ['SCHERPENISSE-PLATTEWEG'],
+        linkedCapsule: 'CAP-1953-WATERSNOOD'
+      },
+      {
+        id: 'GRAMPS-I04-GUILJAM-HEIN',
+        name: 'Hein Guiljam (Guillaume)',
+        birthDate: '1785',
+        deathDate: '1859',
+        place: 'Sint-Maartensdijk / Scherpenisse, Tholen',
+        role: 'Zeeuwse voorouderlijn Guiljam / Guillaume op het eiland Tholen',
+        linkedParcels: ['SCHERPENISSE-PLATTEWEG'],
+        linkedCapsule: 'CAP-1953-WATERSNOOD'
+      }
+    ];
+
+    /***************************************************************************
+     * 3. VECTOR-STROKE 3D FONT GLYPHS FOR BINARY .STL PEDESTAL ENGRAVING
+     ***************************************************************************/
+    const StlVectorFont = {
+      'A': [[0,0, 0.5,1], [0.5,1, 1,0], [0.2,0.4, 0.8,0.4]],
+      'B': [[0,0, 0,1], [0,1, 0.8,1], [0.8,1, 0.8,0.5], [0.8,0.5, 0,0.5], [0.8,0.5, 0.9,0], [0.9,0, 0,0]],
+      'C': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0]],
+      'D': [[0,0, 0,1], [0,1, 0.7,1], [0.7,1, 1,0.5], [1,0.5, 0.7,0], [0.7,0, 0,0]],
+      'E': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [0,0.5, 0.8,0.5]],
+      'F': [[1,1, 0,1], [0,1, 0,0], [0,0.5, 0.8,0.5]],
+      'G': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [1,0, 1,0.5], [1,0.5, 0.5,0.5]],
+      'H': [[0,0, 0,1], [1,0, 1,1], [0,0.5, 1,0.5]],
+      'I': [[0.2,1, 0.8,1], [0.5,0, 0.5,1], [0.2,0, 0.8,0]],
+      'J': [[1,1, 1,0], [1,0, 0,0], [0,0, 0,0.4]],
+      'K': [[0,0, 0,1], [0,0.5, 1,1], [0,0.5, 1,0]],
+      'L': [[0,1, 0,0], [0,0, 1,0]],
+      'M': [[0,0, 0,1], [0,1, 0.5,0.4], [0.5,0.4, 1,1], [1,1, 1,0]],
+      'N': [[0,0, 0,1], [0,1, 1,0], [1,0, 1,1]],
+      'O': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0]],
+      'P': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5]],
+      'Q': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0.5,0.5, 1,0]],
+      'R': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5], [0.4,0.5, 1,0]],
+      'S': [[1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5], [1,0.5, 1,0], [1,0, 0,0]],
+      'T': [[0,1, 1,1], [0.5,0, 0.5,1]],
+      'U': [[0,1, 0,0], [0,0, 1,0], [1,0, 1,1]],
+      'V': [[0,1, 0.5,0], [0.5,0, 1,1]],
+      'W': [[0,1, 0.25,0], [0.25,0, 0.5,0.6], [0.5,0.6, 0.75,0], [0.75,0, 1,1]],
+      'X': [[0,0, 1,1], [0,1, 1,0]],
+      'Y': [[0,1, 0.5,0.5], [1,1, 0.5,0.5], [0.5,0.5, 0.5,0]],
+      'Z': [[0,1, 1,1], [1,1, 0,0], [0,0, 1,0]],
+      '0': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0,0, 1,1]],
+      '1': [[0.2,0.8, 0.5,1], [0.5,1, 0.5,0], [0.2,0, 0.8,0]],
+      '2': [[0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5], [0,0.5, 0,0], [0,0, 1,0]],
+      '3': [[0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0.2,0.5, 1,0.5]],
+      '4': [[0,1, 0,0.5], [0,0.5, 1,0.5], [0.8,1, 0.8,0]],
+      '5': [[1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5], [1,0.5, 1,0], [1,0, 0,0]],
+      '6': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [1,0, 1,0.5], [1,0.5, 0,0.5]],
+      '7': [[0,1, 1,1], [1,1, 0.3,0]],
+      '8': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0,0.5, 1,0.5]],
+      '9': [[0,0, 1,0], [1,0, 1,1], [1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5]],
+      '.': [[0.4,0, 0.6,0], [0.6,0, 0.6,0.2], [0.6,0.2, 0.4,0.2]],
+      '-': [[0.1,0.5, 0.9,0.5]],
+      ':': [[0.4,0.2, 0.6,0.2], [0.4,0.8, 0.6,0.8]],
+      '/': [[0.1,0, 0.9,1]],
+      ' ': []
+    };
+
+    const StarryNight1889Anchors = [
+      { id: 'VG-VENUS',   bodyName: 'Venus',          label: 'Venus (Heldere Morgenster bij Cipres)', canvasAz: 82.4,  canvasAlt: 14.8, color: '#fef08a' },
+      { id: 'VG-MOON',    bodyName: 'Maan (Luna)',    label: 'Oranje Maansikkel (Rechtsboven)',       canvasAz: 103.5, canvasAlt: 26.2, color: '#f59e0b' },
+      { id: 'VG-M45',     bodyName: 'Plejaden (M45)', label: 'Plejaden / Zevengesternte (M45)',       canvasAz: 67.8,  canvasAlt: 24.5, color: '#00f0ff' },
+      { id: 'VG-ALDEBAR', bodyName: 'Aldebaran',      label: 'Aldebaran (#10) & Hyaden in Stier',     canvasAz: 74.2,  canvasAlt: 17.6, color: '#fdba74' },
+      { id: 'VG-HAMAL',   bodyName: 'Hamal',          label: 'Hamal (#6) / Ram (Aries) Bovenkrul',    canvasAz: 88.6,  canvasAlt: 42.1, color: '#c084fc' }
+    ];
+
+    const TlePresets = {
+      ISS: {
+        name: 'ISS (NORAD 25544)',
+        line1: '1 25544U 98067A   26310.31736111  .00016717  00000-0  30142-3 0  9995',
+        line2: '2 25544  51.6416  28.4000 0005120  84.2100 275.9500 15.49214560481124',
+        downlinkMHz: 145.800
+      }
+    };
+
+    /***************************************************************************
+     * 4. VORTEX STATE (STARTS DIRECTLY WITH OPENSEAMAP + ZEEGRID + TIDE + BATHY)
+     ***************************************************************************/
+    const VortexState = {
+      viewportSplit: 'split',
+      liveClock: true,
+      timeWarpFactor: 1.0,
+      lastFrameTimeMs: performance.now(),
+      currentDate: new Date(),
+      activeParcelId: 'LODIJKE-369',
+      zeegridStepDeg: 0.0083333,
+
+      // Tidal & Bathymetric State
+      activeTideStationId: 'BERGSE_DIEPSLUIS',
+      stormSurgeM: 0.00,
+      probeKm: 6.80, // Default on Bol van Lodijke M 369 (6.80 km along transect)
+      lastTideState: null,
+
+      layers: {
+        openseamap_seamarks: true,
+        nautisch_zeegrid: true,
+        harmonisch_getij: true,
+        bathymetrie_profiel: true,
+        kadastrale_percelen: true,
+        nautische_positielijnen: true,
+        sterren: true,
+        repro_kaart_kalibratie: false,
+        procrustes_vangogh: false
+      },
+
+      reproCalibration: {
+        imageElement: null,
+        syntheticGridActive: true,
+        mapScale: 2500,
+        targetWidthCm: 20.0,
+        targetHeightCm: 16.0,
+        quadPickMode: false,
+        quadPickIndex: 0,
+        srcQuadNorm: [
+          { u: 0.12, v: 0.13 },
+          { u: 0.88, v: 0.11 },
+          { u: 0.90, v: 0.89 },
+          { u: 0.10, v: 0.87 }
+        ],
+        homographyMatrix: [25, 0, -2.5, 0, 20, -2.0, 0, 0, 1],
+        traceMode: false,
+        tracedPointsPx: [
+          { x: 0.225, y: 0.220 },
+          { x: 0.790, y: 0.208 },
+          { x: 0.802, y: 0.792 },
+          { x: 0.214, y: 0.780 }
+        ]
+      },
+
+      observer: {
+        id: 'VORTEX-03',
+        name: 'Bol van Lodijke / Oosterschelde',
+        lat: 51.4783,
+        lon: 4.1375,
+        rdX: 68120,
+        rdY: 388050,
+        tempC: 10.0,
+        pressureMb: 1013.25
+      },
+
+      activeTLE: { ...TlePresets.ISS },
+      lastGDOP: 1.38,
+
+      sensors: {
+        azimuth: 245.91,
+        pitch: 12.10,
+        roll: 0.00,
+        raw26Bit: 45841209
+      },
+
+      planimeter: {
+        poleX: 0.22,
+        poleY: 0.78,
+        tracerX: 0.79,
+        tracerY: 0.21,
+        dragging: false,
+        wheelCount: 178.12
+      },
+
+      selectedFixBodies: ['Zon (Helios)', 'Maan (Luna)', 'Sirius', 'ISS (NORAD 25544)'],
+      sextantOffsets: {
+        'Zon (Helios)': 0.050,
+        'Maan (Luna)': 0.035,
+        'Sirius': -0.025,
+        'ISS (NORAD 25544)': 0.040
+      },
+
+      places: {
+        'VORTEX-03':      { code: 'VORTEX-03',      name: 'Bol van Lodijke Perceel 369',  lat: 51.4783, lon: 4.1375 },
+        'VORTEX-07':      { code: 'VORTEX-07',      name: 'Scherpenisse Pluimpot',        lat: 51.5475, lon: 4.1039 },
+        'VORTEX-06':      { code: 'VORTEX-06',      name: 'Tholen Kruittoren 23',         lat: 51.5312, lon: 4.2201 },
+        'VORTEX-DOM':     { code: 'VORTEX-DOM',     name: 'Domburg Nehalennia',           lat: 51.5641, lon: 3.4982 },
+        'VORTEX-LAREN':   { code: 'VORTEX-LAREN',   name: 'Laren (Midden-NL Sessie)',     lat: 52.2500, lon: 5.2200 },
+        'VORTEX-02':      { code: 'VORTEX-02',      name: 'Laren / Tafelbergheide',       lat: 52.2300, lon: 5.1800 },
+        'VORTEX-01':      { code: 'VORTEX-01',      name: 'Bourges Meridiaan Anker',      lat: 47.0844, lon: 2.3956 },
+        'VORTEX-ST-REMY': { code: 'VORTEX-ST-REMY', name: 'Saint-Rémy-de-Provence',       lat: 43.7886, lon: 4.8311 }
+      },
+
+      voyageRoute: [
+        { name: 'Domburg Nehalennia', lat: 51.5641, lon: 3.4982 },
+        { name: 'Scherpenisse Pluimpot', lat: 51.5475, lon: 4.1039 },
+        { name: 'Bol van Lodijke 369', lat: 51.4783, lon: 4.1375 },
+        { name: 'Tholen Kruittoren 23', lat: 51.5312, lon: 4.2201 }
+      ],
+
+      timeCapsules: [
+        { id: 'CAP-2026-OOSTERSCHELDE', title: 'OpenSeaMap & Zeegrid Oosterschelde (Bol van Lodijke 369)', utc: '2026-11-06T11:27:00Z', placeId: 'VORTEX-03', surgeM: 0.0 },
+        { id: 'CAP-1953-WATERSNOOD',    title: 'Watersnood Sint-Maartensdijk (1 Feb 1953 03:00 UT — Springtij +3.10m Stormopzet)', utc: '1953-02-01T03:00:00Z', placeId: 'VORTEX-07', surgeM: 3.10 },
+        { id: 'CAP-1901-SCHOT',         title: 'Oesterconcessie B.W. Schot (15 Sept 1901 — Bol van Lodijke 369)', utc: '1901-09-15T12:00:00Z', placeId: 'VORTEX-03', surgeM: 0.0 },
+        { id: 'CAP-1889-VANGOGH',       title: 'Van Gogh — De Sterrennacht Procrustes Benchmark (19 Juni 1889 03:35 UT)', utc: '1889-06-19T03:35:00Z', placeId: 'VORTEX-ST-REMY', surgeM: 0.0 },
+        { id: 'CAP-2026-ECLIPSE',       title: 'Saros 126 Totale Zonsverduistering (12 Aug 2026 18:08 UT)', utc: '2026-08-12T18:08:30Z', placeId: 'VORTEX-01', surgeM: 0.0 },
+        { id: 'CAP-1530-LODIJKE',       title: 'Sint-Felixvloed — Kasteel Lodijke (5 Nov 1530 12:00 UT)', utc: '1530-11-05T12:00:00Z', placeId: 'VORTEX-03', surgeM: 2.85 }
+      ]
+    };
+
+    /***************************************************************************
+     * 5. COMPLETE 57 INTERNATIONAL NAVIGATIONAL STARS + POLARIS & M45 CATALOG
+     ***************************************************************************/
+    const Raw57NavStars = [
+      [0,  'Polaris',      'UMi', 2.5303,   89.2641, 1.98, '#a5f3fc', false],
+      [1,  'Alpheratz',    'And', 0.1398,   29.0904, 2.06, '#e2e8f0', false],
+      [2,  'Ankaa',        'Phe', 0.4381,  -42.3060, 2.40, '#fed7aa', false],
+      [3,  'Schedar',      'Cas', 0.6751,   56.5373, 2.24, '#fdba74', false],
+      [4,  'Diphda',       'Cet', 0.7265,  -17.9866, 2.04, '#fed7aa', false],
+      [5,  'Achernar',     'Eri', 1.6286,  -57.2368, 0.45, '#93c5fd', false],
+      [6,  'Hamal',        'Ari', 2.1196,   23.4624, 2.01, '#fdba74', false],
+      [7,  'Acamar',       'Eri', 2.9710,  -40.3047, 2.88, '#e2e8f0', false],
+      [8,  'Menkar',       'Cet', 3.0380,    4.0897, 2.54, '#fca5a5', false],
+      [9,  'Mirfak',       'Per', 3.4054,   49.8612, 1.79, '#fef08a', false],
+      [10, 'Aldebaran',    'Tau', 4.5987,   16.5093, 0.86, '#fdba74', true],
+      [11, 'Rigel',        'Ori', 5.2423,   -8.2016, 0.13, '#93c5fd', true],
+      [12, 'Capella',      'Aur', 5.2782,   45.9980, 0.08, '#fef08a', true],
+      [13, 'Bellatrix',    'Ori', 5.4189,    6.3497, 1.64, '#bfdbfe', false],
+      [14, 'Elnath',       'Tau', 5.4382,   28.6075, 1.65, '#bae6fd', false],
+      [15, 'Alnilam',      'Ori', 5.6036,   -1.2019, 1.69, '#93c5fd', false],
+      [16, 'Betelgeuze',   'Ori', 5.9195,    7.4071, 0.50, '#fca5a5', true],
+      [17, 'Canopus',      'Car', 6.3992,  -52.6957, -0.74,'#fef9c3', false],
+      [18, 'Sirius',       'CMa', 6.7525,  -16.7161, -1.47,'#00f0ff', true],
+      [19, 'Adhara',       'CMa', 6.9771,  -28.9721, 1.50, '#93c5fd', false],
+      [20, 'Procyon',      'CMi', 7.6550,    5.2250, 0.34, '#bae6fd', true],
+      [21, 'Pollux',       'Gem', 7.7553,   28.0262, 1.14, '#fed7aa', true],
+      [22, 'Avior',        'Car', 8.3752,  -59.5095, 1.86, '#fdba74', false],
+      [23, 'Suhail',       'Vel', 9.1333,  -43.4326, 2.21, '#fca5a5', false],
+      [24, 'Miaplacidus',  'Car', 9.2200,  -69.7172, 1.67, '#bae6fd', false],
+      [25, 'Alphard',      'Hya', 9.4598,   -8.6586, 1.98, '#fdba74', false],
+      [26, 'Regulus',      'Leo', 10.1395,  11.9672, 1.36, '#bae6fd', false],
+      [27, 'Dubhe',        'UMa', 11.0621,  61.7510, 1.79, '#fed7aa', false],
+      [28, 'Denebola',     'Leo', 11.8177,  14.5721, 2.14, '#e2e8f0', false],
+      [29, 'Gienah',       'Crv', 12.2634, -17.5419, 2.58, '#bae6fd', false],
+      [30, 'Acrux',        'Cru', 12.4433, -63.0991, 0.77, '#93c5fd', false],
+      [31, 'Gacrux',       'Cru', 12.5194, -57.1132, 1.63, '#fca5a5', false],
+      [32, 'Alioth',       'UMa', 12.9005,  55.9598, 1.76, '#e2e8f0', false],
+      [33, 'Spica',        'Vir', 13.4199, -11.1613, 0.97, '#93c5fd', false],
+      [34, 'Alkaid',       'UMa', 13.7923,  49.3133, 1.85, '#93c5fd', false],
+      [35, 'Hadar',        'Cen', 14.0637, -60.3730, 0.61, '#93c5fd', false],
+      [36, 'Menkent',      'Cen', 14.1114, -36.3700, 2.06, '#fed7aa', false],
+      [37, 'Arcturus',     'Boo', 14.2610,  19.1824, -0.05,'#fdba74', false],
+      [38, 'Rigil Kent.',  'Cen', 14.6601, -60.8340, -0.27,'#fef08a', false],
+      [39, 'Zubenelgenubi','Lib', 14.8480, -16.0418, 2.75, '#e2e8f0', false],
+      [40, 'Kochab',       'UMi', 14.8451,  74.1555, 2.07, '#fdba74', false],
+      [41, 'Alphecca',     'CrB', 15.5781,  26.7147, 2.22, '#bae6fd', false],
+      [42, 'Antares',      'Sco', 16.4901, -26.4320, 1.06, '#f87171', false],
+      [43, 'Atria',        'TrA', 16.8111, -69.0277, 1.91, '#fdba74', false],
+      [44, 'Sabik',        'Oph', 17.1730, -15.7249, 2.43, '#e2e8f0', false],
+      [45, 'Shaula',       'Sco', 17.5601, -37.1038, 1.62, '#93c5fd', false],
+      [46, 'Rasalhague',   'Oph', 17.5822,  12.5600, 2.08, '#e2e8f0', false],
+      [47, 'Eltanin',      'Dra', 17.9434,  51.4889, 2.24, '#fdba74', false],
+      [48, 'Kaus Australis','Sgr',18.4029, -34.3846, 1.79, '#bae6fd', false],
+      [49, 'Vega',         'Lyr', 18.6156,  38.7837, 0.03, '#7dd3fc', false],
+      [50, 'Nunki',        'Sgr', 18.9211, -26.2967, 2.05, '#93c5fd', false],
+      [51, 'Altair',       'Aql', 19.8464,   8.8683, 0.76, '#e2e8f0', false],
+      [52, 'Peacock',      'Pav', 20.4275, -56.7351, 1.94, '#93c5fd', false],
+      [53, 'Deneb',        'Cyg', 20.6905,  45.2803, 1.25, '#e2e8f0', false],
+      [54, 'Enif',         'Peg', 21.7364,   9.8750, 2.38, '#fdba74', false],
+      [55, 'Al Na\'ir',    'Gru', 22.1372, -46.9610, 1.73, '#93c5fd', false],
+      [56, 'Fomalhaut',    'PsA', 22.9608, -29.6222, 1.16, '#e2e8f0', false],
+      [57, 'Markab',       'Peg', 23.0793,  15.2053, 2.49, '#bae6fd', false],
+      [-1, 'Plejaden (M45)','Tau', 3.7914,  24.1050, 1.60, '#93c5fd', false]
+    ];
+
+    const CelestialCatalog = Raw57NavStars.map(([navNr, name, constellation, raHours, decDeg, mag, color, winterHex]) => ({
+      navNr, name, bayer: navNr > 0 ? `Nav #${navNr}` : (navNr === 0 ? 'α UMi' : 'M45'),
+      constellation, raHours, decDeg, shaDeg: ((360 - raHours * 15) % 360 + 360) % 360,
+      mag, color, type: navNr === -1 ? 'cluster' : 'star', winterHex
+    }));
+
+    /***************************************************************************
+     * 6. HARMONIC TIDE PREDICTION ENGINE (M2/S2/N2/K1/O1/M4) & NAP BATHYMETRY
+     ***************************************************************************/
+    const DEG2RAD = Math.PI / 180;
+    const RAD2DEG = 180 / Math.PI;
+    const R_EARTH_KM = 6371.0088;
+    const ZEEUWS_GEMET_M2 = 3924.0;
+
+    function mod360(x) { return ((x % 360) + 360) % 360; }
+
+    function formatDMM(deg, isSigned = false) {
+      const sign = deg < 0 ? '-' : (isSigned ? '+' : '');
+      const abs = Math.abs(deg);
+      const d = Math.floor(abs);
+      const m = (abs - d) * 60;
+      return `${sign}${String(d).padStart(2, '0')}° ${m.toFixed(1).padStart(4, '0')}'`;
+    }
+
+    function formatHMS(hours) {
+      const hNorm = ((hours % 24) + 24) % 24;
+      const h = Math.floor(hNorm);
+      const mFloat = (hNorm - h) * 60;
+      const m = Math.floor(mFloat);
+      const s = Math.round((mFloat - m) * 60);
+      return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+    }
+
+    // Compute Harmonic Tide Height H(t) relative to NAP and LAT at Julian Date jd
+    function computeHarmonicTide(jd, stationId = VortexState.activeTideStationId, stormSurgeM = VortexState.stormSurgeM) {
+      const st = HarmonicTideStations[stationId] || HarmonicTideStations.BERGSE_DIEPSLUIS;
+      const sid = calcSiderealTime(jd, 4.1375);
+      const solar = getDynamicSolarSystemBodies(jd);
+      const sunLHA = mod360(sid.lstDeg - solar[0].raHours * 15.0);
+      const moonLHA = mod360(sid.lstDeg - solar[1].raHours * 15.0);
+      const hoursSinceJ2000 = (jd - 2451545.0) * 24.0;
+
+      let sumAstroM = st.z0NapM;
+      let dHdtMPerHr = 0.0;
+      const breakdown = [];
+
+      st.constituents.forEach(c => {
+        // Astronomical argument V0 + omega * t coupled to lunar/solar hour angle
+        let argDeg = 0;
+        if (c.code === 'M2') argDeg = 2.0 * moonLHA - c.phaseDeg;
+        else if (c.code === 'S2') argDeg = 2.0 * sunLHA - c.phaseDeg;
+        else if (c.code === 'N2') argDeg = 2.0 * moonLHA - 13.06499 * (hoursSinceJ2000 / 24.0) - c.phaseDeg;
+        else if (c.code === 'K1') argDeg = sid.lstDeg - c.phaseDeg;
+        else if (c.code === 'O1') argDeg = 2.0 * moonLHA - sid.lstDeg - c.phaseDeg;
+        else if (c.code === 'M4') argDeg = 4.0 * moonLHA - c.phaseDeg;
+        else argDeg = c.speedDegHr * hoursSinceJ2000 - c.phaseDeg;
+
+        const rad = argDeg * DEG2RAD;
+        const valM = c.ampM * Math.cos(rad);
+        const rateMPerHr = -c.ampM * (c.speedDegHr * DEG2RAD) * Math.sin(rad);
+        sumAstroM += valM;
+        dHdtMPerHr += rateMPerHr;
+        breakdown.push({ ...c, argDeg: mod360(argDeg), valM });
+      });
+
+      const totalNapM = sumAstroM + stormSurgeM;
+      const totalLatM = totalNapM - st.latOffsetM;
+      const phaseLabel = dHdtMPerHr >= 0.08 ? 'Opkomend (Vloed)' : dHdtMPerHr <= -0.08 ? 'Afgaand (Eb)' : (totalNapM > 0 ? 'Hoogwater Kentering' : 'Laagwater Kentering');
+
+      // Depth over Bol van Lodijke M 369 (-0.45 m NAP bed elevation)
+      const bedM369 = -0.45;
+      const depthM369 = totalNapM - bedM369;
+      const isM369Exposed = depthM369 <= 0.0;
+
+      // Interpolate bathymetry bed elevation at active sounding probe km
+      const probe = interpolateBathymetryAtKm(VortexState.probeKm);
+      const probeWaterDepthM = Math.max(0.0, totalNapM - probe.napBedM);
+
+      // Build 24-hour tidal curve (-12h to +12h around current JD)
+      const curve24h = [];
+      for (let dh = -12; dh <= 12; dh += 0.5) {
+        const jdStep = jd + dh / 24.0;
+        const sidStep = calcSiderealTime(jdStep, 4.1375);
+        const mLhaStep = mod360(moonLHA + dh * 14.49205);
+        const sLhaStep = mod360(sunLHA + dh * 15.0);
+        let hStep = st.z0NapM + stormSurgeM;
+        st.constituents.forEach(c => {
+          let a = 0;
+          if (c.code === 'M2') a = 2.0 * mLhaStep - c.phaseDeg;
+          else if (c.code === 'S2') a = 2.0 * sLhaStep - c.phaseDeg;
+          else if (c.code === 'M4') a = 4.0 * mLhaStep - c.phaseDeg;
+          else a = (c.speedDegHr * (hoursSinceJ2000 + dh)) - c.phaseDeg;
+          hStep += c.ampM * Math.cos(a * DEG2RAD);
+        });
+        curve24h.push({ dh, napM: hStep });
+      }
+
+      return {
+        stationName: st.name,
+        z0NapM: st.z0NapM,
+        latOffsetM: st.latOffsetM,
+        stormSurgeM,
+        astroNapM: sumAstroM,
+        totalNapM,
+        totalLatM,
+        dHdtMPerHr,
+        phaseLabel,
+        bedM369,
+        depthM369,
+        isM369Exposed,
+        probe,
+        probeWaterDepthM,
+        breakdown,
+        curve24h
+      };
+    }
+
+    function interpolateBathymetryAtKm(kmVal) {
+      const km = Math.max(0, Math.min(8.5, kmVal));
+      for (let i = 0; i < BathymetryTransectNodes.length - 1; i++) {
+        const n1 = BathymetryTransectNodes[i];
+        const n2 = BathymetryTransectNodes[i + 1];
+        if (km >= n1.km && km <= n2.km) {
+          const f = (km - n1.km) / Math.max(1e-6, n2.km - n1.km);
+          return {
+            km,
+            name: f < 0.5 ? n1.name : n2.name,
+            napBedM: n1.napBedM * (1 - f) + n2.napBedM * f,
+            lat: n1.lat * (1 - f) + n2.lat * f,
+            lon: n1.lon * (1 - f) + n2.lon * f
+          };
+        }
+      }
+      const last = BathymetryTransectNodes[BathymetryTransectNodes.length - 1];
+      return { km, name: last.name, napBedM: last.napBedM, lat: last.lat, lon: last.lon };
+    }
+
+    function selectTideStation(stationId) {
+      if (!HarmonicTideStations[stationId]) return;
+      VortexState.activeTideStationId = stationId;
+      updateAllCalculations();
+    }
+
+    function updateStormSurge(val) {
+      VortexState.stormSurgeM = parseFloat(val) || 0.0;
+      document.getElementById('lbl-storm-surge').textContent = `${VortexState.stormSurgeM >= 0 ? '+' : ''}${VortexState.stormSurgeM.toFixed(2)} m`;
+      updateAllCalculations();
+    }
+
+    function updateBathymetryProbe(kmVal) {
+      VortexState.probeKm = parseFloat(kmVal) || 6.80;
+      updateAllCalculations();
+    }
+
+    function jumpToLowWaterExposure() {
+      VortexState.liveClock = false;
+      updateLiveClockButtonUI();
+      // Search next 12 hours for minimum low water so Bol van Lodijke M 369 falls dry
+      const baseMs = VortexState.currentDate.getTime();
+      let minNap = 999, bestMs = baseMs;
+      for (let m = 0; m <= 750; m += 10) {
+        const testDate = new Date(baseMs + m * 60000);
+        const t = computeHarmonicTide(dateToJulianDate(testDate));
+        if (t.totalNapM < minNap) {
+          minNap = t.totalNapM;
+          bestMs = testDate.getTime();
+        }
+      }
+      VortexState.currentDate = new Date(bestMs);
+      syncDateInputsFromCurrentDate();
+      updateAllCalculations();
+      kernelLog(`🦪 Tijd verplaatst naar Laagwater-droogval (${minNap.toFixed(2)} m NAP): Oesterpercelen Bol van Lodijke M 365/369 liggen droog voor inspectie.`, 'success');
+    }
+
+    function jumpToHighWaterFlood() {
+      VortexState.liveClock = false;
+      updateLiveClockButtonUI();
+      const baseMs = VortexState.currentDate.getTime();
+      let maxNap = -999, bestMs = baseMs;
+      for (let m = 0; m <= 750; m += 10) {
+        const testDate = new Date(baseMs + m * 60000);
+        const t = computeHarmonicTide(dateToJulianDate(testDate));
+        if (t.totalNapM > maxNap) {
+          maxNap = t.totalNapM;
+          bestMs = testDate.getTime();
+        }
+      }
+      VortexState.currentDate = new Date(bestMs);
+      syncDateInputsFromCurrentDate();
+      updateAllCalculations();
+      kernelLog(`🌊 Tijd verplaatst naar Hoogwater-vloed (${maxNap >= 0 ? '+' : ''}${maxNap.toFixed(2)} m NAP).`, 'success');
+    }
+
+    // Render Dedicated Hydrographic Cross-Section Canvas (Module 1)
+    function renderBathymetryCrossSectionCanvas(tide) {
+      const bCanvas = document.getElementById('bathymetrie-canvas');
+      if (!bCanvas || !tide) return;
+      const rect = bCanvas.parentElement.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const dpr = window.devicePixelRatio || 1;
+      if (bCanvas.width !== Math.round(rect.width * dpr) || bCanvas.height !== Math.round(rect.height * dpr)) {
+        bCanvas.width = Math.round(rect.width * dpr);
+        bCanvas.height = Math.round(rect.height * dpr);
+      }
+      const bCtx = bCanvas.getContext('2d');
+      bCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const w = rect.width, h = rect.height;
+      bCtx.clearRect(0, 0, w, h);
+      bCtx.fillStyle = '#030710';
+      bCtx.fillRect(0, 0, w, h);
+
+      const padL = 38, padR = 14, padT = 18, padB = 22;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      // Elevation range: +6.0m NAP (top) down to -20.0m NAP (bottom of Oosterschelde channel)
+      const maxNap = 6.0, minNap = -20.0;
+      const kmToX = km => padL + (km / 8.5) * plotW;
+      const napToY = nap => padT + ((maxNap - nap) / (maxNap - minNap)) * plotH;
+
+      // 1. Water Fill up to current Harmonic Tide H(t)
+      const yTide = napToY(tide.totalNapM);
+      bCtx.save();
+      bCtx.beginPath();
+      bCtx.moveTo(kmToX(0), yTide);
+      bCtx.lineTo(kmToX(8.5), yTide);
+      bCtx.lineTo(kmToX(8.5), napToY(minNap));
+      bCtx.lineTo(kmToX(0), napToY(minNap));
+      bCtx.closePath();
+      bCtx.fillStyle = 'rgba(0, 240, 255, 0.16)';
+      bCtx.fill();
+      bCtx.restore();
+
+      // 2. NAP Reference Lines (0.0m NAP, LAT -1.65m, -10m, -18m)
+      [0, -1.65, -10, -18].forEach(elev => {
+        const y = napToY(elev);
+        bCtx.strokeStyle = elev === 0 ? 'rgba(245, 158, 11, 0.55)' : 'rgba(51, 65, 85, 0.45)';
+        bCtx.setLineDash(elev === 0 ? [4, 3] : [2, 3]);
+        bCtx.beginPath(); bCtx.moveTo(padL, y); bCtx.lineTo(w - padR, y); bCtx.stroke();
+        bCtx.fillStyle = elev === 0 ? '#f59e0b' : '#64748b';
+        bCtx.font = '8.5px "JetBrains Mono"';
+        bCtx.fillText(elev === 0 ? 'NAP' : `${elev}m`, 4, y + 3);
+      });
+      bCtx.setLineDash([]);
+
+      // 3. Draw Seabed & Dike Bathymetry Polygon
+      bCtx.beginPath();
+      BathymetryTransectNodes.forEach((n, idx) => {
+        const x = kmToX(n.km), y = napToY(n.napBedM);
+        if (idx === 0) bCtx.moveTo(x, y); else bCtx.lineTo(x, y);
+      });
+      bCtx.lineTo(kmToX(8.5), napToY(minNap));
+      bCtx.lineTo(kmToX(0), napToY(minNap));
+      bCtx.closePath();
+      bCtx.fillStyle = '#0f1b31';
+      bCtx.fill();
+
+      bCtx.strokeStyle = '#10b981';
+      bCtx.lineWidth = 2.0;
+      bCtx.beginPath();
+      BathymetryTransectNodes.forEach((n, idx) => {
+        const x = kmToX(n.km), y = napToY(n.napBedM);
+        if (idx === 0) bCtx.moveTo(x, y); else bCtx.lineTo(x, y);
+      });
+      bCtx.stroke();
+
+      // 4. Draw Animated Harmonic Tide Waterline H(t)
+      bCtx.strokeStyle = '#00f0ff';
+      bCtx.lineWidth = 2.2;
+      bCtx.beginPath();
+      bCtx.moveTo(padL, yTide);
+      bCtx.lineTo(w - padR, yTide);
+      bCtx.stroke();
+
+      // 5. Draw Active Sounding Lead Line (Peillood) at VortexState.probeKm
+      const px = kmToX(tide.probe.km);
+      const pyBed = napToY(tide.probe.napBedM);
+      bCtx.strokeStyle = '#f59e0b';
+      bCtx.lineWidth = 1.6;
+      bCtx.setLineDash([3, 2]);
+      bCtx.beginPath();
+      bCtx.moveTo(px, Math.min(yTide, pyBed));
+      bCtx.lineTo(px, pyBed);
+      bCtx.stroke();
+      bCtx.setLineDash([]);
+
+      bCtx.fillStyle = '#fde047';
+      bCtx.beginPath();
+      bCtx.arc(px, pyBed, 4, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // Labels for Pluimpot, Geul & Lodijke M 369
+      bCtx.fillStyle = '#cbd5e1';
+      bCtx.font = '8.5px "JetBrains Mono"';
+      bCtx.fillText('Pluimpot', kmToX(0.5), h - 6);
+      bCtx.fillText('Oosterschelde Geul (-18.4m)', kmToX(2.6), h - 6);
+      bCtx.fillStyle = '#00f0ff';
+      bCtx.fillText('Lodijke M369 (-0.45m)', kmToX(5.8), h - 6);
+    }
+
+    /***************************************************************************
+     * 7. R & SCILAB STATISTICAL MATRIX SCRIPT GENERATOR (MODULE 2)
+     ***************************************************************************/
+    function generateRAndScilabScripts() {
+      const H = VortexState.reproCalibration.homographyMatrix;
+      const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      const allBodies = [...getDynamicSolarSystemBodies(jd), ...CelestialCatalog];
+      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+      const proc = computeVanGoghProcrustes(reductions);
+      const tide = computeHarmonicTide(jd);
+
+      const rdXVec = green.rdVertices.slice(0, 4).map(v => v.x.toFixed(2)).join(', ');
+      const rdYVec = green.rdVertices.slice(0, 4).map(v => v.y.toFixed(2)).join(', ');
+
+      const skyAzVec = proc ? proc.results.map(r => r.skyAz.toFixed(2)).join(', ') : '80.1, 99.8, 66.2, 72.9, 86.1';
+      const skyAltVec = proc ? proc.results.map(r => r.skyAlt.toFixed(2)).join(', ') : '13.9, 24.7, 23.8, 16.4, 40.5';
+      const canAzVec = proc ? proc.results.map(r => r.canvasAz.toFixed(2)).join(', ') : '82.4, 103.5, 67.8, 74.2, 88.6';
+      const canAltVec = proc ? proc.results.map(r => r.canvasAlt.toFixed(2)).join(', ') : '14.8, 26.2, 24.5, 17.6, 42.1';
+
+      // 1. R Script (.R)
+      const rCode = `# ============================================================================
+# VORTEX KERNEL v35.0 — R STATISTICAL & GEODETIC VALIDATION SCRIPT (.R)
+# Onderwerp : 3x3 Homografie H, Green's Planimeter (${green.parcel.id}), Procrustes SVD & Getij
+# ============================================================================
+
+# 1. 3x3 Projectieve Homografie Matrix H (DLT 8-DOF Kalibratie)
+H <- matrix(c(
+  ${H[0].toFixed(6)}, ${H[1].toFixed(6)}, ${H[2].toFixed(6)},
+  ${H[3].toFixed(6)}, ${H[4].toFixed(6)}, ${H[5].toFixed(6)},
+  ${H[6].toFixed(6)}, ${H[7].toFixed(6)}, ${H[8].toFixed(6)}
+), nrow = 3, byrow = TRUE)
+cat("Determinant Homografie det(H):", det(H), "\\n")
+
+# 2. Stelling van Green Oppervlakte-integraal (A. Ott Nr. 573 Poolplanimeter)
+rd_x <- c(${rdXVec})
+rd_y <- c(${rdYVec})
+n <- length(rd_x)
+area_m2 <- 0.5 * abs(sum(rd_x * c(rd_y[-1], rd_y[1]) - c(rd_x[-1], rd_x[1]) * rd_y))
+area_ha <- area_m2 / 10000
+area_zeeuwse_gemeten <- area_m2 / 3924.0
+cat(sprintf("Perceel ${green.parcel.id}: %.2f m2 = %.4f ha = %.2f Zeeuwse gemeten\\n",
+            area_m2, area_ha, area_zeeuwse_gemeten))
+
+# 3. Orthogonale Procrustes SVD Analyse (De Sterrennacht 1889 Saint-Remy)
+X_sky <- cbind(c(${skyAzVec}), c(${skyAltVec}))
+Y_canvas <- cbind(c(${canAzVec}), c(${canAltVec}))
+Xc <- scale(X_sky, center = TRUE, scale = FALSE)
+Yc <- scale(Y_canvas, center = TRUE, scale = FALSE)
+svd_res <- svd(t(Xc) %*% Yc)
+R_opt <- svd_res$u %*% t(svd_res$v)
+theta_deg <- atan2(R_opt[1,2], R_opt[1,1]) * (180 / pi)
+scale_s <- sum(svd_res$d) / sum(Xc^2)
+residuals <- Yc - scale_s * (Xc %*% R_opt)
+rms_deg <- sqrt(mean(rowSums(residuals^2)))
+cat(sprintf("Procrustes SVD: theta = %.2f deg, schaal s = %.4f, RMS = %.2f deg\\n",
+            theta_deg, scale_s, rms_deg))
+
+# 4. Harmonische Getijdenconstituenten Oosterschelde (M2, S2, N2, K1, O1, M4)
+amp_m <- c(${tide.breakdown.map(c => c.ampM.toFixed(2)).join(', ')})
+phase_deg <- c(${tide.breakdown.map(c => c.argDeg.toFixed(2)).join(', ')})
+h_nap <- ${tide.z0NapM.toFixed(2)} + sum(amp_m * cos(phase_deg * pi / 180))
+cat(sprintf("Actuele Waterstand Oosterschelde: %+.3f m NAP\\n", h_nap))`;
+
+      // 2. Scilab Script (.sce)
+      const sciCode = `// ============================================================================
+// VORTEX KERNEL v35.0 — SCILAB NUMERICAL MATRIX & ERROR ANALYSIS (.SCE)
+// ============================================================================
+clear; clc;
+
+// 1. 3x3 Projectieve Homografie Matrix H
+H = [ ${H[0].toFixed(6)}, ${H[1].toFixed(6)}, ${H[2].toFixed(6)} ;
+      ${H[3].toFixed(6)}, ${H[4].toFixed(6)}, ${H[5].toFixed(6)} ;
+      ${H[6].toFixed(6)}, ${H[7].toFixed(6)}, ${H[8].toFixed(6)} ];
+mprintf("Homografie det(H) = %.6f\\n", det(H));
+
+// 2. Stelling van Green voor Perceel ${green.parcel.id} (RD EPSG:28992)
+rd_x = [${rdXVec}];
+rd_y = [${rdYVec}];
+x_next = [rd_x(2:$), rd_x(1)];
+y_next = [rd_y(2:$), rd_y(1)];
+area_m2 = 0.5 * abs(sum(rd_x .* y_next - x_next .* rd_y));
+mprintf("Green Oppervlakte: %.2f m2 = %.4f ha = %.2f gemeten\\n", ...
+        area_m2, area_m2/10000, area_m2/3924.0);
+
+// 3. Orthogonale Procrustes SVD (Van Gogh 1889 Saint-Remy)
+X_sky = [${skyAzVec} ; ${skyAltVec}]';
+Y_can = [${canAzVec} ; ${canAltVec}]';
+Xc = X_sky - repmat(mean(X_sky, "r"), size(X_sky,1), 1);
+Yc = Y_can - repmat(mean(Y_can, "r"), size(Y_can,1), 1);
+[U, S, V] = svd(Xc' * Yc);
+R_opt = U * V';
+theta_deg = atan(R_opt(1,2), R_opt(1,1)) * 180 / %pi;
+scale_s = trace(S) / sum(Xc.^2);
+res_mat = Yc - scale_s * (Xc * R_opt);
+rms_err = sqrt(mean(sum(res_mat.^2, "c")));
+mprintf("Procrustes SVD: theta = %.2f deg, s = %.4f, RMS = %.2f deg\\n", ...
+        theta_deg, scale_s, rms_err);`;
+
+      const rBox = document.getElementById('r-script-output-box');
+      if (rBox) rBox.value = rCode;
+      const sBox = document.getElementById('scilab-script-output-box');
+      if (sBox) sBox.value = sciCode;
+
+      return { rCode, sciCode };
+    }
+
+    function downloadRScriptFile() {
+      const { rCode } = generateRAndScilabScripts();
+      const blob = new Blob([rCode], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vortex_matrices_${VortexState.activeParcelId.toLowerCase()}.R`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      kernelLog('📊 R-script (.R) met Homografie-, Procrustes- en Getijdenmatrices gedownload.', 'success');
+    }
+
+    function downloadScilabScriptFile() {
+      const { sciCode } = generateRAndScilabScripts();
+      const blob = new Blob([sciCode], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vortex_matrices_${VortexState.activeParcelId.toLowerCase()}.sce`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      kernelLog('🧮 Scilab-script (.sce) gedownload.', 'success');
+    }
+
+    /***************************************************************************
+     * 8. 4-POINT PROJECTIVE HOMOGRAPHY, GREEN'S THEOREM & 3D PEDESTAL STL
+     ***************************************************************************/
+    function solveHomography3x3(srcQuad, dstQuad) {
+      const A = [], b = [];
+      for (let i = 0; i < 4; i++) {
+        const u = srcQuad[i].u, v = srcQuad[i].v;
+        const X = dstQuad[i].X, Y = dstQuad[i].Y;
+        A.push([u, v, 1, 0, 0, 0, -u * X, -v * X]); b.push(X);
+        A.push([0, 0, 0, u, v, 1, -u * Y, -v * Y]); b.push(Y);
+      }
+      const n = 8;
+      for (let col = 0; col < n; col++) {
+        let pivot = col;
+        for (let row = col + 1; row < n; row++) {
+          if (Math.abs(A[row][col]) > Math.abs(A[pivot][col])) pivot = row;
+        }
+        if (Math.abs(A[pivot][col]) < 1e-11) continue;
+        [A[col], A[pivot]] = [A[pivot], A[col]];
+        [b[col], b[pivot]] = [b[pivot], b[col]];
+        const div = A[col][col];
+        for (let j = col; j < n; j++) A[col][j] /= div;
+        b[col] /= div;
+        for (let row = 0; row < n; row++) {
+          if (row !== col) {
+            const factor = A[row][col];
+            for (let j = col; j < n; j++) A[row][j] -= factor * A[col][j];
+            b[row] -= factor * b[col];
+          }
+        }
+      }
+      return [b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], 1.0];
+    }
+
+    function applyHomographyPoint(H, u, v) {
+      const denom = H[6] * u + H[7] * v + H[8];
+      const w = Math.abs(denom) < 1e-9 ? 1e-9 : denom;
+      return {
+        X: (H[0] * u + H[1] * v + H[2]) / w,
+        Y: (H[3] * u + H[4] * v + H[5]) / w
+      };
+    }
+
+    function toggleHomographyQuadPickMode() {
+      const cal = VortexState.reproCalibration;
+      cal.quadPickMode = !cal.quadPickMode;
+      cal.quadPickIndex = 0;
+      const btn = document.getElementById('btn-pick-homography');
+      if (cal.quadPickMode) {
+        toggleLayer('repro_kaart_kalibratie', true);
+        if (btn) btn.classList.add('cyber-btn-active');
+        document.getElementById('hud-click-mode').textContent = '🎯 Klik Q1 (LB)';
+      } else {
+        if (btn) btn.classList.remove('cyber-btn-active');
+        document.getElementById('hud-click-mode').textContent = 'Inspecteer Lood';
+      }
+    }
+
+    function resetHomographyQuad() {
+      VortexState.reproCalibration.srcQuadNorm = [
+        { u: 0.12, v: 0.13 },
+        { u: 0.88, v: 0.11 },
+        { u: 0.90, v: 0.89 },
+        { u: 0.10, v: 0.87 }
+      ];
+      VortexState.reproCalibration.quadPickMode = false;
+      recalcReproPlanimeter();
+    }
+
+    function wgs84ToRDExact(lat, lon) {
+      const phi0 = 52.15517440, lam0 = 5.38720621;
+      const dPhi = 0.36 * (lat - phi0), dLam = 0.36 * (lon - lam0);
+      const x = 155000 + 190094.945 * dLam - 11832.228 * dPhi * dLam - 114.221 * Math.pow(dPhi, 2) * dLam - 32.391 * Math.pow(dLam, 3);
+      const y = 463000 + 309056.544 * dPhi + 3638.893 * Math.pow(dLam, 2) + 73.077 * Math.pow(dPhi, 2) - 157.984 * dPhi * Math.pow(dLam, 2) + 59.788 * Math.pow(dPhi, 3);
+      return { x, y };
+    }
+
+    function wgs84ToRD(lat, lon) {
+      const pt = wgs84ToRDExact(lat, lon);
+      return { x: Math.round(pt.x), y: Math.round(pt.y) };
+    }
+
+    function computeParcelGreenPlanimeter(parcelId) {
+      const parcel = CadastralParcelsCatalog[parcelId] || CadastralParcelsCatalog['LODIJKE-369'];
+      const rdVertices = parcel.coordsWGS84.map(([lon, lat]) => wgs84ToRDExact(lat, lon));
+
+      let crossSum = 0.0;
+      let perimeterM = 0.0;
+      for (let i = 0; i < rdVertices.length - 1; i++) {
+        const p1 = rdVertices[i];
+        const p2 = rdVertices[i + 1];
+        crossSum += (p1.x * p2.y - p2.x * p1.y);
+        perimeterM += Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      }
+
+      const areaM2 = 0.5 * Math.abs(crossSum);
+      const areaHa = areaM2 / 10000.0;
+      const areaGemeten = areaM2 / ZEEUWS_GEMET_M2;
+      const m2PerCm2OnMap = Math.pow(parcel.mapScale / 100.0, 2);
+      const ottPaperCm2 = areaM2 / m2PerCm2OnMap;
+
+      const cxRD = Math.round(rdVertices.slice(0, 4).reduce((s, v) => s + v.x, 0) / 4.0);
+      const cyRD = Math.round(rdVertices.slice(0, 4).reduce((s, v) => s + v.y, 0) / 4.0);
+
+      return { parcel, rdVertices, cxRD, cyRD, areaM2, areaHa, areaGemeten, perimeterM, ottPaperCm2 };
+    }
+
+    function loadSyntheticArchiveMap() {
+      VortexState.reproCalibration.imageElement = null;
+      VortexState.reproCalibration.syntheticGridActive = true;
+      toggleLayer('repro_kaart_kalibratie', true);
+      switchModuleTab('kadaster');
+      recalcReproPlanimeter();
+    }
+
+    function recalcReproPlanimeter() {
+      const scale = parseFloat(document.getElementById('repro-map-scale')?.value) || 2500;
+      const targetW = parseFloat(document.getElementById('homog-target-w')?.value) || 20.0;
+      const targetH = parseFloat(document.getElementById('homog-target-h')?.value) || 16.0;
+
+      const cal = VortexState.reproCalibration;
+      cal.mapScale = scale;
+      cal.targetWidthCm = targetW;
+      cal.targetHeightCm = targetH;
+
+      const dstQuad = [
+        { X: 0,       Y: 0 },
+        { X: targetW, Y: 0 },
+        { X: targetW, Y: targetH },
+        { X: 0,       Y: targetH }
+      ];
+
+      const H = solveHomography3x3(cal.srcQuadNorm, dstQuad);
+      cal.homographyMatrix = H;
+
+      const matEl = document.getElementById('homography-matrix-readout');
+      if (matEl) {
+        matEl.textContent =
+          `[ ${H[0].toFixed(2)}, ${H[1].toFixed(2)}, ${H[2].toFixed(2)} | ${H[3].toFixed(2)}, ${H[4].toFixed(2)}, ${H[5].toFixed(2)} | ${H[6].toFixed(3)}, ${H[7].toFixed(3)}, 1.000 ]`;
+      }
+      updateParcelGreenUI();
+    }
+
+    function syncPedestalEngravingFromParcel(greenRes) {
+      const l1 = document.getElementById('ped-line-1');
+      const l2 = document.getElementById('ped-line-2');
+      const l3 = document.getElementById('ped-line-3');
+      if (l1 && l2 && l3) {
+        l1.value = greenRes.parcel.shortLabel || 'BOL VAN LODIJKE M 369';
+        l2.value = `${greenRes.areaHa.toFixed(2)} HA - ${greenRes.areaGemeten.toFixed(2)} GEMETEN`;
+        l3.value = `RD ${greenRes.cxRD} ${greenRes.cyRD} OTT 573`;
+      }
+    }
+
+    function updateParcelGreenUI(parcelId = null) {
+      if (parcelId) VortexState.activeParcelId = parcelId;
+      const res = computeParcelGreenPlanimeter(VortexState.activeParcelId);
+      VortexState.planimeter.wheelCount = res.ottPaperCm2;
+
+      const elM2 = document.getElementById('ott-area-m2');
+      if (elM2) {
+        elM2.textContent = `${Math.round(res.areaM2).toLocaleString('nl-NL')} m²`;
+        document.getElementById('ott-area-ha').textContent = `${res.areaHa.toFixed(4)} ha`;
+        document.getElementById('ott-area-gemeten').textContent = `${res.areaGemeten.toFixed(2)} gemeten`;
+        document.getElementById('ott-wheel-cm2').textContent = `${res.ottPaperCm2.toFixed(2)} cm² (1:${res.parcel.mapScale})`;
+      }
+
+      document.getElementById('hdr-planimeter').textContent = `${res.areaHa.toFixed(2)} ha (${res.areaGemeten.toFixed(2)} gem.)`;
+      document.getElementById('pipe-plan-coords').textContent = `${res.areaHa.toFixed(2)} ha | ${res.areaGemeten.toFixed(2)} gem.`;
+      document.getElementById('pipe-plan-sub').textContent = `Sectie ${res.parcel.sectie} ${res.parcel.nummer} | ${res.ottPaperCm2.toFixed(1)} cm²`;
+      document.getElementById('hud-ott-val').textContent = `${res.areaGemeten.toFixed(2)} gem.`;
+
+      const logEl = document.getElementById('parcel-vertices-log');
+      if (logEl) {
+        const vStr = res.rdVertices.slice(0, 4).map((v, i) => `V${i + 1}(RD ${Math.round(v.x)}, ${Math.round(v.y)})`).join(' → ');
+        logEl.innerHTML = `<strong class="text-vortex-cyan">${res.parcel.title}</strong><br/>Omtrek: ${res.perimeterM.toFixed(1)} m | RD Hoekpunten: ${vStr}`;
+      }
+      return res;
+    }
+
+    function flyToCadastralParcel(parcelId) {
+      const p = CadastralParcelsCatalog[parcelId];
+      if (!p) return;
+      VortexState.activeParcelId = parcelId;
+      const sel = document.getElementById('parcel-select-dropdown');
+      if (sel) sel.value = parcelId;
+
+      toggleLayer('kadastrale_percelen', true);
+      setObserverLocation(`KAD-${p.sectie}${p.nummer.split(' ')[0]}`, `${p.gemeente} (${p.sectie} ${p.nummer})`, p.center[1], p.center[0]);
+      const res = updateParcelGreenUI(parcelId);
+      syncPedestalEngravingFromParcel(res);
+      generateOpenSCADModel();
+
+      if (vortexMap && mapReady) {
+        vortexMap.flyTo({ center: p.center, zoom: 13.8, pitch: 52, bearing: -14, essential: true });
+      }
+      document.getElementById('map-parcel-readout').textContent =
+        `${p.gemeente} ${p.sectie} ${p.nummer}: ${res.areaHa.toFixed(2)} ha (${res.areaGemeten.toFixed(2)} gemeten)`;
+    }
+
+    /***************************************************************************
+     * 9. 3D PEDESTAL WITH EMBOSSED RELIEF TEXT IN BINARY .STL & OPENSCAD .SCAD
+     ***************************************************************************/
+    function addBoxPrismToTriangles(triangles, x1, y1, z1, x2, y2, z2) {
+      const addTri = (p1, p2, p3) => {
+        const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
+        const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const len = Math.hypot(nx, ny, nz) || 1.0;
+        triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
+      };
+      const b0 = [x1, y1, z1], b1 = [x2, y1, z1], b2 = [x2, y2, z1], b3 = [x1, y2, z1];
+      const t0 = [x1, y1, z2], t1 = [x2, y1, z2], t2 = [x2, y2, z2], t3 = [x1, y2, z2];
+      addTri(b0, b2, b1); addTri(b0, b3, b2);
+      addTri(t0, t1, t2); addTri(t0, t2, t3);
+      const bL = [b0, b1, b2, b3], tL = [t0, t1, t2, t3];
+      for (let i = 0; i < 4; i++) {
+        const ni = (i + 1) % 4;
+        addTri(bL[i], bL[ni], tL[ni]);
+        addTri(bL[i], tL[ni], tL[i]);
+      }
+    }
+
+    function extrudePedestalTextLineToSTL(triangles, textStr, centerX, frontY, baseZ, charW, charH, strokeThick, reliefDepth) {
+      const clean = (textStr || '').toUpperCase();
+      const spacing = charW * 1.32;
+      const totalWidth = clean.length * spacing;
+      const startX = centerX - totalWidth * 0.5;
+
+      const addTri = (p1, p2, p3) => {
+        const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
+        const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const len = Math.hypot(nx, ny, nz) || 1.0;
+        triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
+      };
+
+      for (let cIdx = 0; cIdx < clean.length; cIdx++) {
+        const ch = clean[cIdx];
+        const strokes = StlVectorFont[ch] || [];
+        const ox = startX + cIdx * spacing;
+
+        strokes.forEach(([sx1, sy1, sx2, sy2]) => {
+          const xA = ox + sx1 * charW, zA = baseZ + sy1 * charH;
+          const xB = ox + sx2 * charW, zB = baseZ + sy2 * charH;
+          const dx = xB - xA, dz = zB - zA;
+          const len = Math.hypot(dx, dz) || 1.0;
+          const px = (-dz / len) * (strokeThick * 0.5);
+          const pz = (dx / len) * (strokeThick * 0.5);
+
+          const yBack = frontY;
+          const yFront = frontY - reliefDepth;
+
+          const v0 = [xA - px, yBack,  zA - pz], v1 = [xA + px, yBack,  zA + pz], v2 = [xB + px, yBack,  zB + pz], v3 = [xB - px, yBack,  zB - pz];
+          const f0 = [xA - px, yFront, zA - pz], f1 = [xA + px, yFront, zA + pz], f2 = [xB + px, yFront, zB + pz], f3 = [xB - px, yFront, zB - pz];
+
+          addTri(f0, f1, f2); addTri(f0, f2, f3);
+          const backL = [v0, v1, v2, v3], frontL = [f0, f1, f2, f3];
+          for (let s = 0; s < 4; s++) {
+            const ns = (s + 1) % 4;
+            addTri(backL[s], backL[ns], frontL[ns]);
+            addTri(backL[s], frontL[ns], frontL[s]);
+          }
+        });
+      }
+    }
+
+    function buildSTLTriangleList() {
+      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 58.0;
+      const pedH = parseFloat(document.getElementById('ped-height-mm')?.value) || 14.0;
+      const textDepth = parseFloat(document.getElementById('ped-text-depth')?.value) || 1.6;
+      const parcelReliefH = 8.0;
+
+      const line1 = document.getElementById('ped-line-1')?.value || 'BOL VAN LODIJKE M 369';
+      const line2 = document.getElementById('ped-line-2')?.value || '11.13 HA - 28.37 GEMETEN';
+      const line3 = document.getElementById('ped-line-3')?.value || 'RD 68120 388050 OTT 573';
+
+      const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
+      const ptsRD = green.rdVertices.slice(0, 4);
+      const cxRD = ptsRD.reduce((s, v) => s + v.x, 0) / 4.0;
+      const cyRD = ptsRD.reduce((s, v) => s + v.y, 0) / 4.0;
+
+      const vMm = ptsRD.map(v => ({
+        x: (v.x - cxRD) * 0.18,
+        y: (v.y - cyRD) * 0.18
+      }));
+
+      const triangles = [];
+      const addTri = (p1, p2, p3) => {
+        const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
+        const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const len = Math.hypot(nx, ny, nz) || 1.0;
+        triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
+      };
+
+      const pedHalfW = Math.max(domeR + 10, 68);
+      const pedHalfD = Math.max(domeR + 10, 68);
+      addBoxPrismToTriangles(triangles, -pedHalfW, -pedHalfD, 0, pedHalfW, pedHalfD, pedH);
+
+      extrudePedestalTextLineToSTL(triangles, line1, 0, -pedHalfD, pedH - 4.2, 3.1, 3.0, 0.75, textDepth);
+      extrudePedestalTextLineToSTL(triangles, line2, 0, -pedHalfD, pedH - 8.6, 2.7, 2.6, 0.70, textDepth);
+      extrudePedestalTextLineToSTL(triangles, line3, 0, -pedHalfD, pedH - 12.8, 2.5, 2.4, 0.65, textDepth);
+
+      const zBase = pedH, zTop = pedH + parcelReliefH;
+      const b0 = [vMm[0].x, vMm[0].y, zBase], b1 = [vMm[1].x, vMm[1].y, zBase], b2 = [vMm[2].x, vMm[2].y, zBase], b3 = [vMm[3].x, vMm[3].y, zBase];
+      const t0 = [vMm[0].x, vMm[0].y, zTop],  t1 = [vMm[1].x, vMm[1].y, zTop],  t2 = [vMm[2].x, vMm[2].y, zTop],  t3 = [vMm[3].x, vMm[3].y, zTop];
+
+      addTri(b0, b2, b1); addTri(b0, b3, b2);
+      addTri(t0, t1, t2); addTri(t0, t2, t3);
+
+      const baseLoop = [b0, b1, b2, b3], topLoop = [t0, t1, t2, t3];
+      for (let i = 0; i < 4; i++) {
+        const ni = (i + 1) % 4;
+        addTri(baseLoop[i], baseLoop[ni], topLoop[ni]);
+        addTri(baseLoop[i], topLoop[ni], topLoop[i]);
+      }
+
+      const nAz = 16, nEl = 4;
+      for (let i = 0; i < nEl; i++) {
+        const el1 = (i / nEl) * (Math.PI / 2);
+        const el2 = ((i + 1) / nEl) * (Math.PI / 2);
+        for (let j = 0; j < nAz; j++) {
+          const az1 = (j / nAz) * (2 * Math.PI);
+          const az2 = ((j + 1) / nAz) * (2 * Math.PI);
+          const domePt = (el, az) => [
+            domeR * Math.cos(el) * Math.cos(az),
+            domeR * Math.cos(el) * Math.sin(az),
+            zTop + domeR * Math.sin(el)
+          ];
+          const d00 = domePt(el1, az1), d10 = domePt(el1, az2), d11 = domePt(el2, az2), d01 = domePt(el2, az1);
+          addTri(d00, d10, d11);
+          if (i < nEl - 1) addTri(d00, d11, d01);
+        }
+      }
+
+      return triangles;
+    }
+
+    function generateBinarySTLBuffer() {
+      const triangles = buildSTLTriangleList();
+      const numTri = triangles.length;
+      const byteLength = 84 + numTri * 50;
+      const buffer = new ArrayBuffer(byteLength);
+      const view = new DataView(buffer);
+
+      const headerStr = `VORTEX v35.0 STL // PEDESTAL + ${VortexState.activeParcelId} + GEMETEN + RD`.padEnd(80, ' ');
+      for (let i = 0; i < 80; i++) {
+        view.setUint8(i, headerStr.charCodeAt(i) & 0x7f);
+      }
+      view.setUint32(80, numTri, true);
+
+      let offset = 84;
+      triangles.forEach(tri => {
+        const coords = [...tri.n, ...tri.v1, ...tri.v2, ...tri.v3];
+        for (let k = 0; k < 12; k++) {
+          view.setFloat32(offset, coords[k], true);
+          offset += 4;
+        }
+        view.setUint16(offset, 0, true);
+        offset += 2;
+      });
+
+      const statsEl = document.getElementById('stl-mesh-stats');
+      if (statsEl) statsEl.textContent = `${numTri.toLocaleString('nl-NL')} Δ (${(byteLength / 1024).toFixed(1)} KB)`;
+
+      return { buffer, numTri, byteLength };
+    }
+
+    function downloadBinarySTLFile() {
+      const { buffer, numTri, byteLength } = generateBinarySTLBuffer();
+      const blob = new Blob([buffer], { type: 'application/sla' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vortex_voetstuk_${VortexState.activeParcelId.toLowerCase()}.stl`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      kernelLog(`📐 Binaire 3D .STL met Gegraveerd Voetstuk gedownload (${numTri} driehoeken, ${byteLength} bytes).`, 'success');
+    }
+
+    function generateOpenSCADModel() {
+      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 58.0;
+      const pedH = parseFloat(document.getElementById('ped-height-mm')?.value) || 14.0;
+      const textDepth = parseFloat(document.getElementById('ped-text-depth')?.value) || 1.6;
+
+      const line1 = document.getElementById('ped-line-1')?.value || 'BOL VAN LODIJKE M 369';
+      const line2 = document.getElementById('ped-line-2')?.value || '11.13 HA - 28.37 GEMETEN';
+      const line3 = document.getElementById('ped-line-3')?.value || 'RD 68120 388050 OTT 573';
+
+      const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
+      const cxRD = green.rdVertices.slice(0, 4).reduce((s, v) => s + v.x, 0) / 4.0;
+      const cyRD = green.rdVertices.slice(0, 4).reduce((s, v) => s + v.y, 0) / 4.0;
+      const polyMm = green.rdVertices.slice(0, 4).map(v =>
+        `[${((v.x - cxRD) * 0.18).toFixed(2)}, ${((v.y - cyRD) * 0.18).toFixed(2)}]`
+      ).join(', ');
+
+      const pedW = Math.max(domeR * 2 + 20, 136);
+      const scadCode = `// VORTEX KERNEL v35.0 — OPENSCAD MODEL MET GEGRAVEERD 3D-VOETSTUK (.SCAD)
+$fn = 72;
+pedestal_w = ${pedW.toFixed(1)};
+pedestal_h = ${pedH.toFixed(1)};
+text_relief_mm = ${textDepth.toFixed(2)};
+
+union() {
+  translate([-pedestal_w/2, -pedestal_w/2, 0])
+    cube([pedestal_w, pedestal_w, pedestal_h]);
+  translate([0, -pedestal_w/2, pedestal_h - 3.6])
+    rotate([90, 0, 0]) linear_extrude(height = text_relief_mm)
+      text("${line1}", size = 4.2, halign = "center");
+  translate([0, -pedestal_w/2, pedestal_h - 8.2])
+    rotate([90, 0, 0]) linear_extrude(height = text_relief_mm)
+      text("${line2}", size = 3.6, halign = "center");
+  translate([0, -pedestal_w/2, pedestal_h - 12.2])
+    rotate([90, 0, 0]) linear_extrude(height = text_relief_mm)
+      text("${line3}", size = 3.2, halign = "center");
+  translate([0, 0, pedestal_h])
+    linear_extrude(height = 8.0) polygon(points = [ ${polyMm} ]);
+}`;
+
+      const box = document.getElementById('openscad-output-box');
+      if (box) box.value = scadCode;
+      generateBinarySTLBuffer();
+      return scadCode;
+    }
+
+    function downloadOpenSCADFile() {
+      const code = generateOpenSCADModel();
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vortex_voetstuk_${VortexState.activeParcelId.toLowerCase()}.scad`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function generateSolidPodTurtle() {
+      const baseUri = document.getElementById('solid-pod-base-uri')?.value || 'https://vanvrijberghe.solidcommunity.net/vortex/lodijke#';
+      const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
+      const ttlCode = `@prefix vortex: <${baseUri}> .
+vortex:${green.parcel.id}
+    vortex:pedestalInscription "${green.parcel.shortLabel} | ${green.areaHa.toFixed(2)} HA - ${green.areaGemeten.toFixed(2)} GEMETEN | RD ${green.cxRD} ${green.cyRD}" ;
+    vortex:areaHectares "${green.areaHa.toFixed(4)}" ;
+    vortex:areaZeeuwseGemeten "${green.areaGemeten.toFixed(2)}" .`;
+      const box = document.getElementById('solid-turtle-output-box');
+      if (box) box.value = ttlCode;
+      return ttlCode;
+    }
+
+    function downloadSolidTurtleFile() {
+      const ttl = generateSolidPodTurtle();
+      const blob = new Blob([ttl], { type: 'text/turtle;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vortex_solid_${VortexState.activeParcelId.toLowerCase()}.ttl`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /***************************************************************************
+     * 10. OPENSEAMAP + NAUTICAL ZEEGRID & MAPLIBRE GL JS v4.7.1 ENGINE
+     ***************************************************************************/
+    let vortexMap = null;
+    let mapReady = false;
+
+    function setZeegridStep(stepVal) {
+      VortexState.zeegridStepDeg = parseFloat(stepVal) || 0.0083333;
+      toggleLayer('nautisch_zeegrid', true);
+      syncMapLibreGeoJSON();
+    }
+
+    function bootOpenSeaMapAndZeegrid() {
+      toggleLayer('openseamap_seamarks', true);
+      toggleLayer('nautisch_zeegrid', true);
+      toggleLayer('harmonisch_getij', true);
+      toggleLayer('bathymetrie_profiel', true);
+      toggleLayer('kadastrale_percelen', true);
+      flyToCadastralParcel('LODIJKE-369');
+      kernelLog('⚓ OpenSeaMap Seamarks + Nautisch Zeegrid + Harmonisch Getij gecentreerd op de Oosterschelde (Bol van Lodijke M 369).', 'success');
+    }
+
+    function initMapLibre3D() {
+      if (typeof maplibregl === 'undefined') return;
+      try {
+        vortexMap = new maplibregl.Map({
+          container: 'vortex-maplibre',
+          style: {
+            version: 8,
+            light: {
+              anchor: 'map',
+              color: '#fde047',
+              intensity: 0.65,
+              position: [1.5, 165, 70]
+            },
+            sources: {
+              'carto-dark': {
+                type: 'raster',
+                tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap, CARTO & OpenSeaMap'
+              },
+              'openseamap-seamarks': {
+                type: 'raster',
+                tiles: ['https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenSeaMap Seamarks'
+              }
+            },
+            layers: [
+              { id: 'carto-dark-layer', type: 'raster', source: 'carto-dark', minzoom: 0, maxzoom: 20 },
+              { id: 'openseamap-seamark-layer', type: 'raster', source: 'openseamap-seamarks', minzoom: 6, maxzoom: 18, paint: { 'raster-opacity': 0.95 } }
+            ]
+          },
+          center: [4.1220, 51.5090],
+          zoom: 12.1,
+          pitch: 48,
+          bearing: -12
+        });
+
+        vortexMap.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+        vortexMap.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'nautical' }), 'bottom-left');
+
+        vortexMap.on('load', () => {
+          mapReady = true;
+          vortexMap.addSource('vortex-live-geojson', {
+            type: 'geojson',
+            data: buildGeoJSONFeatureCollection()
+          });
+
+          vortexMap.addLayer({
+            id: 'vortex-zeegrid-lines',
+            type: 'line',
+            source: 'vortex-live-geojson',
+            filter: ['in', ['get', 'feature_type'], ['literal', ['zeegrid_graticule', 'zeegrid_nm_ring', 'bathymetry_transect_line']]],
+            paint: {
+              'line-color': ['coalesce', ['get', 'stroke'], '#00f0ff'],
+              'line-width': [
+                'case',
+                ['==', ['get', 'feature_type'], 'bathymetry_transect_line'], 2.8,
+                ['==', ['get', 'feature_type'], 'zeegrid_nm_ring'], 1.5,
+                0.85
+              ],
+              'line-dasharray': [2, 2],
+              'line-opacity': 0.72
+            }
+          });
+
+          vortexMap.addLayer({
+            id: 'vortex-cadastral-3d',
+            type: 'fill-extrusion',
+            source: 'vortex-live-geojson',
+            filter: ['==', ['get', 'feature_type'], 'cadastral_parcel_3d'],
+            paint: {
+              'fill-extrusion-color': ['coalesce', ['get', 'fill_color'], '#00f0ff'],
+              'fill-extrusion-height': ['coalesce', ['get', 'extrusion_height'], 18],
+              'fill-extrusion-base': 0,
+              'fill-extrusion-opacity': 0.75
+            }
+          });
+
+          vortexMap.addLayer({
+            id: 'vortex-geojson-lines',
+            type: 'line',
+            source: 'vortex-live-geojson',
+            filter: ['in', ['get', 'feature_type'], ['literal', ['nautical_lop', 'voyage_orthodrome']]],
+            paint: {
+              'line-color': ['coalesce', ['get', 'stroke'], '#10b981'],
+              'line-width': 2.5,
+              'line-opacity': 0.92
+            }
+          });
+
+          vortexMap.addLayer({
+            id: 'vortex-geojson-points',
+            type: 'circle',
+            source: 'vortex-live-geojson',
+            filter: ['==', '$type', 'Point'],
+            paint: {
+              'circle-radius': 7,
+              'circle-color': ['coalesce', ['get', 'marker_color'], '#00f0ff'],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#03060c'
+            }
+          });
+        });
+      } catch (err) {
+        console.warn('MapLibre init warning:', err);
+      }
+    }
+
+    function syncMapLibreGeoJSON() {
+      if (!mapReady || !vortexMap) return;
+      if (vortexMap.getLayer('openseamap-seamark-layer')) {
+        vortexMap.setLayoutProperty(
+          'openseamap-seamark-layer',
+          'visibility',
+          VortexState.layers.openseamap_seamarks ? 'visible' : 'none'
+        );
+      }
+      const src = vortexMap.getSource('vortex-live-geojson');
+      if (src) src.setData(buildGeoJSONFeatureCollection());
+    }
+
+    function flyMapToAnchor(placeId, zoomLevel = 12.2) {
+      const p = VortexState.places[placeId];
+      if (!p) return;
+      setObserverLocation(p.code, p.name, p.lat, p.lon);
+      if (vortexMap && mapReady) {
+        vortexMap.flyTo({ center: [p.lon, p.lat], zoom: zoomLevel, pitch: 48, essential: true });
+      }
+    }
+
+    function setViewportSplit(mode) {
+      VortexState.viewportSplit = mode;
+      const grid = document.getElementById('dual-viewport-grid');
+      const skyW = document.getElementById('sky-pane-wrapper');
+      const mapW = document.getElementById('map-pane-wrapper');
+      if (mode === 'sky') {
+        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.remove('hidden'); mapW.classList.add('hidden');
+      } else if (mode === 'map') {
+        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.add('hidden'); mapW.classList.remove('hidden');
+      } else {
+        grid.className = 'flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.remove('hidden'); mapW.classList.remove('hidden');
+      }
+      setTimeout(() => {
+        resizeCanvas();
+        if (vortexMap) vortexMap.resize();
+      }, 60);
+    }
+
+    function executeMapLibreAICommand(customQuery = null) {
+      const inp = document.getElementById('maplibre-ai-input');
+      const raw = (customQuery !== null ? customQuery : (inp ? inp.value : '')).trim();
+      if (!raw) return;
+      const q = raw.toLowerCase();
+
+      if (q.includes('droog') || q.includes('laagwater') || q.includes('eb')) {
+        jumpToLowWaterExposure();
+      } else if (q.includes('hoogwater') || q.includes('vloed') || q.includes('spring')) {
+        jumpToHighWaterFlood();
+      } else if (q.includes('1953') || q.includes('storm')) {
+        loadTimeCapsule('CAP-1953-WATERSNOOD');
+      } else if (q.includes('export r') || q.includes('scilab')) {
+        switchModuleTab('r_scilab');
+        generateRAndScilabScripts();
+      } else if (q.includes('lodijke') || q.includes('369')) {
+        flyToCadastralParcel('LODIJKE-369');
+      } else if (q.includes('scherpenisse') || q.includes('pluimpot')) {
+        flyToCadastralParcel('SCHERPENISSE-PLATTEWEG');
+      } else {
+        bootOpenSeaMapAndZeegrid();
+      }
+    }
+
+    /***************************************************************************
+     * 11. GEOJSON BUILDER INCLUDING ZEEGRID, TIDAL PARCELS & BATHYMETRY LINE
+     ***************************************************************************/
+    function buildGeoJSONFeatureCollection() {
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      const tide = VortexState.lastTideState || computeHarmonicTide(jd);
+      const solar = getDynamicSolarSystemBodies(jd);
+      const sat = calcSatelliteTelemetry(jd, obs.lat, obs.lon);
+      const allBodies = [...solar, sat, ...CelestialCatalog];
+      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+      const selected = reductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+      const fix = computeLeastSquaresFix(selected, obs.lat, obs.lon);
+
+      const features = [];
+      const cosLat = Math.cos(obs.lat * DEG2RAD);
+
+      // 1. Dynamic Nautical Zeegrid
+      if (VortexState.layers.nautisch_zeegrid) {
+        const step = VortexState.zeegridStepDeg || 0.0083333;
+        const spanLat = step * 10, spanLon = step * 14;
+        const minLat = Math.floor((obs.lat - spanLat) / step) * step;
+        const maxLat = obs.lat + spanLat;
+        const minLon = Math.floor((obs.lon - spanLon) / step) * step;
+        const maxLon = obs.lon + spanLon;
+
+        for (let lat = minLat; lat <= maxLat; lat += step) {
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_graticule', stroke: '#0ea5e9' },
+            geometry: { type: 'LineString', coordinates: [[minLon, lat], [maxLon, lat]] }
+          });
+        }
+        for (let lon = minLon; lon <= maxLon; lon += step) {
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_graticule', stroke: '#0ea5e9' },
+            geometry: { type: 'LineString', coordinates: [[lon, minLat], [lon, maxLat]] }
+          });
+        }
+
+        [0.5, 1.0, 2.0].forEach(nmRadius => {
+          const ringCoords = [];
+          for (let deg = 0; deg <= 360; deg += 8) {
+            const rad = deg * DEG2RAD;
+            ringCoords.push([
+              Number((obs.lon + (nmRadius * Math.sin(rad)) / (60.0 * cosLat)).toFixed(6)),
+              Number((obs.lat + (nmRadius * Math.cos(rad)) / 60.0).toFixed(6))
+            ]);
+          }
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_nm_ring', stroke: '#00f0ff' },
+            geometry: { type: 'LineString', coordinates: ringCoords }
+          });
+        });
+      }
+
+      // 2. Bathymetry Transect Line (Scherpenisse Pluimpot -> Gorishoek -> Bol van Lodijke) & Active Sounding Probe Point
+      if (VortexState.layers.bathymetrie_profiel) {
+        features.push({
+          type: 'Feature',
+          properties: { feature_type: 'bathymetry_transect_line', stroke: '#f59e0b' },
+          geometry: {
+            type: 'LineString',
+            coordinates: BathymetryTransectNodes.map(n => [n.lon, n.lat])
+          }
+        });
+        features.push({
+          type: 'Feature',
+          properties: {
+            feature_type: 'sounding_probe_point',
+            name: `Loodpunt: ${tide.probe.name}`,
+            marker_color: '#fde047'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [Number(tide.probe.lon.toFixed(6)), Number(tide.probe.lat.toFixed(6))]
+          }
+        });
+      }
+
+      // 3. 3D Cadastral Parcels with Tidal Exposure Coloring (Dry Oyster Bank vs Submerged)
+      if (VortexState.layers.kadastrale_percelen) {
+        Object.keys(CadastralParcelsCatalog).forEach(pid => {
+          const green = computeParcelGreenPlanimeter(pid);
+          const p = green.parcel;
+          const waterColM = tide.totalNapM - (p.bedNapM || -0.45);
+          const isDry = waterColM <= 0.0;
+          features.push({
+            type: 'Feature',
+            properties: {
+              feature_type: 'cadastral_parcel_3d',
+              parcel_id: p.id,
+              title: p.title,
+              area_ha: Number(green.areaHa.toFixed(4)),
+              area_gemeten: Number(green.areaGemeten.toFixed(2)),
+              ott_cm2: Number(green.ottPaperCm2.toFixed(2)),
+              fill_color: isDry ? '#f59e0b' : p.color,
+              extrusion_height: isDry ? 24 : Math.max(6, 18 - waterColM * 4)
+            },
+            geometry: { type: 'Polygon', coordinates: [p.coordsWGS84] }
+          });
+        });
+      }
+
+      // 4. Assumed Position & Astro-Fix
+      features.push({
+        type: 'Feature',
+        properties: { feature_type: 'assumed_position', name: `AP: ${obs.name}`, marker_color: '#f59e0b' },
+        geometry: { type: 'Point', coordinates: [Number(obs.lon.toFixed(6)), Number(obs.lat.toFixed(6))] }
+      });
+
+      features.push({
+        type: 'Feature',
+        properties: { feature_type: 'marcq_st_hilaire_fix', name: 'Astro-Fix', marker_color: '#10b981' },
+        geometry: { type: 'Point', coordinates: [Number(fix.fixLon.toFixed(6)), Number(fix.fixLat.toFixed(6))] }
+      });
+
+      // 5. Nautical LOPs
+      if (VortexState.layers.nautische_positielijnen) {
+        selected.forEach(r => {
+          const azRad = r.znDeg * DEG2RAD;
+          const pNM = r.interceptNM;
+          const iLat = obs.lat + (pNM * Math.cos(azRad)) / 60.0;
+          const iLon = obs.lon + (pNM * Math.sin(azRad)) / (60.0 * cosLat);
+          const perpRad = azRad + Math.PI / 2.0;
+          const halfLenNM = 4.5;
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'nautical_lop', body: r.name, stroke: r.color },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [Number((iLon - (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat)).toFixed(6)), Number((iLat - (halfLenNM * Math.cos(perpRad)) / 60.0).toFixed(6))],
+                [Number(iLon.toFixed(6)), Number(iLat.toFixed(6))],
+                [Number((iLon + (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat)).toFixed(6)), Number((iLat + (halfLenNM * Math.cos(perpRad)) / 60.0).toFixed(6))]
+              ]
+            }
+          });
+        });
+      }
+
+      return { type: 'FeatureCollection', name: 'VORTEX_Kernel_v35_GeoJSON', features };
+    }
+
+    /***************************************************************************
+     * 12. PROCRUSTES 1889, MULTI-CALENDAR, SAROS & EPHEMERIS ENGINE
+     ***************************************************************************/
+    function computeVanGoghProcrustes(allReductions) {
+      const pairs = [];
+      StarryNight1889Anchors.forEach(anchor => {
+        const found = allReductions.find(r => r.name === anchor.bodyName);
+        if (found) {
+          pairs.push({
+            anchor,
+            skyX: { x: found.znDeg, y: found.hcDeg },
+            canvasY: { x: anchor.canvasAz, y: anchor.canvasAlt }
+          });
+        }
+      });
+      const n = pairs.length;
+      if (n < 2) return null;
+
+      let mxX = 0, myX = 0, mxY = 0, myY = 0;
+      pairs.forEach(p => { mxX += p.skyX.x; myX += p.skyX.y; mxY += p.canvasY.x; myY += p.canvasY.y; });
+      mxX /= n; myX /= n; mxY /= n; myY /= n;
+
+      let num = 0, den = 0, normX2 = 0;
+      pairs.forEach(p => {
+        const dx = p.skyX.x - mxX, dy = p.skyX.y - myX;
+        const ux = p.canvasY.x - mxY, uy = p.canvasY.y - myY;
+        num += (dx * uy - dy * ux);
+        den += (dx * ux + dy * uy);
+        normX2 += (dx * dx + dy * dy);
+      });
+
+      const thetaRad = Math.atan2(num, den);
+      const thetaDeg = thetaRad * RAD2DEG;
+      const cosT = Math.cos(thetaRad), sinT = Math.sin(thetaRad);
+      const scale = Math.sqrt(num * num + den * den) / Math.max(1e-6, normX2);
+
+      let sumSqErr = 0;
+      const results = pairs.map(p => {
+        const dx = p.skyX.x - mxX, dy = p.skyX.y - myX;
+        const fitAz = mxY + scale * (dx * cosT - dy * sinT);
+        const fitAlt = myY + scale * (dx * sinT + dy * cosT);
+        const errDeg = Math.hypot(fitAz - p.canvasY.x, fitAlt - p.canvasY.y);
+        sumSqErr += errDeg * errDeg;
+        return {
+          label: p.anchor.label, bodyName: p.anchor.bodyName, color: p.anchor.color,
+          skyAz: p.skyX.x, skyAlt: p.skyX.y, canvasAz: p.canvasY.x, canvasAlt: p.canvasY.y,
+          fitAz, fitAlt, errDeg
+        };
+      });
+
+      return { thetaDeg, scale, rmsDeg: Math.sqrt(sumSqErr / n), results };
+    }
+
+    function runVanGoghProcrustes1889() {
+      loadTimeCapsule('CAP-1889-VANGOGH');
+      toggleLayer('sterren', true);
+      toggleLayer('procrustes_vangogh', true);
+      updateAllCalculations();
+    }
+
+    function toRoman(num) {
+      if (num <= 0) return String(num);
+      const lookup = [['M',1000],['CM',900],['D',500],['CD',400],['C',100],['XC',90],['L',50],['XL',40],['X',10],['IX',9],['V',5],['IV',4],['I',1]];
+      let roman = '', n = Math.floor(num);
+      for (const [sym, val] of lookup) {
+        while (n >= val) { roman += sym; n -= val; }
+      }
+      return roman;
+    }
+
+    function dateToJulianDate(dateObj) {
+      return dateObj.getTime() / 86400000 + 2440587.5;
+    }
+
+    function jdToFrenchRepublican(jd) {
+      const epochJD = 2375839.5;
+      const daysSinceEpoch = Math.floor(jd - epochJD);
+      const months = ['Vendémiaire', 'Brumaire', 'Frimaire', 'Nivôse', 'Pluviôse', 'Ventôse', 'Germinal', 'Floréal', 'Prairial', 'Messidor', 'Thermidor', 'Fructidor', 'Sansculottides'];
+      const decadeDays = ['Primidi', 'Duodi', 'Tridi', 'Quartidi', 'Quintidi', 'Sextidi', 'Septidi', 'Octidi', 'Nonidi', 'Décadi'];
+      let approxYear = Math.floor((daysSinceEpoch + 1) / 365.2425) + 1;
+      const startOfYearDays = y => {
+        const prev = y - 1;
+        const leaps = Math.floor((prev + 1) / 4) - Math.floor((prev + 1) / 100) + Math.floor((prev + 1) / 400);
+        return prev * 365 + leaps;
+      };
+      while (startOfYearDays(approxYear + 1) <= daysSinceEpoch) approxYear++;
+      while (startOfYearDays(approxYear) > daysSinceEpoch) approxYear--;
+      const dayOfYear0 = daysSinceEpoch - startOfYearDays(approxYear);
+      const monthIdx = Math.min(12, Math.floor(dayOfYear0 / 30));
+      const dayOfMonth = (dayOfYear0 % 30) + 1;
+      const romanYear = approxYear > 0 ? `An ${toRoman(approxYear)}` : `An ${approxYear}`;
+      return { formatted: `${dayOfMonth} ${months[monthIdx]} ${romanYear} (${decadeDays[(dayOfMonth - 1) % 10]})` };
+    }
+
+    function calcGDOPForSet(reductionsList) {
+      if (!reductionsList || reductionsList.length < 2) return 99.9;
+      let sAA = 0, sAB = 0, sBB = 0;
+      reductionsList.forEach(r => {
+        const az = r.znDeg * DEG2RAD;
+        const a = Math.sin(az), b = Math.cos(az);
+        sAA += a * a; sAB += a * b; sBB += b * b;
+      });
+      const det = sAA * sBB - sAB * sAB;
+      if (det <= 1e-5) return 99.9;
+      return Math.sqrt((sAA + sBB) / det);
+    }
+
+    function calcGreatCircle(lat1, lon1, lat2, lon2) {
+      const p1 = lat1 * DEG2RAD, p2 = lat2 * DEG2RAD;
+      const dPhi = (lat2 - lat1) * DEG2RAD, dLam = (lon2 - lon1) * DEG2RAD;
+      const a = Math.sin(dPhi / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dLam / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
+      const distKm = R_EARTH_KM * c;
+      const distNM = distKm / 1.852;
+      const y = Math.sin(dLam) * Math.cos(p2);
+      const x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dLam);
+      const bearingDeg = mod360(Math.atan2(y, x) * RAD2DEG);
+      return { distKm, distNM, bearingDeg };
+    }
+
+    function calcSiderealTime(jd, lonDeg) {
+      const T = (jd - 2451545.0) / 36525.0;
+      const gmstDeg = mod360(280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * T * T);
+      const lstDeg = mod360(gmstDeg + lonDeg);
+      return { gmstDeg, lstDeg, lstHours: lstDeg / 15.0 };
+    }
+
+    function getDynamicSolarSystemBodies(jd) {
+      const T = (jd - 2451545.0) / 36525.0;
+      const eps = (23.439291 - 0.0130042 * T) * DEG2RAD;
+
+      const L0 = mod360(280.46646 + 36000.76983 * T);
+      const M = mod360(357.52911 + 35999.05029 * T) * DEG2RAD;
+      const C = (1.914602 - 0.004817 * T) * Math.sin(M) + 0.019993 * Math.sin(2 * M);
+      const sunLonDeg = mod360(L0 + C);
+      const sunLon = sunLonDeg * DEG2RAD;
+      const sunRA = mod360(Math.atan2(Math.cos(eps) * Math.sin(sunLon), Math.cos(sunLon)) * RAD2DEG) / 15;
+      const sunDec = Math.asin(Math.sin(eps) * Math.sin(sunLon)) * RAD2DEG;
+
+      const Lp = mod360(218.3164477 + 481267.88123421 * T);
+      const D = mod360(297.8501921 + 445267.1114034 * T) * DEG2RAD;
+      const Mp = mod360(134.9633964 + 477198.8675055 * T) * DEG2RAD;
+      const F = mod360(93.2720950 + 483202.0175233 * T) * DEG2RAD;
+
+      const moonLonDeg = mod360(
+        Lp + 6.288774 * Math.sin(Mp) + 1.274027 * Math.sin(2 * D - Mp) +
+        0.658314 * Math.sin(2 * D) + 0.213618 * Math.sin(2 * Mp) -
+        0.185116 * Math.sin(M) - 0.114332 * Math.sin(2 * F)
+      );
+      const moonLatDeg = 5.128122 * Math.sin(F) + 0.280602 * Math.sin(Mp + F) + 0.277693 * Math.sin(Mp - F);
+      const distKm = 385000.56 - 20905.355 * Math.cos(Mp) - 3699.111 * Math.cos(2 * D - Mp) - 2955.968 * Math.cos(2 * D);
+      const hpArcMin = Math.asin(6378.14 / distKm) * RAD2DEG * 60.0;
+
+      const lamM = moonLonDeg * DEG2RAD;
+      const betM = moonLatDeg * DEG2RAD;
+      const moonRA = mod360(Math.atan2(Math.sin(lamM) * Math.cos(eps) - Math.tan(betM) * Math.sin(eps), Math.cos(lamM)) * RAD2DEG) / 15;
+      const moonDec = Math.asin(Math.sin(betM) * Math.cos(eps) + Math.cos(betM) * Math.sin(eps) * Math.sin(lamM)) * RAD2DEG;
+
+      const venusL = mod360(181.9798 + 58517.8156 * T + 22 * Math.sin((50 + 22518 * T) * DEG2RAD)) * DEG2RAD;
+      const venusRA = mod360(Math.atan2(Math.cos(eps) * Math.sin(venusL), Math.cos(venusL)) * RAD2DEG) / 15;
+      const venusDec = Math.asin(Math.sin(eps) * Math.sin(venusL)) * RAD2DEG;
+
+      return [
+        { name: 'Zon (Helios)', navNr: 'SUN', bayer: '☉', constellation: 'Ecl', raHours: sunRA, decDeg: sunDec, mag: -26.7, color: '#fde047', type: 'sun', sunLonDeg },
+        { name: 'Maan (Luna)', navNr: 'MOON', bayer: '☾', constellation: 'Ecl', raHours: moonRA, decDeg: moonDec, mag: -12.6, color: '#34d399', type: 'moon', distKm, hpArcMin, moonLonDeg, moonLatDeg },
+        { name: 'Venus', navNr: 'VEN', bayer: '♀', constellation: 'Ecl', raHours: venusRA, decDeg: venusDec, mag: -4.2, color: '#fef08a', type: 'planet' }
+      ];
+    }
+
+    function calcSatelliteTelemetry(jd, obsLatDeg, obsLonDeg) {
+      const refJD = 2461350.8173611;
+      const dtMin = (jd - refJD) * 1440.0;
+      const hSatKm = 426.0;
+      const incRad = 51.64 * DEG2RAD;
+      const nRadMin = (2 * Math.PI) / 92.9;
+      const u = 1.125 + nRadMin * dtMin;
+      const subLatDeg = Math.asin(Math.sin(incRad) * Math.sin(u)) * RAD2DEG;
+      const subLonDeg = mod360(28.4 + Math.atan2(Math.cos(incRad) * Math.sin(u), Math.cos(u)) * RAD2DEG - 0.25068 * dtMin + 180) - 180;
+
+      const gc = calcGreatCircle(obsLatDeg, obsLonDeg, subLatDeg, subLonDeg);
+      const centralAngleRad = gc.distKm / R_EARTH_KM;
+      const rSat = R_EARTH_KM + hSatKm;
+      const slantRangeKm = Math.sqrt(R_EARTH_KM ** 2 + rSat ** 2 - 2 * R_EARTH_KM * rSat * Math.cos(centralAngleRad));
+      const sinEl = (rSat * Math.cos(centralAngleRad) - R_EARTH_KM) / slantRangeKm;
+      const elDeg = Math.asin(Math.max(-1, Math.min(1, sinEl))) * RAD2DEG;
+
+      const sid = calcSiderealTime(jd, obsLonDeg);
+      const lhaDeg = mod360(sid.lstDeg - subLonDeg);
+      const raHours = mod360(sid.lstDeg - lhaDeg) / 15.0;
+
+      return {
+        name: 'ISS (NORAD 25544)', navNr: 'TLE', bayer: '25544', constellation: 'h=426km',
+        raHours, decDeg: subLatDeg, subLatDeg, subLonDeg, hSatKm, elDeg, azDeg: gc.bearingDeg,
+        ringRadiusNM: gc.distNM, color: '#c084fc', type: 'satellite'
+      };
+    }
+
+    function calcSightReduction(body, obsLatDeg, obsLonDeg, jd) {
+      if (body.type === 'satellite') {
+        const sat = body;
+        const offsetDeg = VortexState.sextantOffsets[sat.name] !== undefined ? VortexState.sextantOffsets[sat.name] : 0.04;
+        const hoDeg = sat.elDeg + offsetDeg;
+        const interceptNM = 60.0 * (hoDeg - sat.elDeg);
+        return {
+          name: sat.name, navNr: sat.navNr, constellation: sat.constellation, color: sat.color, type: 'satellite',
+          raHours: sat.raHours, decDeg: sat.subLatDeg, shaDeg: mod360(360 - sat.raHours * 15),
+          lhaDeg: mod360(obsLonDeg - sat.subLonDeg), hcDeg: sat.elDeg, hoDeg, znDeg: sat.azDeg,
+          interceptNM, direction: interceptNM >= 0 ? 'TOWARDS' : 'AWAY', mag: -1.5
+        };
+      }
+
+      const sid = calcSiderealTime(jd, obsLonDeg);
+      const raDeg = body.raHours * 15.0;
+      const shaDeg = mod360(360.0 - raDeg);
+      const lhaDeg = mod360(sid.lstDeg - raDeg);
+
+      const phi = obsLatDeg * DEG2RAD, dec = body.decDeg * DEG2RAD, lha = lhaDeg * DEG2RAD;
+      const sinHc = Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(lha);
+      const hcDeg = Math.asin(Math.max(-1, Math.min(1, sinHc))) * RAD2DEG;
+
+      const y = -Math.sin(lha);
+      const x = Math.tan(dec) * Math.cos(phi) - Math.sin(phi) * Math.cos(lha);
+      const znDeg = mod360(Math.atan2(y, x) * RAD2DEG);
+
+      const offsetDeg = VortexState.sextantOffsets[body.name] !== undefined ? VortexState.sextantOffsets[body.name] : 0.025;
+      const hoDeg = hcDeg + offsetDeg;
+      const interceptNM = 60.0 * (hoDeg - hcDeg);
+
+      return {
+        name: body.name, navNr: body.navNr !== undefined ? body.navNr : '-', constellation: body.constellation,
+        color: body.color, type: body.type, winterHex: Boolean(body.winterHex),
+        raHours: body.raHours, decDeg: body.decDeg, shaDeg, lhaDeg, hcDeg, hoDeg, znDeg, interceptNM,
+        direction: interceptNM >= 0 ? 'TOWARDS' : 'AWAY', mag: body.mag || 1.0
+      };
+    }
+
+    /***************************************************************************
+     * 13. UI, REAL-TIME LOOP & CANVAS RENDERING
+     ***************************************************************************/
+    function toggleLayer(layerName, forceState = null) {
+      if (!(layerName in VortexState.layers)) return false;
+      VortexState.layers[layerName] = forceState !== null ? Boolean(forceState) : !VortexState.layers[layerName];
+      syncLayerButtonsUI();
+      renderCanvas();
+      syncMapLibreGeoJSON();
+      return VortexState.layers[layerName];
+    }
+
+    function panicResetAllLayers() {
+      Object.keys(VortexState.layers).forEach(k => { VortexState.layers[k] = false; });
+      syncLayerButtonsUI();
+      renderCanvas();
+      syncMapLibreGeoJSON();
+    }
+
+    function enableAllLayers() {
+      Object.keys(VortexState.layers).forEach(k => { VortexState.layers[k] = true; });
+      VortexState.liveClock = true;
+      updateLiveClockButtonUI();
+      syncLayerButtonsUI();
+      updateAllCalculations();
+    }
+
+    function syncLayerButtonsUI() {
+      Object.entries(VortexState.layers).forEach(([key, isOn]) => {
+        const btn = document.getElementById(`layer-btn-${key}`);
+        const st = document.getElementById(`state-${key}`);
+        if (btn && st) {
+          btn.className = isOn
+            ? 'layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition'
+            : 'layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition';
+          st.textContent = isOn ? '[ON]' : '[OFF]';
+        }
+      });
+    }
+
+    function switchModuleTab(tabName) {
+      const tabs = ['tide_bathy', 'r_scilab', 'kadaster', 'scad_solid', 'kernel'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`mod-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (panel) panel.classList.toggle('hidden', t !== tabName);
+        if (btn) btn.classList.toggle('cyber-btn-active', t === tabName);
+      });
+      if (tabName === 'r_scilab') generateRAndScilabScripts();
+      if (tabName === 'scad_solid') {
+        generateOpenSCADModel();
+        generateSolidPodTurtle();
+      }
+      updateAllCalculations();
+    }
+
+    function setObserverLocation(code, name, lat, lon) {
+      const rd = wgs84ToRD(lat, lon);
+      VortexState.observer = { ...VortexState.observer, id: code, name, lat, lon, rdX: rd.x, rdY: rd.y };
+      document.getElementById('hdr-location').textContent = `ZEE-ANKER: ${name.toUpperCase()} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`;
+      document.getElementById('hdr-rd').textContent = `RD: ${rd.x} · ${rd.y}`;
+      document.getElementById('ap-readout').textContent = `${formatDMM(lat)}N, ${formatDMM(lon)}E`;
+      updateAllCalculations();
+    }
+
+    function loadTimeCapsule(capsuleId) {
+      const cap = VortexState.timeCapsules.find(c => c.id === capsuleId);
+      if (!cap) return false;
+      VortexState.liveClock = false;
+      updateLiveClockButtonUI();
+      VortexState.currentDate = new Date(cap.utc);
+      if (cap.surgeM !== undefined) {
+        VortexState.stormSurgeM = cap.surgeM;
+        const sl = document.getElementById('slider-storm-surge');
+        if (sl) sl.value = cap.surgeM;
+        document.getElementById('lbl-storm-surge').textContent = `${cap.surgeM >= 0 ? '+' : ''}${cap.surgeM.toFixed(2)} m`;
+      }
+      if (cap.placeId && VortexState.places[cap.placeId]) {
+        const p = VortexState.places[cap.placeId];
+        setObserverLocation(p.code, p.name, p.lat, p.lon);
+        if (vortexMap && mapReady) vortexMap.flyTo({ center: [p.lon, p.lat], zoom: 12.0, essential: true });
+      }
+      updateAllCalculations();
+      return true;
+    }
+
+    function computeLeastSquaresFix(selectedReductions, apLat, apLon) {
+      if (!selectedReductions || selectedReductions.length < 2) {
+        return { fixLat: apLat, fixLon: apLon, dxNM: 0, dyNM: 0 };
+      }
+      let sumAA = 0, sumAB = 0, sumBB = 0, sumAP = 0, sumBP = 0;
+      selectedReductions.forEach(r => {
+        const az = r.znDeg * DEG2RAD;
+        const a = Math.sin(az), b = Math.cos(az), p = r.interceptNM;
+        sumAA += a * a; sumAB += a * b; sumBB += b * b;
+        sumAP += a * p; sumBP += b * p;
+      });
+      const det = sumAA * sumBB - sumAB * sumAB;
+      if (Math.abs(det) < 1e-5) return { fixLat: apLat, fixLon: apLon, dxNM: 0, dyNM: 0 };
+      const dxNM = (sumBB * sumAP - sumAB * sumBP) / det;
+      const dyNM = (sumAA * sumBP - sumAB * sumAP) / det;
+      const fixLat = apLat + (dyNM / 60.0);
+      const fixLon = apLon + (dxNM / (60.0 * Math.cos(apLat * DEG2RAD)));
+      return { fixLat, fixLon, dxNM, dyNM };
+    }
+
+    function updateAllCalculations() {
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+
+      document.getElementById('hdr-utc').textContent = VortexState.currentDate.toISOString().replace('T', ' ').slice(0, 19);
+
+      // 1. Compute Harmonic Tide & Bathymetry Sounding
+      const tide = computeHarmonicTide(jd);
+      VortexState.lastTideState = tide;
+
+      const napStr = `${tide.totalNapM >= 0 ? '+' : ''}${tide.totalNapM.toFixed(2)} m NAP`;
+      document.getElementById('hdr-tide-nap').textContent = `${napStr} (${tide.dHdtMPerHr >= 0 ? 'VLOED' : 'EB'})`;
+      document.getElementById('hdr-sounding').textContent = tide.isM369Exposed
+        ? `DROOG (+${Math.abs(tide.depthM369).toFixed(2)}m)`
+        : `${tide.depthM369.toFixed(2)} m water`;
+
+      document.getElementById('pipe-tide-phase').textContent = tide.phaseLabel.split(' ')[0];
+      document.getElementById('pipe-tide-level').textContent = `${napStr} (+${tide.totalLatM.toFixed(2)} m LAT)`;
+      document.getElementById('pipe-bathy-status').textContent = tide.isM369Exposed ? 'DROOGVALLEND (Intergetij)' : 'Sublitoraal (Onder Water)';
+      document.getElementById('pipe-bathy-depth').textContent = tide.isM369Exposed
+        ? `M 369: DROOG (+${Math.abs(tide.depthM369).toFixed(2)}m)`
+        : `M 369: ${tide.depthM369.toFixed(2)} m water`;
+      document.getElementById('pipe-bathy-sub').textContent =
+        `Lood (${tide.probe.km.toFixed(1)}km): ${tide.probeWaterDepthM.toFixed(2)}m water`;
+      document.getElementById('hud-tide').textContent = napStr;
+
+      document.getElementById('cal-tide-ribbon').textContent =
+        `H(t) = ${napStr} (+${tide.totalLatM.toFixed(2)}m LAT) | Perceel M 369 (-0.45m NAP): ${tide.isM369Exposed ? 'DROOGGEVALLEN' : `ONDER WATER (${tide.depthM369.toFixed(2)}m)`}`;
+      document.getElementById('cal-french').textContent = jdToFrenchRepublican(jd).formatted;
+
+      const tNapEl = document.getElementById('tide-card-nap');
+      if (tNapEl) {
+        tNapEl.textContent = napStr;
+        document.getElementById('tide-card-lat').textContent = `+${tide.totalLatM.toFixed(2)} m LAT`;
+        document.getElementById('tide-card-rate').textContent = `${tide.dHdtMPerHr >= 0 ? '+' : ''}${tide.dHdtMPerHr.toFixed(2)} m/u`;
+        document.getElementById('tide-card-m369').textContent = tide.isM369Exposed
+          ? `DROOG (+${Math.abs(tide.depthM369).toFixed(2)}m)`
+          : `${tide.depthM369.toFixed(2)} m water`;
+      }
+
+      const cTbody = document.getElementById('tide-constituents-tbody');
+      if (cTbody) {
+        cTbody.innerHTML = '';
+        tide.breakdown.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="py-1 font-bold text-vortex-cyan">${c.code} <span class="text-slate-500 font-normal">(${c.desc})</span></td>
+            <td class="py-1 text-slate-300">${c.speedDegHr.toFixed(4)}°/u</td>
+            <td class="py-1 text-vortex-amber">${c.ampM.toFixed(2)} m</td>
+            <td class="py-1 text-purple-300">${c.phaseDeg.toFixed(1)}°</td>
+            <td class="py-1 font-bold ${c.valM >= 0 ? 'text-emerald-300' : 'text-rose-400'}">${c.valM >= 0 ? '+' : ''}${c.valM.toFixed(3)} m</td>
+          `;
+          cTbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('lbl-probe-km').textContent =
+        `${tide.probe.km.toFixed(2)} km (${tide.probe.name} | Bodem ${tide.probe.napBedM >= 0 ? '+' : ''}${tide.probe.napBedM.toFixed(2)}m NAP | Lood ${tide.probeWaterDepthM.toFixed(2)}m)`;
+      document.getElementById('sounding-probe-readout').textContent =
+        `Lood: ${tide.probeWaterDepthM.toFixed(2)}m (${tide.probe.name})`;
+
+      renderBathymetryCrossSectionCanvas(tide);
+
+      if (!VortexState.layers.repro_kaart_kalibratie) {
+        updateParcelGreenUI();
+      } else {
+        recalcReproPlanimeter();
+      }
+
+      const solarBodies = getDynamicSolarSystemBodies(jd);
+      const satBody = calcSatelliteTelemetry(jd, obs.lat, obs.lon);
+      const allBodies = [...solarBodies, satBody, ...CelestialCatalog];
+      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+      const selectedReductions = reductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+      const gdop = calcGDOPForSet(selectedReductions);
+      VortexState.lastGDOP = gdop;
+      document.getElementById('hud-gdop').textContent = gdop.toFixed(2);
+
+      const fix = computeLeastSquaresFix(selectedReductions, obs.lat, obs.lon);
+      document.getElementById('fix-readout').textContent =
+        `${formatDMM(fix.fixLat)}N, ${formatDMM(fix.fixLon)}E (GDOP ${gdop.toFixed(2)})`;
+
+      renderCanvas(reductions, selectedReductions, fix, satBody, tide);
+      syncMapLibreGeoJSON();
+    }
+
+    /***************************************************************************
+     * 14. REAL-TIME 60 FPS CANVAS RENDERER (WITH EMBEDDED TIDAL BATHYMETRY HUD)
+     ***************************************************************************/
+    const canvas = document.getElementById('vortex-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      renderCanvas();
+      if (VortexState.lastTideState) renderBathymetryCrossSectionCanvas(VortexState.lastTideState);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      if (vortexMap) vortexMap.resize();
+    });
+
+    function skyToCanvas(azDeg, altDeg, cx, cy, maxR) {
+      const clampedAlt = Math.max(-32, Math.min(90, altDeg));
+      const r = maxR * ((90 - clampedAlt) / 90);
+      const theta = (azDeg - 90) * DEG2RAD;
+      return { x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta) };
+    }
+
+    function renderCanvas(allReductions = null, selectedReductions = null, fixData = null, satBody = null, tide = null) {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      if (!allReductions) {
+        const solarBodies = getDynamicSolarSystemBodies(jd);
+        satBody = calcSatelliteTelemetry(jd, obs.lat, obs.lon);
+        const allBodies = [...solarBodies, satBody, ...CelestialCatalog];
+        allReductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+        selectedReductions = allReductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+        fixData = computeLeastSquaresFix(selectedReductions, obs.lat, obs.lon);
+        tide = VortexState.lastTideState || computeHarmonicTide(jd);
+      }
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#03060c';
+      ctx.fillRect(0, 0, w, h);
+
+      const cx = w * 0.5, cy = h * 0.43;
+      const maxR = Math.min(w, h) * 0.30;
+
+      // Base Horizon Circle
+      ctx.save();
+      ctx.strokeStyle = 'rgba(30, 47, 77, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, maxR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // LAYER 1: STERREN
+      if (VortexState.layers.sterren) {
+        ctx.save();
+        const findBody = name => allReductions.find(b => b.name === name);
+        const hexOrder = ['Sirius', 'Procyon', 'Pollux', 'Capella', 'Aldebaran', 'Rigel', 'Sirius'];
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        let started = false;
+        hexOrder.forEach(name => {
+          const b = findBody(name);
+          if (b && b.hcDeg > -28) {
+            const pt = skyToCanvas(b.znDeg, b.hcDeg, cx, cy, maxR);
+            if (!started) { ctx.moveTo(pt.x, pt.y); started = true; } else ctx.lineTo(pt.x, pt.y);
+          }
+        });
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        allReductions.forEach(body => {
+          if (body.type === 'satellite' || body.hcDeg < -24) return;
+          const pt = skyToCanvas(body.znDeg, body.hcDeg, cx, cy, maxR);
+          const isFixStar = VortexState.selectedFixBodies.includes(body.name);
+          const isSirius = body.name === 'Sirius';
+          const isMajor = body.winterHex || isFixStar || body.type === 'sun' || body.type === 'moon' || body.navNr === 0;
+          const radius = body.type === 'sun' || body.type === 'moon' ? 5.5 : isSirius ? 4.8 : isFixStar ? 4.2 : isMajor ? 3.0 : 2.0;
+
+          ctx.fillStyle = body.hcDeg >= 0 ? body.color : 'rgba(100, 116, 139, 0.5)';
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
+
+          if (isMajor || body.hcDeg > 12) {
+            ctx.fillStyle = body.hcDeg >= 0 ? '#f8fafc' : '#94a3b8';
+            ctx.font = (isFixStar || isSirius) ? 'bold 9px "JetBrains Mono"' : '8px "JetBrains Mono"';
+            const nrTag = typeof body.navNr === 'number' && body.navNr > 0 ? `#${body.navNr} ` : '';
+            ctx.fillText(`${nrTag}${body.name}`, pt.x + 5, pt.y + 3);
+          }
+        });
+        ctx.restore();
+      }
+
+      // LAYER 2: NAUTISCHE_POSITIELIJNEN
+      if (VortexState.layers.nautische_positielijnen && selectedReductions) {
+        ctx.save();
+        const nmScale = 14.0;
+        selectedReductions.forEach(r => {
+          const azRad = (r.znDeg - 90) * DEG2RAD;
+          const pDistPx = r.interceptNM * nmScale;
+          const ix = cx + pDistPx * Math.cos(azRad);
+          const iy = cy + pDistPx * Math.sin(azRad);
+          const perpRad = azRad + Math.PI / 2;
+          const lopHalfLen = 75;
+          ctx.strokeStyle = r.color;
+          ctx.lineWidth = 2.0;
+          ctx.beginPath();
+          ctx.moveTo(ix - lopHalfLen * Math.cos(perpRad), iy - lopHalfLen * Math.sin(perpRad));
+          ctx.lineTo(ix + lopHalfLen * Math.cos(perpRad), iy + lopHalfLen * Math.sin(perpRad));
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
+      // LAYER 3: EMBEDDED HARMONIC TIDE CURVE & NAP BATHYMETRY STRIP AT BOTTOM OF SKY CANVAS
+      if ((VortexState.layers.harmonisch_getij || VortexState.layers.bathymetrie_profiel) && tide) {
+        ctx.save();
+        const stripTop = h * 0.72;
+        const stripH = h * 0.20;
+        const stripL = 16, stripR = w - 16, stripW = stripR - stripL;
+
+        ctx.fillStyle = 'rgba(5, 10, 20, 0.92)';
+        ctx.strokeStyle = '#1e2f4d';
+        ctx.fillRect(stripL, stripTop, stripW, stripH);
+        ctx.strokeRect(stripL, stripTop, stripW, stripH);
+
+        // Left half: 24h Harmonic Tide Curve (-12u .. +12u)
+        const halfW = stripW * 0.48;
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        tide.curve24h.forEach((pt, idx) => {
+          const x = stripL + 8 + ((pt.dh + 12) / 24) * (halfW - 16);
+          const y = stripTop + stripH * 0.5 - (pt.napM / 3.5) * (stripH * 0.42);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Current time marker at dh = 0
+        const nowX = stripL + 8 + 0.5 * (halfW - 16);
+        const nowY = stripTop + stripH * 0.5 - (tide.totalNapM / 3.5) * (stripH * 0.42);
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath(); ctx.arc(nowX, nowY, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = 'bold 9px "JetBrains Mono"';
+        ctx.fillText(`GETIJ M2/S2/N2/K1: ${tide.totalNapM >= 0 ? '+' : ''}${tide.totalNapM.toFixed(2)}m NAP`, stripL + 8, stripTop + 12);
+
+        // Right half: Mini Bathymetry Transect Pluimpot -> Geul -> Lodijke M 369
+        const rightL = stripL + halfW + 10;
+        const rightW = stripW - halfW - 18;
+        const kmToX = km => rightL + (km / 8.5) * rightW;
+        const napToY = nap => stripTop + 14 + ((5.0 - nap) / 24.0) * (stripH - 18);
+
+        const yWater = napToY(tide.totalNapM);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.beginPath(); ctx.moveTo(rightL, yWater); ctx.lineTo(rightL + rightW, yWater); ctx.stroke();
+
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        BathymetryTransectNodes.forEach((n, idx) => {
+          const x = kmToX(n.km), y = napToY(n.napBedM);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        const probeX = kmToX(tide.probe.km);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.beginPath(); ctx.moveTo(probeX, yWater); ctx.lineTo(probeX, napToY(tide.probe.napBedM)); ctx.stroke();
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 9px "JetBrains Mono"';
+        ctx.fillText(`LOOD ${tide.probe.km.toFixed(1)}km: ${tide.probeWaterDepthM.toFixed(2)}m`, rightL, stripTop + 12);
+        ctx.restore();
+      }
+    }
+
+    // Interactive click/drag on dedicated Bathymetry Canvas to move Sounding Lead (Peillood)
+    const bCanvasEl = document.getElementById('bathymetrie-canvas');
+    if (bCanvasEl) {
+      bCanvasEl.addEventListener('pointerdown', e => {
+        const rect = bCanvasEl.getBoundingClientRect();
+        const km = Math.max(0, Math.min(8.5, ((e.clientX - rect.left - 38) / (rect.width - 52)) * 8.5));
+        VortexState.probeKm = km;
+        const sl = document.getElementById('slider-probe-km');
+        if (sl) sl.value = km;
+        updateAllCalculations();
+      });
+    }
+
+    /***************************************************************************
+     * 15. REAL-TIME 60 FPS ANIMATION ENGINE & PUBLIC API
+     ***************************************************************************/
+    function stepTime(seconds) {
+      VortexState.currentDate = new Date(VortexState.currentDate.getTime() + seconds * 1000);
+      updateAllCalculations();
+    }
+
+    function setNowSystemTime() {
+      VortexState.currentDate = new Date();
+      VortexState.liveClock = true;
+      updateLiveClockButtonUI();
+      updateAllCalculations();
+    }
+
+    function setTimeWarp(factor) {
+      VortexState.timeWarpFactor = parseFloat(factor) || 1.0;
+      VortexState.liveClock = true;
+      updateLiveClockButtonUI();
+    }
+
+    function toggleLiveClock() {
+      VortexState.liveClock = !VortexState.liveClock;
+      VortexState.lastFrameTimeMs = performance.now();
+      updateLiveClockButtonUI();
+    }
+
+    function updateLiveClockButtonUI() {
+      const btn = document.getElementById('btn-live-clock');
+      const dot = document.getElementById('rt-pulse-dot');
+      if (!btn) return;
+      if (VortexState.liveClock) {
+        btn.textContent = `▶️ REAL-TIME (${VortexState.timeWarpFactor}×)`;
+        btn.className = 'cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan font-bold';
+        if (dot) dot.className = 'w-3 h-3 rounded-full bg-vortex-emerald animate-ping shadow-[0_0_12px_#10b981]';
+      } else {
+        btn.textContent = '⏸️ GEPAUZEERD';
+        btn.className = 'cyber-btn px-2.5 py-1 rounded text-[11px] bg-amber-500/20 border-amber-500 text-amber-300 font-semibold';
+        if (dot) dot.className = 'w-3 h-3 rounded-full bg-amber-400';
+      }
+    }
+
+    let lastUiTableRefreshMs = 0;
+    function realtimeAnimationLoop(nowMs) {
+      const dtMs = Math.min(200, nowMs - VortexState.lastFrameTimeMs);
+      VortexState.lastFrameTimeMs = nowMs;
+
+      if (VortexState.liveClock) {
+        if (VortexState.timeWarpFactor === 1.0 && Math.abs(Date.now() - VortexState.currentDate.getTime()) < 5000) {
+          VortexState.currentDate = new Date();
+        } else {
+          VortexState.currentDate = new Date(VortexState.currentDate.getTime() + dtMs * VortexState.timeWarpFactor);
+        }
+
+        if (nowMs - lastUiTableRefreshMs > 300) {
+          lastUiTableRefreshMs = nowMs;
+          updateAllCalculations();
+        } else {
+          renderCanvas();
+        }
+      }
+      requestAnimationFrame(realtimeAnimationLoop);
+    }
+
+    function kernelLog(msg, level = 'info') {
+      const out = document.getElementById('kernel-console-output');
+      if (!out) return;
+      const line = document.createElement('div');
+      const ts = new Date().toISOString().slice(11, 19);
+      const colorClass =
+        level === 'success' ? 'text-emerald-400' :
+        level === 'warn' ? 'text-amber-400' :
+        level === 'error' ? 'text-red-400' : 'text-cyan-300';
+      line.className = `${colorClass} leading-relaxed whitespace-pre-wrap`;
+      line.textContent = `[${ts}] ${msg}`;
+      out.appendChild(line);
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function clearKernelConsole() {
+      const out = document.getElementById('kernel-console-output');
+      if (out) out.innerHTML = '';
+    }
+
+    window.VortexKernel = {
+      setLayer: (name, state) => toggleLayer(name, state),
+      calcHarmonicTide: (stationId = 'BERGSE_DIEPSLUIS', surgeM = 0.0) => {
+        VortexState.activeTideStationId = stationId;
+        VortexState.stormSurgeM = surgeM;
+        updateAllCalculations();
+        const t = VortexState.lastTideState;
+        kernelLog(
+          `🌊 HARMONISCH GETIJ (${t.stationName}):\n` +
+          `  Waterstand H(t) : ${t.totalNapM >= 0 ? '+' : ''}${t.totalNapM.toFixed(3)} m NAP (+${t.totalLatM.toFixed(3)} m LAT) [${t.phaseLabel}]\n` +
+          `  Perceel M 369   : ${t.isM369Exposed ? `DROOGGEVALLEN (+${Math.abs(t.depthM369).toFixed(2)}m boven water)` : `ONDER WATER (${t.depthM369.toFixed(2)}m waterkolom)`}`,
+          'success'
+        );
+        return t;
+      },
+      probeBathymetry: (kmVal = 6.80) => {
+        VortexState.probeKm = kmVal;
+        const sl = document.getElementById('slider-probe-km');
+        if (sl) sl.value = kmVal;
+        updateAllCalculations();
+        const t = VortexState.lastTideState;
+        kernelLog(`⚓ DIEPTELOOD op Km ${t.probe.km.toFixed(2)} (${t.probe.name}): Bodem=${t.probe.napBedM.toFixed(2)}m NAP, Looddiepte=${t.probeWaterDepthM.toFixed(2)}m water.`, 'info');
+        return t.probe;
+      },
+      exportRScript: (download = false) => {
+        const { rCode } = generateRAndScilabScripts();
+        kernelLog('📊 R Statistisch Validatie-Script (.R) gegenereerd:\n' + rCode, 'success');
+        if (download) downloadRScriptFile();
+        return rCode;
+      },
+      exportScilabScript: (download = false) => {
+        const { sciCode } = generateRAndScilabScripts();
+        kernelLog('🧮 Scilab Matrix-Script (.sce) gegenereerd:\n' + sciCode, 'success');
+        if (download) downloadScilabScriptFile();
+        return sciCode;
+      },
+      exportBinarySTL: (download = false) => {
+        const info = generateBinarySTLBuffer();
+        if (download) downloadBinarySTLFile();
+        return info;
+      },
+      loadTimeCapsule: (id) => loadTimeCapsule(id),
+      runProcrustes1889: () => {
+        runVanGoghProcrustes1889();
+        const jd = dateToJulianDate(VortexState.currentDate);
+        const obs = VortexState.observer;
+        const allBodies = [...getDynamicSolarSystemBodies(jd), ...CelestialCatalog];
+        const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+        return computeVanGoghProcrustes(reductions);
+      },
+      log: (msg) => kernelLog(String(msg), 'info')
+    };
+
+    const KernelTemplates = {
+      tpl_tide_bathymetry: `// VORTEX KERNEL SCRIPT 1: Harmonische Getijdenvoorspelling (M2/S2/N2/K1) & NAP-Dieptelood
+const tide = VortexKernel.calcHarmonicTide("BERGSE_DIEPSLUIS", 0.0);
+
+// Peil de diepte in de afgedamde Pluimpot (0.8 km), de Oosterschelde-geul (3.6 km) en Bol van Lodijke M 369 (6.8 km)
+VortexKernel.probeBathymetry(0.80);
+VortexKernel.probeBathymetry(3.60);
+VortexKernel.probeBathymetry(6.80);`,
+
+      tpl_r_scilab_export: `// VORTEX KERNEL SCRIPT 2: Exporteer 3x3 Homografie H, Procrustes SVD & Getij naar R (.R) en Scilab (.sce)
+VortexKernel.exportRScript(false);      // Zet op true om direct het .R bestand te downloaden
+VortexKernel.exportScilabScript(false); // Zet op true om direct het .sce bestand te downloaden`,
+
+      tpl_openseamap_pedestal: `// VORTEX KERNEL SCRIPT 3: Genereer Binaire 3D .STL met Gegraveerd Voetstuk (Lodijke M 369)
+const stl = VortexKernel.exportBinarySTL(false);
+VortexKernel.log("Binaire STL gereed: " + stl.numTri + " driehoeken (" + stl.byteLength + " bytes)");`,
+
+      tpl_1953_storm_surge: `// VORTEX KERNEL SCRIPT 4: Reconstructie Watersnoodramp 1 Februari 1953 03:00 UT (+3.10m Stormopzet)
+VortexKernel.loadTimeCapsule("CAP-1953-WATERSNOOD");
+VortexKernel.calcHarmonicTide("STAVENISSE", 3.10);
+VortexKernel.probeBathymetry(0.0); // Dijkhoogte Scherpenisse / Sint-Maartensdijk`,
+
+      tpl_procrustes_1889: `// VORTEX KERNEL SCRIPT 5: Wiskundige Procrustes-Analyse De Sterrennacht (19 Juni 1889 03:35 UT)
+const res = VortexKernel.runProcrustes1889();
+VortexKernel.log("Procrustes SVD Rotatie θ = " + res.thetaDeg.toFixed(2) + "°, Schaal s = " + res.scale.toFixed(3) + "×");`
+    };
+
+    function loadKernelTemplate(tplKey) {
+      const editor = document.getElementById('kernel-code-editor');
+      if (editor && KernelTemplates[tplKey]) editor.value = KernelTemplates[tplKey];
+    }
+
+    function runKernelScript() {
+      const code = document.getElementById('kernel-code-editor').value;
+      const statusEl = document.getElementById('editor-status');
+      try {
+        statusEl.textContent = 'EXECUTING...';
+        const fn = new Function('VortexKernel', code);
+        fn(window.VortexKernel);
+        statusEl.textContent = 'OK (EXECUTED)';
+      } catch (err) {
+        statusEl.textContent = 'KERNEL ERROR';
+        kernelLog(`❌ Fout: ${err.message}`, 'error');
+      }
+    }
+
+    function copyKernelCode() {
+      const editor = document.getElementById('kernel-code-editor');
+      if (!editor) return;
+      editor.select();
+      document.execCommand('copy');
+      kernelLog('📋 Code gekopieerd naar klembord.', 'info');
+    }
+
+    /***************************************************************************
+     * 16. INITIALIZATION ON WINDOW LOAD
+     ***************************************************************************/
+    window.onload = function () {
+      syncLayerButtonsUI();
+      const green = updateParcelGreenUI('LODIJKE-369');
+      syncPedestalEngravingFromParcel(green);
+      generateOpenSCADModel();
+      generateSolidPodTurtle();
+      generateRAndScilabScripts();
+      loadKernelTemplate('tpl_tide_bathymetry');
+      resizeCanvas();
+      initMapLibre3D();
+      updateAllCalculations();
+      requestAnimationFrame(realtimeAnimationLoop);
+
+      kernelLog('🌊 VORTEX KERNEL IDE v35.0 geladen: Harmonisch Getij (M2/S2/N2/K1/O1/M4), NAP-Bathymetrie Pluimpot-Lodijke & R/Scilab Matrices actief.', 'success');
+    };
+  </script>
+</body>
+</html>
