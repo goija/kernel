@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>VORTEX KERNEL IDE v32.0 // 3x3 Homografie Ott 573, Binaire STL + OpenSCAD & Solid POD GRAMPS RDF</title>
+  <title>VORTEX KERNEL IDE v34.0 // OpenSeaMap + Nautisch Zeegrid, 3D Reliëf-Voetstuk (.STL/.SCAD), Ott 573 & Solid GRAMPS</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official MapLibre GL JS v4.7.1 -->
@@ -103,18 +103,18 @@
 </head>
 <body class="min-h-screen flex flex-col select-none">
 
-  <!-- TOP TELEMETRY & KERNEL HEADER -->
+  <!-- TOP TELEMETRY & OPENSEAMAP NAUTICAL HEADER -->
   <header class="cyber-panel border-b border-vortex-border px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 sticky top-0">
     <div class="flex items-center gap-2.5">
       <div id="rt-pulse-dot" class="w-3 h-3 rounded-full bg-vortex-emerald animate-ping shadow-[0_0_12px_#10b981]"></div>
       <div>
         <div class="flex items-center gap-2">
-          <span class="font-bold text-xs sm:text-sm tracking-wider text-vortex-cyan">VORTEX KERNEL IDE v32.0</span>
-          <span class="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-vortex-emerald/20 border border-vortex-emerald/50 text-emerald-300">3x3 HOMOGRAFIE · BINAIRE STL + OPENSCAD · SOLID POD GRAMPS RDF</span>
+          <span class="font-bold text-xs sm:text-sm tracking-wider text-vortex-cyan">VORTEX KERNEL IDE v34.0</span>
+          <span class="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-vortex-cyan/20 border border-vortex-cyan/50 text-vortex-cyan font-bold">⚓ OPENSEAMAP + ZEEGRID START · 3D VOETSTUK STL/SCAD · OTT 573</span>
         </div>
         <div class="text-[10px] text-slate-400 flex items-center gap-2">
-          <span id="hdr-location">ANKER: LAREN / MIDDEN-NL (52.2500°N, 5.2200°E)</span>
-          <span class="text-vortex-amber hidden sm:inline" id="hdr-rd">RD: 143582 · 473566</span>
+          <span id="hdr-location">ZEE-ANKER: BOL VAN LODIJKE / OOSTERSCHELDE (51.4783°N, 4.1375°E)</span>
+          <span class="text-vortex-amber hidden sm:inline" id="hdr-rd">RD: 68120 · 388050</span>
         </div>
       </div>
     </div>
@@ -123,38 +123,41 @@
     <div class="flex items-center gap-2 sm:gap-3 bg-[#050a14] px-3 py-1 rounded border border-vortex-border text-[11px]">
       <div>
         <span class="text-slate-500">UTC:</span>
-        <span id="hdr-utc" class="text-slate-200 font-semibold">2026-11-06 10:48:00</span>
+        <span id="hdr-utc" class="text-slate-200 font-semibold">2026-11-06 11:04:00</span>
       </div>
       <div class="hidden sm:block border-l border-slate-800 pl-2.5">
         <span class="text-slate-500">JD:</span>
-        <span id="hdr-jd" class="text-vortex-amber">2461350.95000</span>
+        <span id="hdr-jd" class="text-vortex-amber">2461350.96111</span>
       </div>
       <div class="border-l border-slate-800 pl-2.5">
         <span class="text-slate-500">LST:</span>
-        <span id="hdr-lst" class="text-vortex-cyan font-bold">14h 12m 03s</span>
+        <span id="hdr-lst" class="text-vortex-cyan font-bold">14h 23m 48s</span>
       </div>
       <div class="hidden xl:block border-l border-slate-800 pl-2.5">
-        <span class="text-slate-500">OTT 573 (H):</span>
+        <span class="text-slate-500">OTT 573:</span>
         <span id="hdr-planimeter" class="text-vortex-emerald font-bold">11.13 ha (28.37 gem.)</span>
       </div>
     </div>
 
     <!-- Quick Action & Export Buttons -->
     <div class="flex items-center gap-1.5">
-      <button onclick="syncRealtimeQuadPipes()" title="Start Real-Time Sterrenhemel + MapLibre 3D Kadaster Sync" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 font-bold flex items-center gap-1">
-        <span>⚡</span><span class="hidden sm:inline">LIVE REALTIME</span>
+      <button onclick="bootOpenSeaMapAndZeegrid()" title="Hercentreer op OpenSeaMap Oosterschelde + Nautisch Zeegrid" class="cyber-btn px-2.5 py-1 rounded text-[11px] bg-vortex-cyan/25 border-vortex-cyan text-vortex-cyan font-bold flex items-center gap-1">
+        <span>⚓</span><span class="hidden sm:inline">ZEEGRID FOCUS</span>
       </button>
-      <button onclick="downloadBinarySTLFile()" title="Genereer en download direct een Binaire .STL 3D-mesh van het perceel + sterrenkoepel" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-amber/20 border-vortex-amber text-amber-300 font-bold flex items-center gap-1">
-        <span>📐</span><span class="hidden sm:inline">Download .STL</span>
+      <button onclick="downloadBinarySTLFile()" title="Download Binaire .STL inclusief 3D-Voetstuk met gegraveerde Perceelnaam, Gemeten & RD" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-amber/20 border-vortex-amber text-amber-300 font-bold flex items-center gap-1">
+        <span>📐</span><span class="hidden sm:inline">Voetstuk .STL</span>
       </button>
-      <button onclick="downloadOpenSCADFile()" title="Download het parametrische OpenSCAD (.scad) 3D-printscript" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan font-bold flex items-center gap-1">
-        <span>🧊</span><span class="hidden sm:inline">.SCAD</span>
-      </button>
-      <button onclick="downloadSolidTurtleFile()" title="Download Solid POD Linked Data (.ttl) met GRAMPS Genealogie Triples" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-purple/20 border-vortex-purple text-purple-300 font-bold flex items-center gap-1">
-        <span>🔗</span><span class="hidden sm:inline">GRAMPS .TTL</span>
+      <button onclick="downloadOpenSCADFile()" title="Download OpenSCAD (.scad) met parametrisch gegraveerd 3D-voetstuk" class="cyber-btn px-2 py-1 rounded text-[11px] bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 font-bold flex items-center gap-1">
+        <span>🧊</span><span class="hidden sm:inline">Voetstuk .SCAD</span>
       </button>
       <button id="btn-view-split" onclick="setViewportSplit('split')" class="cyber-btn cyber-btn-active px-2 py-1 rounded text-[11px] font-bold">
         <span>🗺️+✨</span>
+      </button>
+      <button id="btn-view-map" onclick="setViewportSplit('map')" title="Volledig Scherm OpenSeaMap + Zeegrid" class="cyber-btn px-2 py-1 rounded text-[11px] text-vortex-cyan">
+        <span>🗺️ Zee</span>
+      </button>
+      <button id="btn-view-sky" onclick="setViewportSplit('sky')" class="cyber-btn px-2 py-1 rounded text-[11px] text-slate-300">
+        <span>✨</span>
       </button>
       <button onclick="panicResetAllLayers()" title="Zet alle projectielagen op OFF" class="cyber-btn px-2 py-1 rounded text-[11px] bg-red-950/50 border-red-800/70 text-red-300 hover:bg-red-900/60">
         🛑 UIT
@@ -162,42 +165,48 @@
     </div>
   </header>
 
-  <!-- MULTI-CALENDAR, SAROS, HOMOGRAFIE & GRAMPS RIBBON -->
+  <!-- NAUTICAL ZEEGRID, MULTI-CALENDAR & PEDESTAL ENGRAVING RIBBON -->
   <section class="bg-[#040914] border-b border-vortex-border px-3 py-1 flex flex-wrap items-center justify-between gap-2 text-[10px] z-20">
     <div class="flex flex-wrap items-center gap-2.5">
+      <span>⚓ <strong class="text-vortex-cyan">OpenSeaMap &amp; Zeegrid:</strong> <span id="cal-sea-status" class="text-emerald-300 font-semibold">Oosterschelde Seamarks [ACTIEF] | 1' Δφ = 1.0 Zeemijl (1852m)</span></span>
+      <span class="text-slate-600">|</span>
       <span>☀️ <strong class="text-vortex-amber">Zon/Greg:</strong> <span id="cal-solar" class="text-slate-300">2026-11-06 | λ☉ 223.9°</span></span>
       <span class="text-slate-600">|</span>
-      <span>🌙 <strong class="text-vortex-cyan">Maan/Hijri:</strong> <span id="cal-lunar" class="text-slate-300">26.8d (8.1%) | Lun #1285</span></span>
+      <span>🌙 <strong class="text-vortex-cyan">Maan/Getij:</strong> <span id="cal-lunar" class="text-slate-300">26.8d (8.1%) | Lun #1285</span></span>
       <span class="text-slate-600">|</span>
       <span>🏛️ <strong class="text-rose-400">Frans Rep.:</strong> <span id="cal-french" class="text-slate-200 font-semibold">16 Brumaire An CCXXXV</span></span>
       <span class="text-slate-600">|</span>
-      <span>🗿 <strong class="text-emerald-400">Maya:</strong> <span id="cal-maya" class="text-slate-200 font-semibold">13.0.14.0.18 | 9 Etz'nab'</span></span>
-      <span class="text-slate-600">|</span>
-      <span>📐 <strong class="text-amber-300">Homografie H:</strong> <span id="cal-homography" class="text-slate-200">det(H)=1.0004 | Orthogonaal Rechtgetrokken</span></span>
-      <span class="text-slate-600">|</span>
-      <span>🧬 <strong class="text-purple-300">GRAMPS Graaf:</strong> <span id="cal-gramps" class="text-slate-200">B.W. Schot (1840–1935) · Bastiaen Bout (1684) · C.M. Guiljam</span></span>
+      <span>🗿 <strong class="text-purple-300">3D Voetstuk Gravure:</strong> <span id="cal-pedestal-preview" class="text-amber-300 font-bold">BOL VAN LODIJKE M 369 · 28.37 GEMETEN · RD 68120 388050</span></span>
     </div>
   </section>
 
-  <!-- LAYER CONTROL BAR -->
+  <!-- LAYER CONTROL BAR (STARTS WITH OPENSEAMAP + ZEEGRID + 3D KADASTER ON) -->
   <section class="bg-[#060b16] border-b border-vortex-border px-3 py-1.5 flex items-center justify-between gap-2 overflow-x-auto z-20">
     <div class="flex items-center gap-1.5 shrink-0">
       <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mr-1">Lagen:</span>
-      
-      <button id="layer-btn-sterren" onclick="toggleLayer('sterren')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>✨</span><span>57_sterren</span><span class="font-bold text-[9px]" id="state-sterren">[OFF]</span>
+
+      <button id="layer-btn-openseamap_seamarks" onclick="toggleLayer('openseamap_seamarks')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>⚓</span><span>openseamap_betonning</span><span class="font-bold text-[9px]" id="state-openseamap_seamarks">[ON]</span>
       </button>
 
-      <button id="layer-btn-uurhoek_grid" onclick="toggleLayer('uurhoek_grid')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>🧭</span><span>uurhoek_grid</span><span class="font-bold text-[9px]" id="state-uurhoek_grid">[OFF]</span>
+      <button id="layer-btn-nautisch_zeegrid" onclick="toggleLayer('nautisch_zeegrid')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🌐</span><span>nautisch_zeegrid</span><span class="font-bold text-[9px]" id="state-nautisch_zeegrid">[ON]</span>
       </button>
 
-      <button id="layer-btn-nautische_positielijnen" onclick="toggleLayer('nautische_positielijnen')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>⚓</span><span>marcq_lop</span><span class="font-bold text-[9px]" id="state-nautische_positielijnen">[OFF]</span>
+      <button id="layer-btn-kadastrale_percelen" onclick="toggleLayer('kadastrale_percelen')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🏛️</span><span>3d_kadaster_zeeland</span><span class="font-bold text-[9px]" id="state-kadastrale_percelen">[ON]</span>
       </button>
 
-      <button id="layer-btn-kadastrale_percelen" onclick="toggleLayer('kadastrale_percelen')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>🏛️</span><span>3d_kadaster</span><span class="font-bold text-[9px]" id="state-kadastrale_percelen">[OFF]</span>
+      <button id="layer-btn-nautische_positielijnen" onclick="toggleLayer('nautische_positielijnen')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>🧭</span><span>marcq_lop_zeemijl</span><span class="font-bold text-[9px]" id="state-nautische_positielijnen">[ON]</span>
+      </button>
+
+      <button id="layer-btn-sterren" onclick="toggleLayer('sterren')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>✨</span><span>57_navigatiesterren</span><span class="font-bold text-[9px]" id="state-sterren">[ON]</span>
+      </button>
+
+      <button id="layer-btn-uurhoek_grid" onclick="toggleLayer('uurhoek_grid')" class="layer-pill-on border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
+        <span>📐</span><span>uurhoek_grid</span><span class="font-bold text-[9px]" id="state-uurhoek_grid">[ON]</span>
       </button>
 
       <button id="layer-btn-repro_kaart_kalibratie" onclick="toggleLayer('repro_kaart_kalibratie')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
@@ -205,19 +214,11 @@
       </button>
 
       <button id="layer-btn-planimeter_arm" onclick="toggleLayer('planimeter_arm')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>📐</span><span>ott_573_green</span><span class="font-bold text-[9px]" id="state-planimeter_arm">[OFF]</span>
+        <span>📏</span><span>ott_573_arm</span><span class="font-bold text-[9px]" id="state-planimeter_arm">[OFF]</span>
       </button>
 
       <button id="layer-btn-procrustes_vangogh" onclick="toggleLayer('procrustes_vangogh')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
         <span>🎨</span><span>procrustes_1889</span><span class="font-bold text-[9px]" id="state-procrustes_vangogh">[OFF]</span>
-      </button>
-
-      <button id="layer-btn-maansknopen_saros" onclick="toggleLayer('maansknopen_saros')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>🌑</span><span>saros_Ω☋</span><span class="font-bold text-[9px]" id="state-maansknopen_saros">[OFF]</span>
-      </button>
-
-      <button id="layer-btn-satelliet_baan" onclick="toggleLayer('satelliet_baan')" class="layer-pill-off border px-2 py-0.5 rounded text-[11px] flex items-center gap-1 transition">
-        <span>🛰️</span><span>sgp4_tle</span><span class="font-bold text-[9px]" id="state-satelliet_baan">[OFF]</span>
       </button>
     </div>
 
@@ -231,67 +232,105 @@
   <!-- MAIN WORKSPACE CONTAINER -->
   <main id="main-workspace" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
 
-    <!-- LEFT / TOP VIEWPORT: DUAL ASTROMETRIC/HOMOGRAPHY CANVAS + MAPLIBRE GL JS SPATIAL AI (Cols 1-7) -->
+    <!-- LEFT / TOP VIEWPORT: OPENSEAMAP + NAUTICAL ZEEGRID (LEFT) & ASTRO/HOMOGRAPHY CANVAS (RIGHT) (Cols 1-7) -->
     <section id="viewport-section" class="lg:col-span-7 flex flex-col gap-2 min-h-[460px] lg:h-[calc(100vh-134px)]">
       
-      <!-- REALTIME QUAD DATA PIPE TELEMETRY RIBBON -->
+      <!-- REALTIME NAUTICAL & QUAD DATA PIPE TELEMETRY RIBBON -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 shrink-0">
         <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-cyan-400">
           <div class="flex items-center justify-between text-[10px]">
-            <span class="font-bold text-vortex-cyan">🌟 STER: SIRIUS (#18)</span>
-            <span id="pipe-star-status" class="text-[9px] px-1 rounded bg-slate-800 text-slate-300">SHA 258.7°</span>
+            <span class="font-bold text-vortex-cyan">⚓ ZEEGRID &amp; SEAMARKS</span>
+            <span id="pipe-sea-badge" class="text-[9px] px-1 rounded bg-cyan-500/20 text-vortex-cyan">OpenSeaMap</span>
           </div>
-          <div id="pipe-star-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">Hc -19.2° | Zn 268.1°</div>
-          <div id="pipe-star-sub" class="text-[9px] text-slate-400">LHA 092.4° | 57 Almanak Sterren</div>
-        </div>
-
-        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-amber-400">
-          <div class="flex items-center justify-between text-[10px]">
-            <span class="font-bold text-vortex-amber">☀️ ZON (HELIOS)</span>
-            <span id="pipe-sun-status" class="text-[9px] px-1 rounded bg-amber-500/20 text-amber-300">SD +16.1'</span>
-          </div>
-          <div id="pipe-sun-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">Hc +20.84° | Zn 164.8°</div>
-          <div id="pipe-sun-sub" class="text-[9px] text-slate-400">MapLibre 3D Schaduwbron</div>
+          <div id="pipe-sea-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">51°28.7'N, 004°08.3'E</div>
+          <div id="pipe-sea-sub" class="text-[9px] text-slate-400">Oosterschelde · Ringen 0.5–5 NM</div>
         </div>
 
         <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-emerald-400">
           <div class="flex items-center justify-between text-[10px]">
             <span class="font-bold text-vortex-emerald">📐 OTT 573 + HOMOGRAFIE</span>
-            <span id="pipe-plan-status" class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300">3×3 DLT H</span>
+            <span id="pipe-plan-status" class="text-[9px] px-1 rounded bg-emerald-500/20 text-emerald-300">Green ∮xdy</span>
           </div>
           <div id="pipe-plan-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">11.13 ha | 28.37 gem.</div>
           <div id="pipe-plan-sub" class="text-[9px] text-slate-400">Perceel M 369 | Nonius 178.12 cm²</div>
         </div>
 
+        <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-amber-400">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-vortex-amber">☀️ ZON &amp; #18 SIRIUS</span>
+            <span id="pipe-sun-status" class="text-[9px] px-1 rounded bg-amber-500/20 text-amber-300">57 Nav-Sterren</span>
+          </div>
+          <div id="pipe-sun-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">Hc +21.4° | Zn 168.2°</div>
+          <div id="pipe-sun-sub" class="text-[9px] text-slate-400">Sirius LHA 095.1° | GDOP 1.38</div>
+        </div>
+
         <div class="cyber-panel rounded px-2.5 py-1.5 border-l-2 border-l-purple-400">
           <div class="flex items-center justify-between text-[10px]">
-            <span class="font-bold text-purple-300">🧊 STL + SOLID GRAMPS</span>
-            <span id="pipe-stl-badge" class="text-[9px] px-1 rounded bg-purple-500/20 text-purple-300">128 Facets</span>
+            <span class="font-bold text-purple-300">🧊 3D VOETSTUK STL/SCAD</span>
+            <span id="pipe-stl-badge" class="text-[9px] px-1 rounded bg-purple-500/20 text-purple-300">Reliëf-Tekst</span>
           </div>
-          <div id="pipe-proc-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">Binaire .STL + .TTL</div>
-          <div id="pipe-proc-sub" class="text-[9px] text-slate-400">Schot · Bout · Guiljam Graaf</div>
+          <div id="pipe-proc-coords" class="text-[11px] font-bold text-slate-100 mt-0.5">Naam + Gemeten + RD</div>
+          <div id="pipe-proc-sub" class="text-[9px] text-slate-400">Gegraveerde 45° Chamfer Plint</div>
         </div>
       </div>
 
-      <!-- DUAL VIEWPORT CONTAINER -->
+      <!-- DUAL VIEWPORT CONTAINER: PANE 1 = OPENSEAMAP + ZEEGRID (PRIMARY) | PANE 2 = ASTRO & HOMOGRAPHY CANVAS -->
       <div id="dual-viewport-grid" class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-[340px] overflow-hidden">
-        
-        <!-- PANE 1: ASTROMETRIC SKY, 4-POINT HOMOGRAPHY QUAD & OTT 573 PLANIMETER CANVAS -->
+
+        <!-- PANE 1 (PRIMARY): MAPLIBRE GL JS + OPENSEAMAP + NAUTICAL ZEEGRID & 3D CADASTRAL PARCELS -->
+        <div id="map-pane-wrapper" class="relative cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border min-h-[280px]">
+          
+          <!-- MapLibre Spatial AI & OpenSeaMap Command Bar -->
+          <div class="bg-[#050a14] border-b border-vortex-border px-2 py-1.5 flex items-center gap-1.5 z-20">
+            <span class="text-[10px] font-bold text-vortex-cyan shrink-0">⚓ ZeeGrid AI:</span>
+            <input id="maplibre-ai-input" type="text" placeholder="Bijv: 'lodijke 369', 'scherpenisse', 'tholen', 'laren', 'zeegrid fijn', 'download stl'..." onkeydown="if(event.key==='Enter') executeMapLibreAICommand()" class="flex-1 bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-slate-100 focus:outline-none focus:border-vortex-cyan" />
+            <button onclick="executeMapLibreAICommand()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
+              Voer Uit
+            </button>
+          </div>
+
+          <div id="vortex-maplibre" class="w-full h-full flex-1 bg-[#030914]"></div>
+
+          <!-- MapLibre Floating Quick Nautical & Cadastral Anchors -->
+          <div class="absolute top-10 left-2 right-2 z-20 flex flex-wrap items-center justify-between gap-1 pointer-events-none">
+            <div class="flex flex-wrap items-center gap-1 pointer-events-auto">
+              <button onclick="flyToCadastralParcel('LODIJKE-369')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-cyan font-bold">⚓ Lodijke 365/369</button>
+              <button onclick="flyToCadastralParcel('SCHERPENISSE-PLATTEWEG')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-emerald font-bold">🌊 Pluimpot / Platteweg</button>
+              <button onclick="flyToCadastralParcel('THOLEN-KRUITTOREN')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-amber font-bold">🗼 Tholen</button>
+              <button onclick="flyMapToAnchor('VORTEX-DOM', 12.2)" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-rose-300">⛩️ Domburg</button>
+              <button onclick="flyMapToAnchor('VORTEX-LAREN', 12.5)" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-purple-300">📍 Laren</button>
+            </div>
+            <div class="pointer-events-auto flex items-center gap-1">
+              <select id="zeegrid-step-select" onchange="setZeegridStep(this.value)" title="Nautisch Zeegrid Resolutie (Boogminuten / Zeemijl)" class="bg-[#03060c]/95 border border-vortex-cyan/60 rounded px-1.5 py-0.5 text-[9px] text-vortex-cyan font-bold">
+                <option value="0.0166667">Grid: 1.0' (1.0 NM)</option>
+                <option value="0.0083333" selected>Grid: 0.5' (0.5 NM)</option>
+                <option value="0.05">Grid: 3.0' (3.0 NM)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between bg-[#03060c]/90 border border-vortex-border px-2.5 py-1 rounded text-[9px] pointer-events-none">
+            <span>AP: <strong id="ap-readout" class="text-vortex-amber">51°28.7'N, 004°08.3'E</strong></span>
+            <span id="map-parcel-readout" class="text-vortex-cyan font-semibold">OpenSeaMap Seamarks + Nautisch Zeegrid Actief</span>
+          </div>
+        </div>
+
+        <!-- PANE 2: ASTROMETRIC SKY, 4-POINT HOMOGRAPHY QUAD & OTT 573 PLANIMETER CANVAS -->
         <div id="sky-pane-wrapper" class="relative cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border min-h-[280px]">
           <canvas id="vortex-canvas" class="relative z-10 w-full h-full block cursor-crosshair"></canvas>
 
           <!-- Floating Top-Left HUD Overlay on Sky/Planimeter Canvas -->
           <div class="absolute top-2 left-2 z-20 pointer-events-none flex flex-col gap-0.5 bg-[#03060c]/88 border border-vortex-border/80 px-2.5 py-1.5 rounded text-[10px] max-w-[295px]">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-vortex-cyan font-bold">1. ASTRO &amp; 3×3 HOMOGRAFIE CANVAS</span>
+              <span class="text-vortex-cyan font-bold">2. ASTRO KOEPEL &amp; OTT 573 CANVAS</span>
               <span class="text-[9px] px-1 bg-emerald-500/20 text-emerald-300 rounded font-bold">60 FPS</span>
             </div>
-            <div id="canvas-layer-notice" class="text-amber-400 text-[9px] leading-tight">
-              Schakel lagen in of gebruik de 4-punts Homografie-kalibratie in Tab 1.
+            <div id="canvas-layer-notice" class="text-emerald-400 text-[9px] leading-tight">
+              OpenSeaMap + Zeegrid + 57 Sterren + Marcq LOP actief.
             </div>
             <div class="grid grid-cols-2 gap-x-2 text-[9px] text-slate-300 pt-0.5 border-t border-slate-800/80">
               <div>Kompas: <span id="hud-az" class="text-vortex-cyan font-semibold">245.91°</span></div>
-              <div>GDOP: <span id="hud-gdop" class="text-vortex-amber font-bold">1.42</span></div>
+              <div>GDOP: <span id="hud-gdop" class="text-vortex-amber font-bold">1.38</span></div>
               <div>Ott 573: <span id="hud-ott-val" class="text-emerald-300 font-bold">28.37 gem.</span></div>
               <div>Klik-Actie: <span id="hud-click-mode" class="text-purple-300">Inspecteer</span></div>
             </div>
@@ -299,35 +338,7 @@
 
           <div class="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between bg-[#03060c]/90 border border-vortex-border px-2.5 py-1 rounded text-[9px]">
             <span>CURSOR: <strong id="cursor-readout" class="text-vortex-cyan">Az 000.0° | Alt +00.0°</strong></span>
-            <span>FIX: <strong id="fix-readout" class="text-vortex-emerald">52°15.18'N, 005°13.42'E</strong></span>
-          </div>
-        </div>
-
-        <!-- PANE 2: MAPLIBRE GL JS v4.7.1 SPATIAL AI & 3D KADASTER ENGINE -->
-        <div id="map-pane-wrapper" class="relative cyber-panel rounded-lg overflow-hidden flex flex-col border border-vortex-border min-h-[280px]">
-          
-          <!-- MapLibre Spatial AI Command Bar -->
-          <div class="bg-[#050a14] border-b border-vortex-border px-2 py-1.5 flex items-center gap-1.5 z-20">
-            <span class="text-[10px] font-bold text-vortex-cyan shrink-0">🤖 MapLibre AI:</span>
-            <input id="maplibre-ai-input" type="text" placeholder="Bijv: 'lodijke 369', 'scherpenisse', 'homografie', 'download stl', 'gramps'..." onkeydown="if(event.key==='Enter') executeMapLibreAICommand()" class="flex-1 bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-slate-100 focus:outline-none focus:border-vortex-cyan" />
-            <button onclick="executeMapLibreAICommand()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-cyan/20 border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
-              Voer Uit
-            </button>
-          </div>
-
-          <div id="vortex-maplibre" class="w-full h-full flex-1 bg-[#040812]"></div>
-
-          <!-- MapLibre Floating Quick Anchors -->
-          <div class="absolute top-10 left-2 z-20 flex flex-wrap items-center gap-1 pointer-events-auto">
-            <button onclick="flyToCadastralParcel('LODIJKE-369')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-cyan font-bold">Lodijke 365/369</button>
-            <button onclick="flyToCadastralParcel('SCHERPENISSE-PLATTEWEG')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-emerald font-bold">Platteweg 3-7</button>
-            <button onclick="flyToCadastralParcel('THOLEN-KRUITTOREN')" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-vortex-amber font-bold">Tholen</button>
-            <button onclick="flyMapToAnchor('VORTEX-LAREN', 12.5)" class="cyber-btn px-2 py-0.5 rounded bg-[#03060c]/95 text-[9px] text-purple-300">Laren</button>
-          </div>
-
-          <div class="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between bg-[#03060c]/90 border border-vortex-border px-2.5 py-1 rounded text-[9px] pointer-events-none">
-            <span>AP: <strong id="ap-readout" class="text-vortex-amber">52°15.0'N, 005°13.2'E</strong></span>
-            <span id="map-parcel-readout" class="text-vortex-cyan font-semibold">MapLibre GL JS v4.7.1 Spatial AI Actief</span>
+            <span>FIX: <strong id="fix-readout" class="text-vortex-emerald">51°28.88'N, 004°08.52'E</strong></span>
           </div>
         </div>
 
@@ -355,12 +366,12 @@
 
         <div class="flex items-center gap-1.5">
           <select id="quick-epoch-select" onchange="loadTimeCapsule(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[10px] text-vortex-amber">
-            <option value="CAP-2026-NOW">⚡ 2026-11-06 — Live Sessie Laren</option>
+            <option value="CAP-2026-OOSTERSCHELDE">⚓ 2026-11-06 — OpenSeaMap &amp; Zeegrid Oosterschelde (Bol van Lodijke 369)</option>
+            <option value="CAP-2026-NOW">📍 2026-11-06 — Live Sessie Laren (Noord-Holland)</option>
             <option value="CAP-1953-WATERSNOOD">🌊 1953-02-01 03:00 UT — Watersnood Sint-Maartensdijk (C.M. Guiljam)</option>
             <option value="CAP-1901-SCHOT">🦪 1901-09-15 12:00 UT — Oesterconcessie B.W. Schot (Bol van Lodijke 369)</option>
             <option value="CAP-1889-VANGOGH">🎨 1889-06-19 03:35 UT — Van Gogh Sterrennacht Procrustes</option>
             <option value="CAP-2026-ECLIPSE">🌑 2026-08-12 18:08 UT — Saros 126 Totale Eclips (Bourges)</option>
-            <option value="CAP-1684-BOUT">🧬 1684-02-14 12:00 UT — Geboortejaar Bastiaen Bout (Tholen)</option>
             <option value="CAP-1530-LODIJKE">🌊 1530-11-05 12:00 UT — Sint-Felixvloed (Kasteel Lodijke)</option>
           </select>
         </div>
@@ -372,19 +383,19 @@
       
       <!-- 5-Module Navigation Tabs -->
       <nav class="cyber-panel rounded-lg p-1 grid grid-cols-5 gap-1 shrink-0">
+        <button id="tab-btn-scad_solid" onclick="switchModuleTab('scad_solid')" class="cyber-btn cyber-btn-active px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+          <span>🧊</span><span>1. 3D Voetstuk STL</span>
+        </button>
         <button id="tab-btn-kadaster" onclick="switchModuleTab('kadaster')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
-          <span>📐</span><span>1. Homografie/573</span>
+          <span>📐</span><span>2. Zeegrid &amp; Ott 573</span>
         </button>
         <button id="tab-btn-calendars" onclick="switchModuleTab('calendars')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
-          <span>📅</span><span>2. Kalenders/Saros</span>
+          <span>📅</span><span>3. Kalenders/Saros</span>
         </button>
         <button id="tab-btn-nautical" onclick="switchModuleTab('nautical')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
-          <span>⚓</span><span>3. GDOP &amp; 1889</span>
+          <span>⚓</span><span>4. GDOP &amp; 1889</span>
         </button>
-        <button id="tab-btn-scad_solid" onclick="switchModuleTab('scad_solid')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
-          <span>🧊</span><span>4. STL/SCAD/Solid</span>
-        </button>
-        <button id="tab-btn-kernel" onclick="switchModuleTab('kernel')" class="cyber-btn cyber-btn-active px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
+        <button id="tab-btn-kernel" onclick="switchModuleTab('kernel')" class="cyber-btn px-1 py-2 rounded text-[10px] font-semibold flex flex-col items-center justify-center gap-0.5">
           <span>💻</span><span>5. Kernel IDE</span>
         </button>
       </nav>
@@ -393,77 +404,106 @@
       <div class="flex-1 cyber-panel rounded-lg p-3 overflow-y-auto space-y-3">
 
         <!-- ===================================================================== -->
-        <!-- MODULE 1: 4-PUNTS 3x3 HOMOGRAFIE & OTT NR. 573 PLANIMETER             -->
+        <!-- MODULE 1: 3D VOETSTUK MET RELIËFGRAVURE (.STL / .SCAD) & SOLID POD    -->
+        <!-- ===================================================================== -->
+        <div id="mod-scad_solid" class="space-y-3">
+          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
+            <div>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 1 // 3D VOETSTUK MET RELIËFGRAVURE (.STL &amp; .SCAD)</h2>
+              <p class="text-[11px] text-slate-400">Parametrische sokkel met 45°-chamfer waarop Perceelnaam, Zeeuwse Gemeten &amp; RD in 3D-reliëf worden meegeprint</p>
+            </div>
+          </div>
+
+          <!-- 1. Parametric Engraved Pedestal + Binary STL & OpenSCAD Builder -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2.5 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <span class="font-bold text-vortex-amber">🧊 1. PARAMETRISCH 3D-VOETSTUK &amp; RELIËF-TEKST GENERATOR</span>
+              <div class="flex gap-1.5">
+                <button onclick="downloadBinarySTLFile()" class="cyber-btn px-2.5 py-1 rounded bg-vortex-amber/25 border-vortex-amber text-amber-300 text-[10px] font-bold shadow-[0_0_10px_rgba(245,158,11,0.25)]">
+                  📐 Download Binaire .STL (met Tekst)
+                </button>
+                <button onclick="downloadOpenSCADFile()" class="cyber-btn px-2.5 py-1 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                  💾 Download OpenSCAD .SCAD
+                </button>
+              </div>
+            </div>
+
+            <!-- Editable Engraving Lines on Pedestal Chamfer -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px]">
+              <div>
+                <label class="text-slate-400">Regel 1 (Perceelnaam op Sokkel):</label>
+                <input id="ped-line-1" type="text" value="BOL VAN LODIJKE M 369" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Regel 2 (Hectare &amp; Zeeuwse Gemeten):</label>
+                <input id="ped-line-2" type="text" value="11.13 HA - 28.37 GEMETEN" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-emerald font-bold mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Regel 3 (RD-Coördinaten &amp; Ott 573):</label>
+                <input id="ped-line-3" type="text" value="RD 68120 388050 OTT 573" oninput="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-amber font-bold mt-0.5" />
+              </div>
+            </div>
+
+            <!-- Pedestal Geometry Dimensions -->
+            <div class="grid grid-cols-4 gap-2 text-[10px]">
+              <div>
+                <label class="text-slate-400">Sokkel Hoogte (mm)</label>
+                <input id="ped-height-mm" type="number" step="1" value="14.0" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Letter-Reliëf (mm)</label>
+                <input id="ped-text-depth" type="number" step="0.2" value="1.6" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">Koepel Straal (mm)</label>
+                <input id="scad-dome-r" type="number" step="5" value="58" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-amber mt-0.5" />
+              </div>
+              <div>
+                <label class="text-slate-400">STL Facetten</label>
+                <div id="stl-mesh-stats" class="bg-vortex-panel border border-slate-800 rounded px-2 py-1 text-xs text-emerald-300 font-bold mt-0.5">1,420 Δ</div>
+              </div>
+            </div>
+
+            <textarea id="openscad-output-box" rows="7" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-cyan-200 select-text"></textarea>
+          </div>
+
+          <!-- 2. Solid POD RDF/Turtle with GRAMPS Genealogical Heritage Graph -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <span class="font-bold text-purple-300">🔗 2. SOLID POD LINKED DATA + GRAMPS GENEALOGISCHE GRAAF (.TTL)</span>
+              <div class="flex gap-1">
+                <label class="flex items-center gap-1 text-[10px] text-emerald-300 cursor-pointer mr-1">
+                  <input id="chk-include-gramps" type="checkbox" checked onchange="generateSolidPodTurtle()" class="accent-emerald-400" />
+                  <span>Incl. GRAMPS Ankerpersonen</span>
+                </label>
+                <button onclick="downloadSolidTurtleFile()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
+                  💾 Download .ttl
+                </button>
+              </div>
+            </div>
+            <input id="solid-pod-base-uri" type="text" value="https://vanvrijberghe.solidcommunity.net/vortex/lodijke#" onchange="generateSolidPodTurtle()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-[10px] text-purple-200" />
+            <textarea id="solid-turtle-output-box" rows="5" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-purple-200 select-text"></textarea>
+          </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- MODULE 2: OPENSEAMAP ZEEGRID, 3x3 HOMOGRAFIE & OTT NR. 573            -->
         <!-- ===================================================================== -->
         <div id="mod-kadaster" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-vortex-border pb-2">
             <div>
-              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 1 // 4-PUNTS HOMOGRAFIE (3×3 MATRIX) &amp; OTT NR. 573</h2>
-              <p class="text-[11px] text-slate-400">Corrigeer lens-/kantelvervorming via projectieve homografie $\mathbf{H}$ vóór de Stelling van Green</p>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 2 // OPENSEAMAP ZEEGRID, 3×3 HOMOGRAFIE &amp; OTT 573</h2>
+              <p class="text-[11px] text-slate-400">Nautisch Zeegrid, Zeeuwse 3D-percelen (Stelling van Green) &amp; 4-punts kaartkalibratie</p>
             </div>
             <button onclick="loadSyntheticArchiveMap()" class="px-2 py-1 rounded bg-vortex-cyan/20 border border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
               📜 Kalibratiekaart
             </button>
           </div>
 
-          <!-- 4-Point Projective Homography Matrix (3x3 DLT Solver) -->
+          <!-- Cadastral Parcels & A. Ott Nr. 573 Readout -->
           <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-vortex-amber">📷 1. 4-PUNTS PROJECTIEVE HOMOGRAFIE KALIBRATIE (3×3 MATRIX H)</span>
-              <div class="flex gap-1">
-                <button id="btn-pick-homography" onclick="toggleHomographyQuadPickMode()" class="cyber-btn px-2 py-0.5 rounded bg-purple-950/70 border-purple-500 text-purple-200 text-[10px] font-bold">
-                  🎯 Klik 4 Kaderhoeken (Q1–Q4)
-                </button>
-                <button onclick="resetHomographyQuad()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-300 text-[10px]">
-                  Reset Quad
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <div>
-                <label class="text-[9px] text-slate-400">Upload Archiefkaart (PNG/JPG):</label>
-                <input type="file" accept="image/*" onchange="handleTopDownImageUpload(event)" class="w-full text-[10px] text-slate-300 file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-vortex-panel file:text-vortex-cyan cursor-pointer mt-0.5" />
-              </div>
-              <div>
-                <label class="text-[9px] text-slate-400">Doelbreedte Kader W (cm) &amp; H (cm):</label>
-                <div class="flex gap-1 mt-0.5">
-                  <input id="homog-target-w" type="number" step="0.5" value="20.0" onchange="recalcReproPlanimeter()" class="w-1/2 bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold" />
-                  <input id="homog-target-h" type="number" step="0.5" value="16.0" onchange="recalcReproPlanimeter()" class="w-1/2 bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold" />
-                </div>
-              </div>
-              <div>
-                <label class="text-[9px] text-slate-400">Kaartschaal (1 : M)</label>
-                <input id="repro-map-scale" type="number" value="2500" onchange="recalcReproPlanimeter()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-xs text-vortex-amber font-bold mt-0.5" />
-              </div>
-            </div>
-
-            <!-- Live 3x3 Homography Matrix Readout -->
-            <div class="bg-vortex-panel/80 border border-slate-800 rounded p-2 font-mono text-[10px] flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div class="text-slate-400 text-[9px]">3×3 Projectieve Homografie Matrix H (Beeldvlak u,v → Orthogonaal Kaartvlak X,Y in cm):</div>
-                <div id="homography-matrix-readout" class="text-vortex-cyan font-semibold mt-0.5">
-                  [ +25.000, +0.000, -2.500 | +0.000, +20.000, -2.000 | +0.0000, +0.0000, 1.0000 ]
-                </div>
-              </div>
-              <span id="homography-status-pill" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">DLT 8-DOF ACTIEF</span>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800">
-              <label class="flex items-center gap-1.5 text-[10px] text-emerald-300 cursor-pointer font-semibold">
-                <input id="chk-planimeter-trace-mode" type="checkbox" onchange="togglePlanimeterTraceMode(this.checked)" class="accent-emerald-400" />
-                <span>✍️ Klik op het Linker Canvas om Perceelhoekpunten te Omtrekken (met Homografie-Correctie)</span>
-              </label>
-              <button onclick="clearReproTracePolygon()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-400 text-[10px]">
-                Wis Omtrek
-              </button>
-            </div>
-          </div>
-
-          <!-- 3D Cadastral Parcels & A. Ott Nr. 573 Compensating Polar Planimeter Readout -->
-          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-vortex-emerald">🏛️ 2. KADASTRALE PERCELEN &amp; OTT NR. 573 NONIUS-TELWERK</span>
+              <span class="font-bold text-vortex-emerald">🏛️ 1. ZEEUWSE PERCELEN IN OPENSEAMAP &amp; OTT NR. 573 TELWERK</span>
               <select id="parcel-select-dropdown" onchange="flyToCadastralParcel(this.value)" class="bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-[10px] text-vortex-cyan">
                 <option value="LODIJKE-369">Poortvliet / Bol van Lodijke — Sectie M 369 (B.W. Schot)</option>
                 <option value="LODIJKE-365">Poortvliet / Bol van Lodijke — Sectie M 365 (Verdronken Land)</option>
@@ -493,15 +533,62 @@
 
             <div id="parcel-vertices-log" class="text-[10px] text-slate-300 bg-vortex-panel/70 p-2 rounded border border-slate-800/80 font-mono"></div>
           </div>
+
+          <!-- 4-Point Projective Homography Matrix (3x3 DLT Solver) -->
+          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-vortex-amber">📷 2. 4-PUNTS PROJECTIEVE HOMOGRAFIE KALIBRATIE (3×3 MATRIX H)</span>
+              <div class="flex gap-1">
+                <button id="btn-pick-homography" onclick="toggleHomographyQuadPickMode()" class="cyber-btn px-2 py-0.5 rounded bg-purple-950/70 border-purple-500 text-purple-200 text-[10px] font-bold">
+                  🎯 Klik 4 Kaderhoeken (Q1–Q4)
+                </button>
+                <button onclick="resetHomographyQuad()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-300 text-[10px]">
+                  Reset Quad
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label class="text-[9px] text-slate-400">Upload Archiefkaart (PNG/JPG):</label>
+                <input type="file" accept="image/*" onchange="handleTopDownImageUpload(event)" class="w-full text-[10px] text-slate-300 file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-vortex-panel file:text-vortex-cyan cursor-pointer mt-0.5" />
+              </div>
+              <div>
+                <label class="text-[9px] text-slate-400">Doelbreedte W &amp; H (cm):</label>
+                <div class="flex gap-1 mt-0.5">
+                  <input id="homog-target-w" type="number" step="0.5" value="20.0" onchange="recalcReproPlanimeter()" class="w-1/2 bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold" />
+                  <input id="homog-target-h" type="number" step="0.5" value="16.0" onchange="recalcReproPlanimeter()" class="w-1/2 bg-vortex-panel border border-slate-700 rounded px-1.5 py-0.5 text-xs text-vortex-cyan font-bold" />
+                </div>
+              </div>
+              <div>
+                <label class="text-[9px] text-slate-400">Kaartschaal (1 : M)</label>
+                <input id="repro-map-scale" type="number" value="2500" onchange="recalcReproPlanimeter()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-0.5 text-xs text-vortex-amber font-bold mt-0.5" />
+              </div>
+            </div>
+
+            <div id="homography-matrix-readout" class="bg-vortex-panel/80 border border-slate-800 rounded p-2 font-mono text-[10px] text-vortex-cyan">
+              [ +25.000, +0.000, -2.500 | +0.000, +20.000, -2.000 | +0.000, +0.000, 1.000 ]
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800">
+              <label class="flex items-center gap-1.5 text-[10px] text-emerald-300 cursor-pointer font-semibold">
+                <input id="chk-planimeter-trace-mode" type="checkbox" onchange="togglePlanimeterTraceMode(this.checked)" class="accent-emerald-400" />
+                <span>✍️ Klik op Rechter Canvas om Perceelhoekpunten te Omtrekken</span>
+              </label>
+              <button onclick="clearReproTracePolygon()" class="cyber-btn px-2 py-0.5 rounded bg-slate-900 text-slate-400 text-[10px]">
+                Wis Omtrek
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- ===================================================================== -->
-        <!-- MODULE 2: KALENDERS (ZON, MAAN, COMPUTUS, FRANS REP, MAYA) & SAROS 126-->
+        <!-- MODULE 3: KALENDERS (ZON, MAAN, COMPUTUS, FRANS REP, MAYA) & SAROS 126-->
         <!-- ===================================================================== -->
         <div id="mod-calendars" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-vortex-border pb-2">
             <div>
-              <h2 class="text-sm font-bold text-vortex-amber">MODULE 2 // MULTI-KALENDER, FRANSE REP., MAYA &amp; SAROS 126</h2>
+              <h2 class="text-sm font-bold text-vortex-amber">MODULE 3 // MULTI-KALENDER, FRANSE REP., MAYA &amp; SAROS 126</h2>
               <p class="text-[11px] text-slate-400">Zon, Maan, Computus, Franse Republikeinse Kalender, Maya Lange Telling &amp; Maansknopen</p>
             </div>
             <button onclick="setNowSystemTime()" class="px-2 py-1 rounded bg-vortex-cyan/20 border border-vortex-cyan text-vortex-cyan text-[10px] font-bold">
@@ -525,21 +612,21 @@
               </div>
               <div>
                 <label class="text-[9px] text-slate-400">Uur (UTC)</label>
-                <input id="cal-inp-hour" type="number" min="0" max="23" value="10" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
+                <input id="cal-inp-hour" type="number" min="0" max="23" value="11" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
               </div>
               <div>
                 <label class="text-[9px] text-slate-400">Minuut</label>
-                <input id="cal-inp-min" type="number" min="0" max="59" value="48" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
+                <input id="cal-inp-min" type="number" min="0" max="59" value="4" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan" />
               </div>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
               <select id="place-preset-select" onchange="selectGeodeticPlace(this.value)" class="bg-vortex-panel border border-vortex-border rounded px-2 py-1 text-[11px] text-slate-100 flex-1">
+                <option value="VORTEX-03">🦪 Bol van Lodijke Perceel 369 (51.4783°N, 4.1375°E | RD 68120·388050)</option>
+                <option value="VORTEX-07">🌊 Scherpenisse Platteweg / Pluimpot (51.5475°N, 4.1039°E)</option>
+                <option value="VORTEX-06">🗼 Tholen Kruittoren 23 (51.5312°N, 4.2201°E)</option>
+                <option value="VORTEX-DOM">⛩️ Domburg Nehalennia (51.5641°N, 3.4982°E)</option>
                 <option value="VORTEX-LAREN">📍 Laren (52.2500°N, 5.2200°E | RD 143582·473566)</option>
                 <option value="VORTEX-02">📍 Tafelbergheide Blaricum (52.2300°N, 5.1800°E)</option>
-                <option value="VORTEX-03">🦪 Bol van Lodijke Perceel 369 (51.4783°N, 4.1375°E)</option>
-                <option value="VORTEX-06">🗼 Tholen Kruittoren 23 (51.5312°N, 4.2201°E)</option>
-                <option value="VORTEX-07">🌊 Scherpenisse Platteweg / Pluimpot (51.5475°N, 4.1039°E)</option>
-                <option value="VORTEX-DOM">⛩️ Domburg Nehalennia (51.5641°N, 3.4982°E)</option>
                 <option value="VORTEX-01">🏛️ Bourges Meridiaan Anker (47.0844°N, 2.3956°E)</option>
                 <option value="VORTEX-ST-REMY">🎨 Saint-Rémy-de-Provence (43.7886°N, 4.8311°E)</option>
               </select>
@@ -560,22 +647,16 @@
               <span id="eclipse-alert-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">Status</span>
             </div>
             <div id="saros-nodes-details" class="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-300"></div>
-            <div class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-800/80">
-              <button onclick="stepSarosCycle(-1)" class="cyber-btn px-2 py-0.5 rounded text-[9px] bg-amber-950/60 text-amber-200">-1 Saros (-18j 11d 8u)</button>
-              <button onclick="stepSarosCycle(1)" class="cyber-btn px-2 py-0.5 rounded text-[9px] bg-amber-950/60 text-amber-200">+1 Saros (+18j 11d 8u)</button>
-              <button onclick="loadTimeCapsule('CAP-2026-ECLIPSE')" class="cyber-btn px-2 py-0.5 rounded text-[9px] bg-purple-950/60 text-purple-200">Eclips 12 Aug 2026</button>
-              <button onclick="loadTimeCapsule('CAP-1889-ECLIPSE')" class="cyber-btn px-2 py-0.5 rounded text-[9px] bg-purple-950/60 text-purple-200">Eclips 22 Dec 1889</button>
-            </div>
           </div>
         </div>
 
         <!-- ===================================================================== -->
-        <!-- MODULE 3: 57 NAVIGATIESTERREN, AUTO-3★ GDOP & PROCRUSTES 1889         -->
+        <!-- MODULE 4: 57 NAVIGATIESTERREN, AUTO-3★ GDOP & PROCRUSTES 1889         -->
         <!-- ===================================================================== -->
         <div id="mod-nautical" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-vortex-border pb-2">
             <div>
-              <h2 class="text-sm font-bold text-vortex-emerald">MODULE 3 // 57-STERREN, AUTO-GDOP &amp; PROCRUSTES 1889</h2>
+              <h2 class="text-sm font-bold text-vortex-emerald">MODULE 4 // 57-STERREN, AUTO-GDOP &amp; PROCRUSTES 1889</h2>
               <p class="text-[11px] text-slate-400">Automatische 3-Sterren GDOP Optimalisatie + Procrustes De Sterrennacht</p>
             </div>
             <div class="flex gap-1">
@@ -591,7 +672,7 @@
           <div class="bg-[#050a14] border border-vortex-border rounded-lg p-2.5 space-y-1 text-[11px]">
             <div class="flex items-center justify-between">
               <span class="font-bold text-vortex-cyan">🎯 GEOMETRIC DILUTION OF PRECISION (GDOP) 3-STERREN OPTIMIZER</span>
-              <span id="gdop-status-pill" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">GDOP = 1.42</span>
+              <span id="gdop-status-pill" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">GDOP = 1.38</span>
             </div>
             <p id="gdop-triplet-summary" class="text-[10px] text-slate-300">
               Klik op "🎯 Auto-3★ GDOP" voor optimale azimutspreiding ($120^\circ$).
@@ -643,73 +724,13 @@
         </div>
 
         <!-- ===================================================================== -->
-        <!-- MODULE 4: BINAIRE .STL + OPENSCAD .SCAD & SOLID POD GRAMPS RDF        -->
+        <!-- MODULE 5: KERNEL IDE (OPENSEAMAP ZEEGRID, 3D VOETSTUK STL & GRAMPS)   -->
         <!-- ===================================================================== -->
-        <div id="mod-scad_solid" class="hidden space-y-3">
-          <div class="flex items-center justify-between border-b border-vortex-border pb-2">
-            <div>
-              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 4 // BINAIRE .STL, OPENSCAD .SCAD &amp; SOLID POD GRAMPS</h2>
-              <p class="text-[11px] text-slate-400">Directe Binaire STL-mesh voor 3D-slicers, OpenSCAD &amp; Solid POD met GRAMPS Genealogie</p>
-            </div>
-          </div>
-
-          <!-- 1. Binary STL + Parametric OpenSCAD 3D Print Builder -->
-          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
-            <div class="flex flex-wrap items-center justify-between gap-1.5">
-              <span class="font-bold text-vortex-cyan">🧊 1. CLIENT-SIDE BINAIRE .STL MESH &amp; OPENSCAD (.SCAD)</span>
-              <div class="flex gap-1">
-                <button onclick="downloadBinarySTLFile()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-amber/25 border-vortex-amber text-amber-300 text-[10px] font-bold">
-                  📐 Download Binaire .STL
-                </button>
-                <button onclick="downloadOpenSCADFile()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
-                  💾 Download .SCAD
-                </button>
-              </div>
-            </div>
-            <div class="grid grid-cols-3 gap-2 text-[10px]">
-              <div>
-                <label class="text-slate-400">Z-Exaggeratie (Reliëf)</label>
-                <input id="scad-z-scale" type="number" step="0.5" value="4.0" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-cyan mt-0.5" />
-              </div>
-              <div>
-                <label class="text-slate-400">Koepel Straal (mm)</label>
-                <input id="scad-dome-r" type="number" step="5" value="65" onchange="generateOpenSCADModel()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-xs text-vortex-amber mt-0.5" />
-              </div>
-              <div>
-                <label class="text-slate-400">STL Mesh Facetten</label>
-                <div id="stl-mesh-stats" class="bg-vortex-panel border border-slate-800 rounded px-2 py-1 text-xs text-emerald-300 font-bold mt-0.5">140 Δ (7,084 B)</div>
-              </div>
-            </div>
-            <textarea id="openscad-output-box" rows="5" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-cyan-200 select-text"></textarea>
-          </div>
-
-          <!-- 2. Solid POD RDF/Turtle with GRAMPS Genealogical Heritage Graph -->
-          <div class="bg-[#050a14] border border-vortex-border rounded-lg p-3 space-y-2 text-[11px]">
-            <div class="flex flex-wrap items-center justify-between gap-1.5">
-              <span class="font-bold text-purple-300">🔗 2. SOLID POD LINKED DATA + GRAMPS GENEALOGISCHE GRAAF (.TTL)</span>
-              <div class="flex gap-1">
-                <label class="flex items-center gap-1 text-[10px] text-emerald-300 cursor-pointer mr-1">
-                  <input id="chk-include-gramps" type="checkbox" checked onchange="generateSolidPodTurtle()" class="accent-emerald-400" />
-                  <span>Incl. GRAMPS Ankerpersonen</span>
-                </label>
-                <button onclick="downloadSolidTurtleFile()" class="cyber-btn px-2 py-0.5 rounded bg-vortex-emerald/20 border-vortex-emerald text-emerald-300 text-[10px] font-bold">
-                  💾 Download .ttl
-                </button>
-              </div>
-            </div>
-            <input id="solid-pod-base-uri" type="text" value="https://vanvrijberghe.solidcommunity.net/vortex/lodijke#" onchange="generateSolidPodTurtle()" class="w-full bg-vortex-panel border border-slate-700 rounded px-2 py-1 text-[10px] text-purple-200" />
-            <textarea id="solid-turtle-output-box" rows="6" readonly class="w-full bg-[#03060c] border border-slate-800 rounded p-2 text-[10px] font-mono text-purple-200 select-text"></textarea>
-          </div>
-        </div>
-
-        <!-- ===================================================================== -->
-        <!-- MODULE 5: KERNEL IDE (HOMOGRAFIE, BINAIRE STL, SOLID GRAMPS & C99)    -->
-        <!-- ===================================================================== -->
-        <div id="mod-kernel" class="space-y-2.5 flex flex-col h-full">
+        <div id="mod-kernel" class="hidden space-y-2.5 flex flex-col h-full">
           <div class="flex items-center justify-between border-b border-vortex-border pb-2 shrink-0">
             <div>
-              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 5 // VORTEX KERNEL IDE v32.0 (100% RUST-VRIJ)</h2>
-              <p class="text-[11px] text-slate-400">Programmeer 3×3 Homografie, Ott 573, Binaire STL, Solid GRAMPS RDF &amp; MapLibre AI</p>
+              <h2 class="text-sm font-bold text-vortex-cyan">MODULE 5 // VORTEX KERNEL IDE v34.0</h2>
+              <p class="text-[11px] text-slate-400">Programmeer OpenSeaMap Zeegrid, 3D Voetstuk (.STL/.SCAD), Homografie &amp; Solid GRAMPS</p>
             </div>
             <div class="flex items-center gap-1.5">
               <button onclick="runKernelScript()" class="cyber-btn px-3 py-1 rounded bg-vortex-emerald/25 border-vortex-emerald text-emerald-300 text-xs font-bold flex items-center gap-1 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
@@ -722,11 +743,11 @@
             <div class="flex items-center gap-1.5">
               <span class="text-slate-400 text-[10px]">Script:</span>
               <select id="ide-template-select" onchange="loadKernelTemplate(this.value)" class="bg-[#050a14] border border-vortex-border rounded px-2 py-1 text-[11px] text-vortex-cyan">
-                <option value="tpl_homography_ott573">1. 4-Punts Projectieve Homografie (3×3 Matrix H) + Ott Nr. 573 Green Integraal</option>
-                <option value="tpl_binary_stl_scad">2. Genereer Binaire .STL 3D-Mesh &amp; OpenSCAD (.scad) van Perceel M 369</option>
+                <option value="tpl_openseamap_pedestal">1. OpenSeaMap + Nautisch Zeegrid + 3D Voetstuk (.STL &amp; .SCAD met Reliëftekst)</option>
+                <option value="tpl_homography_ott573">2. 4-Punts Projectieve Homografie (3×3 Matrix H) + Ott Nr. 573 Green Integraal</option>
                 <option value="tpl_solid_gramps_rdf">3. Exporteer Solid POD RDF/Turtle met GRAMPS Genealogie (Schot, Bout, Guiljam)</option>
                 <option value="tpl_procrustes_1889">4. Wiskundige Procrustes-Analyse: Van Gogh De Sterrennacht (1889)</option>
-                <option value="tpl_geojson_export">5. Exporteer 3D Kadaster &amp; Marcq St. Hilaire LOPs naar GeoJSON</option>
+                <option value="tpl_geojson_export">5. Exporteer OpenSeaMap Zeegrid, 3D Kadaster &amp; LOPs naar GeoJSON</option>
               </select>
             </div>
 
@@ -736,19 +757,17 @@
             </div>
           </div>
 
-          <!-- Live Programmable Code Editor -->
           <div class="relative flex-1 min-h-[185px] flex flex-col bg-[#040811] border border-vortex-border rounded-lg overflow-hidden">
             <div class="bg-[#081020] px-3 py-1 border-b border-vortex-border flex items-center justify-between text-[10px] text-slate-400">
-              <span>vortex_kernel_main.js — API: VortexKernel.{solveHomography, exportBinarySTL, exportSolidTurtle, exportOpenSCAD, askMapLibreAI}</span>
+              <span>vortex_kernel_main.js — API: VortexKernel.{bootOpenSeaMap, setPedestalText, exportBinarySTL, exportOpenSCAD, solveHomography}</span>
               <span id="editor-status" class="text-vortex-emerald">READY</span>
             </div>
             <textarea id="kernel-code-editor" spellcheck="false" class="code-editor flex-1 w-full bg-transparent text-cyan-100 p-3 text-xs focus:outline-none resize-none"></textarea>
           </div>
 
-          <!-- Kernel Output Console / REPL -->
           <div class="bg-[#03060c] border border-vortex-border rounded-lg p-2.5 h-44 flex flex-col shrink-0">
             <div class="flex items-center justify-between text-[10px] text-slate-400 pb-1 border-b border-slate-800">
-              <span class="font-bold text-vortex-amber">VORTEX KERNEL REPL, HOMOGRAFIE, BINAIRE STL &amp; SOLID GRAMPS LOG</span>
+              <span class="font-bold text-vortex-amber">VORTEX KERNEL REPL, OPENSEAMAP ZEEGRID &amp; 3D VOETSTUK LOG</span>
               <span>PURE JS / ZERO-RUST</span>
             </div>
             <div id="kernel-console-output" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-1 pt-1.5 text-slate-300 select-text"></div>
@@ -761,7 +780,7 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- VORTEX KERNEL ENGINE v32.0 — 3x3 HOMOGRAPHY, BINARY STL & SOLID GRAMPS    -->
+  <!-- VORTEX KERNEL ENGINE v34.0 — OPENSEAMAP ZEEGRID & 3D PEDESTAL STL ENGINE  -->
   <!-- ========================================================================= -->
   <script>
     /***************************************************************************
@@ -773,6 +792,7 @@
         gemeente: 'Poortvliet / Bol van Lodijke',
         sectie: 'M',
         nummer: '369',
+        shortLabel: 'BOL VAN LODIJKE M 369',
         title: 'Bol van Lodijke — Perceel Sectie M 369 (B.W. Schot Oesterperceel)',
         color: '#00f0ff',
         extrusionHeight: 18,
@@ -792,6 +812,7 @@
         gemeente: 'Poortvliet / Bol van Lodijke',
         sectie: 'M',
         nummer: '365',
+        shortLabel: 'BOL VAN LODIJKE M 365',
         title: 'Bol van Lodijke — Perceel Sectie M 365 (Verdronken Land van Reimerswaal)',
         color: '#10b981',
         extrusionHeight: 14,
@@ -811,6 +832,7 @@
         gemeente: 'Scherpenisse (Tholen)',
         sectie: 'E',
         nummer: '1551 / 1552 (Platteweg 3, 5, 7)',
+        shortLabel: 'SCHERPENISSE E 1551',
         title: 'Scherpenisse — Platteweg 3, 5, 7 & Pluimpot Dijkstrook (Wbb/Woo-archief)',
         color: '#f59e0b',
         extrusionHeight: 22,
@@ -830,6 +852,7 @@
         gemeente: 'Tholen',
         sectie: 'A',
         nummer: '107 (Kruittoren 23 / Contr\'Escarpe)',
+        shortLabel: 'THOLEN SECTIE A 107',
         title: 'Tholen — Kruittoren 23 / Contr\'Escarpe & Oesterputten Eendracht',
         color: '#a855f7',
         extrusionHeight: 20,
@@ -846,7 +869,6 @@
       }
     };
 
-    // GRAMPS Genealogical & Regional Heritage Entities for Solid POD Linked Data
     const GrampsGenealogyCatalog = [
       {
         id: 'GRAMPS-I01-SCHOT',
@@ -891,7 +913,55 @@
     ];
 
     /***************************************************************************
-     * 2. VAN GOGH "DE STERRENNACHT" (1889) DOEK-ANKERS VOOR PROCRUSTES-ANALYSE
+     * 2. VECTOR-STROKE 3D FONT GLYPHS FOR BINARY .STL PEDESTAL ENGRAVING
+     *    Each glyph is defined by line segments [x1, y1, x2, y2] in [0..1, 0..1]
+     ***************************************************************************/
+    const StlVectorFont = {
+      'A': [[0,0, 0.5,1], [0.5,1, 1,0], [0.2,0.4, 0.8,0.4]],
+      'B': [[0,0, 0,1], [0,1, 0.8,1], [0.8,1, 0.8,0.5], [0.8,0.5, 0,0.5], [0.8,0.5, 0.9,0], [0.9,0, 0,0]],
+      'C': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0]],
+      'D': [[0,0, 0,1], [0,1, 0.7,1], [0.7,1, 1,0.5], [1,0.5, 0.7,0], [0.7,0, 0,0]],
+      'E': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [0,0.5, 0.8,0.5]],
+      'F': [[1,1, 0,1], [0,1, 0,0], [0,0.5, 0.8,0.5]],
+      'G': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [1,0, 1,0.5], [1,0.5, 0.5,0.5]],
+      'H': [[0,0, 0,1], [1,0, 1,1], [0,0.5, 1,0.5]],
+      'I': [[0.2,1, 0.8,1], [0.5,0, 0.5,1], [0.2,0, 0.8,0]],
+      'J': [[1,1, 1,0], [1,0, 0,0], [0,0, 0,0.4]],
+      'K': [[0,0, 0,1], [0,0.5, 1,1], [0,0.5, 1,0]],
+      'L': [[0,1, 0,0], [0,0, 1,0]],
+      'M': [[0,0, 0,1], [0,1, 0.5,0.4], [0.5,0.4, 1,1], [1,1, 1,0]],
+      'N': [[0,0, 0,1], [0,1, 1,0], [1,0, 1,1]],
+      'O': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0]],
+      'P': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5]],
+      'Q': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0.5,0.5, 1,0]],
+      'R': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5], [0.4,0.5, 1,0]],
+      'S': [[1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5], [1,0.5, 1,0], [1,0, 0,0]],
+      'T': [[0,1, 1,1], [0.5,0, 0.5,1]],
+      'U': [[0,1, 0,0], [0,0, 1,0], [1,0, 1,1]],
+      'V': [[0,1, 0.5,0], [0.5,0, 1,1]],
+      'W': [[0,1, 0.25,0], [0.25,0, 0.5,0.6], [0.5,0.6, 0.75,0], [0.75,0, 1,1]],
+      'X': [[0,0, 1,1], [0,1, 1,0]],
+      'Y': [[0,1, 0.5,0.5], [1,1, 0.5,0.5], [0.5,0.5, 0.5,0]],
+      'Z': [[0,1, 1,1], [1,1, 0,0], [0,0, 1,0]],
+      '0': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0,0, 1,1]],
+      '1': [[0.2,0.8, 0.5,1], [0.5,1, 0.5,0], [0.2,0, 0.8,0]],
+      '2': [[0,1, 1,1], [1,1, 1,0.5], [1,0.5, 0,0.5], [0,0.5, 0,0], [0,0, 1,0]],
+      '3': [[0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0.2,0.5, 1,0.5]],
+      '4': [[0,1, 0,0.5], [0,0.5, 1,0.5], [0.8,1, 0.8,0]],
+      '5': [[1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5], [1,0.5, 1,0], [1,0, 0,0]],
+      '6': [[1,1, 0,1], [0,1, 0,0], [0,0, 1,0], [1,0, 1,0.5], [1,0.5, 0,0.5]],
+      '7': [[0,1, 1,1], [1,1, 0.3,0]],
+      '8': [[0,0, 0,1], [0,1, 1,1], [1,1, 1,0], [1,0, 0,0], [0,0.5, 1,0.5]],
+      '9': [[0,0, 1,0], [1,0, 1,1], [1,1, 0,1], [0,1, 0,0.5], [0,0.5, 1,0.5]],
+      '.': [[0.4,0, 0.6,0], [0.6,0, 0.6,0.2], [0.6,0.2, 0.4,0.2]],
+      '-': [[0.1,0.5, 0.9,0.5]],
+      ':': [[0.4,0.2, 0.6,0.2], [0.4,0.8, 0.6,0.8]],
+      '/': [[0.1,0, 0.9,1]],
+      ' ': []
+    };
+
+    /***************************************************************************
+     * 3. VAN GOGH "DE STERRENNACHT" (1889) DOEK-ANKERS VOOR PROCRUSTES-ANALYSE
      ***************************************************************************/
     const StarryNight1889Anchors = [
       { id: 'VG-VENUS',   bodyName: 'Venus',          label: 'Venus (Heldere Morgenster bij Cipres)', canvasAz: 82.4,  canvasAlt: 14.8, color: '#fef08a' },
@@ -911,7 +981,7 @@
     };
 
     /***************************************************************************
-     * 3. VORTEX STATE & 4-POINT PROJECTIVE HOMOGRAPHY CALIBRATION STATE
+     * 4. VORTEX STATE (STARTS DIRECTLY IN OPENSEAMAP + NAUTICAL ZEEGRID)
      ***************************************************************************/
     const VortexState = {
       viewportSplit: 'split',
@@ -920,12 +990,16 @@
       lastFrameTimeMs: performance.now(),
       currentDate: new Date(),
       activeParcelId: 'LODIJKE-369',
+      zeegridStepDeg: 0.0083333, // 0.5 arcminute = 0.5 Nautical Mile grid spacing
 
+      // Startup Layers: OpenSeaMap + Nautisch Zeegrid + 3D Kadaster + Sterren + LOPs start ON
       layers: {
-        sterren: false,
-        uurhoek_grid: false,
-        nautische_positielijnen: false,
-        kadastrale_percelen: false,
+        openseamap_seamarks: true,
+        nautisch_zeegrid: true,
+        kadastrale_percelen: true,
+        nautische_positielijnen: true,
+        sterren: true,
+        uurhoek_grid: true,
         repro_kaart_kalibratie: false,
         planimeter_arm: false,
         procrustes_vangogh: false,
@@ -933,25 +1007,22 @@
         satelliet_baan: false
       },
 
-      // Top-Down Repro Camera Stand + 4-Point Projective Homography State
       reproCalibration: {
         imageElement: null,
         syntheticGridActive: true,
         mapScale: 2500,
-        targetWidthCm: 20.0,   // Physical target width W of reference frame in cm
-        targetHeightCm: 16.0,  // Physical target height H of reference frame in cm
+        targetWidthCm: 20.0,
+        targetHeightCm: 16.0,
         quadPickMode: false,
         quadPickIndex: 0,
-        // 4 Reference Quad Corners Q1..Q4 in normalized canvas coordinates (with slight perspective tilt simulated by default)
         srcQuadNorm: [
-          { u: 0.12, v: 0.13 }, // Q1: Top-Left -> maps to (0, 0) cm
-          { u: 0.88, v: 0.11 }, // Q2: Top-Right -> maps to (W, 0) cm
-          { u: 0.90, v: 0.89 }, // Q3: Bottom-Right -> maps to (W, H) cm
-          { u: 0.10, v: 0.87 }  // Q4: Bottom-Left -> maps to (0, H) cm
+          { u: 0.12, v: 0.13 },
+          { u: 0.88, v: 0.11 },
+          { u: 0.90, v: 0.89 },
+          { u: 0.10, v: 0.87 }
         ],
         homographyMatrix: [25, 0, -2.5, 0, 20, -2.0, 0, 0, 1],
         traceMode: false,
-        // Traced polygon inside the quad -> maps to ~14.84 cm x 12.00 cm = 178.12 cm² after Homography rectification
         tracedPointsPx: [
           { x: 0.225, y: 0.220 },
           { x: 0.790, y: 0.208 },
@@ -960,19 +1031,20 @@
         ]
       },
 
+      // Default Startup Anchor: Bol van Lodijke / Oosterschelde (Nautical OpenSeaMap Focus)
       observer: {
-        id: 'VORTEX-LAREN',
-        name: 'Laren (Midden-Nederland)',
-        lat: 52.2500,
-        lon: 5.2200,
-        rdX: 143582,
-        rdY: 473566,
+        id: 'VORTEX-03',
+        name: 'Bol van Lodijke / Oosterschelde',
+        lat: 51.4783,
+        lon: 4.1375,
+        rdX: 68120,
+        rdY: 388050,
         tempC: 10.0,
         pressureMb: 1013.25
       },
 
       activeTLE: { ...TlePresets.ISS },
-      lastGDOP: 1.42,
+      lastGDOP: 1.38,
 
       sensors: {
         azimuth: 245.91,
@@ -999,37 +1071,36 @@
       },
 
       places: {
+        'VORTEX-03':      { code: 'VORTEX-03',      name: 'Bol van Lodijke Perceel 369',  lat: 51.4783, lon: 4.1375 },
+        'VORTEX-07':      { code: 'VORTEX-07',      name: 'Scherpenisse Pluimpot',        lat: 51.5475, lon: 4.1039 },
+        'VORTEX-06':      { code: 'VORTEX-06',      name: 'Tholen Kruittoren 23',         lat: 51.5312, lon: 4.2201 },
+        'VORTEX-DOM':     { code: 'VORTEX-DOM',     name: 'Domburg Nehalennia',           lat: 51.5641, lon: 3.4982 },
         'VORTEX-LAREN':   { code: 'VORTEX-LAREN',   name: 'Laren (Midden-NL Sessie)',     lat: 52.2500, lon: 5.2200 },
         'VORTEX-02':      { code: 'VORTEX-02',      name: 'Laren / Tafelbergheide',       lat: 52.2300, lon: 5.1800 },
         'VORTEX-01':      { code: 'VORTEX-01',      name: 'Bourges Meridiaan Anker',      lat: 47.0844, lon: 2.3956 },
-        'VORTEX-03':      { code: 'VORTEX-03',      name: 'Bol van Lodijke Perceel 369',  lat: 51.4783, lon: 4.1375 },
-        'VORTEX-06':      { code: 'VORTEX-06',      name: 'Tholen Kruittoren 23',         lat: 51.5312, lon: 4.2201 },
-        'VORTEX-07':      { code: 'VORTEX-07',      name: 'Scherpenisse Pluimpot',        lat: 51.5475, lon: 4.1039 },
-        'VORTEX-DOM':     { code: 'VORTEX-DOM',     name: 'Domburg Nehalennia',           lat: 51.5641, lon: 3.4982 },
         'VORTEX-ST-REMY': { code: 'VORTEX-ST-REMY', name: 'Saint-Rémy-de-Provence',       lat: 43.7886, lon: 4.8311 }
       },
 
       voyageRoute: [
-        { name: 'Bourges Meridiaan', lat: 47.0844, lon: 2.3956 },
-        { name: 'Bol van Lodijke 369', lat: 51.4783, lon: 4.1375 },
-        { name: 'Tholen Kruittoren 23', lat: 51.5312, lon: 4.2201 },
+        { name: 'Domburg Nehalennia', lat: 51.5641, lon: 3.4982 },
         { name: 'Scherpenisse Pluimpot', lat: 51.5475, lon: 4.1039 },
-        { name: 'Laren Sessie-Anker', lat: 52.2500, lon: 5.2200 }
+        { name: 'Bol van Lodijke 369', lat: 51.4783, lon: 4.1375 },
+        { name: 'Tholen Kruittoren 23', lat: 51.5312, lon: 4.2201 }
       ],
 
       timeCapsules: [
-        { id: 'CAP-2026-NOW',        title: 'Real-Time Sessie Laren (6 Nov 2026)', utc: '2026-11-06T10:48:00Z', placeId: 'VORTEX-LAREN' },
-        { id: 'CAP-1953-WATERSNOOD', title: 'Watersnood Sint-Maartensdijk (1 Feb 1953 03:00 UT — C.M. Guiljam)', utc: '1953-02-01T03:00:00Z', placeId: 'VORTEX-07' },
-        { id: 'CAP-1901-SCHOT',      title: 'Oesterconcessie B.W. Schot (15 Sept 1901 — Bol van Lodijke 369)', utc: '1901-09-15T12:00:00Z', placeId: 'VORTEX-03' },
-        { id: 'CAP-1889-VANGOGH',    title: 'Van Gogh — De Sterrennacht Procrustes Benchmark (19 Juni 1889 03:35 UT)', utc: '1889-06-19T03:35:00Z', placeId: 'VORTEX-ST-REMY' },
-        { id: 'CAP-2026-ECLIPSE',    title: 'Saros 126 Totale Zonsverduistering (12 Aug 2026 18:08 UT)', utc: '2026-08-12T18:08:30Z', placeId: 'VORTEX-01' },
-        { id: 'CAP-1684-BOUT',       title: 'Geboortejaar Bastiaen Bout te Tholen (Februari 1684)', utc: '1684-02-14T12:00:00Z', placeId: 'VORTEX-06' },
-        { id: 'CAP-1530-LODIJKE',    title: 'Sint-Felixvloed — Kasteel Lodijke (5 Nov 1530 12:00 UT)', utc: '1530-11-05T12:00:00Z', placeId: 'VORTEX-03' }
+        { id: 'CAP-2026-OOSTERSCHELDE', title: 'OpenSeaMap & Zeegrid Oosterschelde (Bol van Lodijke 369)', utc: '2026-11-06T11:04:00Z', placeId: 'VORTEX-03' },
+        { id: 'CAP-2026-NOW',           title: 'Live Sessie Laren (6 Nov 2026)', utc: '2026-11-06T11:04:00Z', placeId: 'VORTEX-LAREN' },
+        { id: 'CAP-1953-WATERSNOOD',    title: 'Watersnood Sint-Maartensdijk (1 Feb 1953 03:00 UT — C.M. Guiljam)', utc: '1953-02-01T03:00:00Z', placeId: 'VORTEX-07' },
+        { id: 'CAP-1901-SCHOT',         title: 'Oesterconcessie B.W. Schot (15 Sept 1901 — Bol van Lodijke 369)', utc: '1901-09-15T12:00:00Z', placeId: 'VORTEX-03' },
+        { id: 'CAP-1889-VANGOGH',       title: 'Van Gogh — De Sterrennacht Procrustes Benchmark (19 Juni 1889 03:35 UT)', utc: '1889-06-19T03:35:00Z', placeId: 'VORTEX-ST-REMY' },
+        { id: 'CAP-2026-ECLIPSE',       title: 'Saros 126 Totale Zonsverduistering (12 Aug 2026 18:08 UT)', utc: '2026-08-12T18:08:30Z', placeId: 'VORTEX-01' },
+        { id: 'CAP-1530-LODIJKE',       title: 'Sint-Felixvloed — Kasteel Lodijke (5 Nov 1530 12:00 UT)', utc: '1530-11-05T12:00:00Z', placeId: 'VORTEX-03' }
       ]
     };
 
     /***************************************************************************
-     * 4. COMPLETE 57 INTERNATIONAL NAVIGATIONAL STARS + POLARIS & M45 CATALOG
+     * 5. COMPLETE 57 INTERNATIONAL NAVIGATIONAL STARS + POLARIS & M45 CATALOG
      ***************************************************************************/
     const Raw57NavStars = [
       [0,  'Polaris',      'UMi', 2.5303,   89.2641, 1.98, '#a5f3fc', false],
@@ -1100,12 +1171,11 @@
     }));
 
     /***************************************************************************
-     * 5. 4-POINT PROJECTIVE HOMOGRAPHY (3x3 DLT SOLVER), GREEN'S THEOREM & OTT 573
+     * 6. 4-POINT PROJECTIVE HOMOGRAPHY (3x3 DLT), GREEN'S THEOREM & OTT 573
      ***************************************************************************/
     const DEG2RAD = Math.PI / 180;
     const RAD2DEG = 180 / Math.PI;
     const R_EARTH_KM = 6371.0088;
-    const MU_EARTH = 398600.4418;
     const ZEEUWS_GEMET_M2 = 3924.0;
 
     function mod360(x) { return ((x % 360) + 360) % 360; }
@@ -1127,20 +1197,14 @@
       return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
     }
 
-    // Gauss-Jordan 8x8 Linear System Solver for 2D Projective Homography H (h33 = 1)
-    // Maps 4 source points (u_i, v_i) in normalized image space to 4 orthogonal target points (X_i, Y_i) in cm
     function solveHomography3x3(srcQuad, dstQuad) {
-      const A = [];
-      const b = [];
+      const A = [], b = [];
       for (let i = 0; i < 4; i++) {
         const u = srcQuad[i].u, v = srcQuad[i].v;
         const X = dstQuad[i].X, Y = dstQuad[i].Y;
-        A.push([u, v, 1, 0, 0, 0, -u * X, -v * X]);
-        b.push(X);
-        A.push([0, 0, 0, u, v, 1, -u * Y, -v * Y]);
-        b.push(Y);
+        A.push([u, v, 1, 0, 0, 0, -u * X, -v * X]); b.push(X);
+        A.push([0, 0, 0, u, v, 1, -u * Y, -v * Y]); b.push(Y);
       }
-
       const n = 8;
       for (let col = 0; col < n; col++) {
         let pivot = col;
@@ -1150,11 +1214,9 @@
         if (Math.abs(A[pivot][col]) < 1e-11) continue;
         [A[col], A[pivot]] = [A[pivot], A[col]];
         [b[col], b[pivot]] = [b[pivot], b[col]];
-
         const div = A[col][col];
         for (let j = col; j < n; j++) A[col][j] /= div;
         b[col] /= div;
-
         for (let row = 0; row < n; row++) {
           if (row !== col) {
             const factor = A[row][col];
@@ -1163,7 +1225,6 @@
           }
         }
       }
-
       return [b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], 1.0];
     }
 
@@ -1191,12 +1252,9 @@
       const btn = document.getElementById('btn-pick-homography');
       if (cal.quadPickMode) {
         cal.traceMode = false;
-        const chk = document.getElementById('chk-planimeter-trace-mode');
-        if (chk) chk.checked = false;
         toggleLayer('repro_kaart_kalibratie', true);
         if (btn) btn.classList.add('cyber-btn-active');
-        document.getElementById('hud-click-mode').textContent = '🎯 Klik Q1 (Links-Boven)';
-        kernelLog('🎯 4-Punts Homografie Kalibratie gestart: Klik op het linker canvas achtereenvolgens op de 4 kaderhoeken Q1 (LB), Q2 (RB), Q3 (RO), Q4 (LO).', 'info');
+        document.getElementById('hud-click-mode').textContent = '🎯 Klik Q1 (LB)';
       } else {
         if (btn) btn.classList.remove('cyber-btn-active');
         document.getElementById('hud-click-mode').textContent = 'Inspecteer';
@@ -1211,10 +1269,7 @@
         { u: 0.10, v: 0.87 }
       ];
       VortexState.reproCalibration.quadPickMode = false;
-      const btn = document.getElementById('btn-pick-homography');
-      if (btn) btn.classList.remove('cyber-btn-active');
       recalcReproPlanimeter();
-      kernelLog('📐 4-Punts Homografie Quad (Q1..Q4) hersteld naar standaard kalibratiestand.', 'info');
     }
 
     function wgs84ToRDExact(lat, lon) {
@@ -1249,7 +1304,10 @@
       const m2PerCm2OnMap = Math.pow(parcel.mapScale / 100.0, 2);
       const ottPaperCm2 = areaM2 / m2PerCm2OnMap;
 
-      return { parcel, rdVertices, areaM2, areaHa, areaGemeten, perimeterM, ottPaperCm2 };
+      const cxRD = Math.round(rdVertices.slice(0, 4).reduce((s, v) => s + v.x, 0) / 4.0);
+      const cyRD = Math.round(rdVertices.slice(0, 4).reduce((s, v) => s + v.y, 0) / 4.0);
+
+      return { parcel, rdVertices, cxRD, cyRD, areaM2, areaHa, areaGemeten, perimeterM, ottPaperCm2 };
     }
 
     function handleTopDownImageUpload(event) {
@@ -1264,7 +1322,6 @@
           toggleLayer('repro_kaart_kalibratie', true);
           toggleLayer('planimeter_arm', true);
           recalcReproPlanimeter();
-          kernelLog(`📷 Top-Down archiefkaart "${file.name}" (${img.width}×${img.height} px) geladen met 3×3 Homografie-correctie.`, 'success');
         };
         img.src = e.target.result;
       };
@@ -1278,7 +1335,6 @@
       toggleLayer('planimeter_arm', true);
       switchModuleTab('kadaster');
       recalcReproPlanimeter();
-      kernelLog('📜 Synthetisch Kadaster-Minuutplan (1:2500) + 4-Punts Homografie Quad (Q1–Q4) geactiveerd.', 'success');
     }
 
     function togglePlanimeterTraceMode(enabled) {
@@ -1298,7 +1354,6 @@
       renderCanvas();
     }
 
-    // Solve 3x3 Homography Matrix H and compute Green's Theorem in rectified cm space
     function recalcReproPlanimeter() {
       const scale = parseFloat(document.getElementById('repro-map-scale')?.value) || 2500;
       const targetW = parseFloat(document.getElementById('homog-target-w')?.value) || 20.0;
@@ -1318,14 +1373,12 @@
 
       const H = solveHomography3x3(cal.srcQuadNorm, dstQuad);
       cal.homographyMatrix = H;
-      const detH = computeDet3x3(H);
 
       const matEl = document.getElementById('homography-matrix-readout');
       if (matEl) {
         matEl.textContent =
           `[ ${H[0].toFixed(2)}, ${H[1].toFixed(2)}, ${H[2].toFixed(2)} | ${H[3].toFixed(2)}, ${H[4].toFixed(2)}, ${H[5].toFixed(2)} | ${H[6].toFixed(3)}, ${H[7].toFixed(3)}, 1.000 ]`;
       }
-      document.getElementById('cal-homography').textContent = `det(H)=${detH.toFixed(2)} | 4-Pt Orthogonaal (${targetW}×${targetH} cm)`;
 
       const pts = cal.tracedPointsPx;
       if (!pts || pts.length < 3 || !VortexState.layers.repro_kaart_kalibratie) {
@@ -1333,9 +1386,7 @@
         return;
       }
 
-      // Rectify each traced vertex (u, v) through Homography Matrix H into orthogonal paper centimeters (X, Y)
       const rectifiedCmPts = pts.map(p => applyHomographyPoint(H, p.x, p.y));
-
       let crossCm2 = 0.0;
       for (let i = 0; i < rectifiedCmPts.length; i++) {
         const p1 = rectifiedCmPts[i];
@@ -1350,18 +1401,26 @@
       const areaGemeten = areaM2 / ZEEUWS_GEMET_M2;
 
       VortexState.planimeter.wheelCount = paperCm2;
-
       document.getElementById('ott-area-m2').textContent = `${Math.round(areaM2).toLocaleString('nl-NL')} m²`;
       document.getElementById('ott-area-ha').textContent = `${areaHa.toFixed(4)} ha`;
       document.getElementById('ott-area-gemeten').textContent = `${areaGemeten.toFixed(2)} gemeten`;
       document.getElementById('ott-wheel-cm2').textContent = `${paperCm2.toFixed(2)} cm² (1:${scale})`;
-
-      document.getElementById('hdr-planimeter').textContent = `${areaHa.toFixed(2)} ha (${areaGemeten.toFixed(2)} gem.)`;
-      document.getElementById('pipe-plan-coords').textContent = `${areaHa.toFixed(2)} ha | ${areaGemeten.toFixed(2)} gem.`;
-      document.getElementById('pipe-plan-sub').textContent = `Homografie 1:${scale} | ${paperCm2.toFixed(2)} cm²`;
-      document.getElementById('hud-ott-val').textContent = `${areaGemeten.toFixed(2)} gem.`;
-
       renderCanvas();
+    }
+
+    function syncPedestalEngravingFromParcel(greenRes) {
+      const l1 = document.getElementById('ped-line-1');
+      const l2 = document.getElementById('ped-line-2');
+      const l3 = document.getElementById('ped-line-3');
+      if (l1 && l2 && l3) {
+        l1.value = greenRes.parcel.shortLabel || 'BOL VAN LODIJKE M 369';
+        l2.value = `${greenRes.areaHa.toFixed(2)} HA - ${greenRes.areaGemeten.toFixed(2)} GEMETEN`;
+        l3.value = `RD ${greenRes.cxRD} ${greenRes.cyRD} OTT 573`;
+      }
+      const prev = document.getElementById('cal-pedestal-preview');
+      if (prev && l1) {
+        prev.textContent = `${l1.value} · ${l2.value} · ${l3.value}`;
+      }
     }
 
     function updateParcelGreenUI(parcelId = null) {
@@ -1398,32 +1457,112 @@
       if (sel) sel.value = parcelId;
 
       toggleLayer('kadastrale_percelen', true);
-      toggleLayer('planimeter_arm', true);
       setObserverLocation(`KAD-${p.sectie}${p.nummer.split(' ')[0]}`, `${p.gemeente} (${p.sectie} ${p.nummer})`, p.center[1], p.center[0]);
       const res = updateParcelGreenUI(parcelId);
+      syncPedestalEngravingFromParcel(res);
+      generateOpenSCADModel();
 
       if (vortexMap && mapReady) {
-        vortexMap.flyTo({ center: p.center, zoom: 15.2, pitch: 58, bearing: -18, essential: true });
+        vortexMap.flyTo({ center: p.center, zoom: 13.8, pitch: 52, bearing: -14, essential: true });
       }
       document.getElementById('map-parcel-readout').textContent =
         `${p.gemeente} ${p.sectie} ${p.nummer}: ${res.areaHa.toFixed(2)} ha (${res.areaGemeten.toFixed(2)} gemeten)`;
-      kernelLog(`📐 3D Kadaster & Ott Nr. 573 geladen voor ${p.title}: ${res.areaHa.toFixed(4)} ha = ${res.areaGemeten.toFixed(2)} Zeeuwse gemeten.`, 'success');
+      kernelLog(`⚓ OpenSeaMap + 3D Voetstuk gesynchroniseerd op ${p.title}: ${res.areaHa.toFixed(4)} ha (${res.areaGemeten.toFixed(2)} gemeten | RD ${res.cxRD}·${res.cyRD}).`, 'success');
     }
 
     /***************************************************************************
-     * 6. CLIENT-SIDE BINARY .STL MESH GENERATOR & OPENSCAD .SCAD GENERATOR
+     * 7. 3D PEDESTAL WITH EMBOSSED RELIEF TEXT IN BINARY .STL & OPENSCAD .SCAD
      ***************************************************************************/
+    function addBoxPrismToTriangles(triangles, x1, y1, z1, x2, y2, z2) {
+      const addTri = (p1, p2, p3) => {
+        const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
+        const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const len = Math.hypot(nx, ny, nz) || 1.0;
+        triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
+      };
+      const b0 = [x1, y1, z1], b1 = [x2, y1, z1], b2 = [x2, y2, z1], b3 = [x1, y2, z1];
+      const t0 = [x1, y1, z2], t1 = [x2, y1, z2], t2 = [x2, y2, z2], t3 = [x1, y2, z2];
+      addTri(b0, b2, b1); addTri(b0, b3, b2);
+      addTri(t0, t1, t2); addTri(t0, t2, t3);
+      const bL = [b0, b1, b2, b3], tL = [t0, t1, t2, t3];
+      for (let i = 0; i < 4; i++) {
+        const ni = (i + 1) % 4;
+        addTri(bL[i], bL[ni], tL[ni]);
+        addTri(bL[i], tL[ni], tL[i]);
+      }
+    }
+
+    // Extrude a string of vector-stroke characters onto the front pedestal face (y = frontY)
+    function extrudePedestalTextLineToSTL(triangles, textStr, centerX, frontY, baseZ, charW, charH, strokeThick, reliefDepth) {
+      const clean = (textStr || '').toUpperCase();
+      const spacing = charW * 1.32;
+      const totalWidth = clean.length * spacing;
+      const startX = centerX - totalWidth * 0.5;
+
+      const addTri = (p1, p2, p3) => {
+        const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
+        const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const len = Math.hypot(nx, ny, nz) || 1.0;
+        triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
+      };
+
+      for (let cIdx = 0; cIdx < clean.length; cIdx++) {
+        const ch = clean[cIdx];
+        const strokes = StlVectorFont[ch] || [];
+        const ox = startX + cIdx * spacing;
+
+        strokes.forEach(([sx1, sy1, sx2, sy2]) => {
+          const xA = ox + sx1 * charW, zA = baseZ + sy1 * charH;
+          const xB = ox + sx2 * charW, zB = baseZ + sy2 * charH;
+          const dx = xB - xA, dz = zB - zA;
+          const len = Math.hypot(dx, dz) || 1.0;
+          const px = (-dz / len) * (strokeThick * 0.5);
+          const pz = (dx / len) * (strokeThick * 0.5);
+
+          const yBack = frontY;
+          const yFront = frontY - reliefDepth; // Protrudes outward toward -Y viewer
+
+          const v0 = [xA - px, yBack,  zA - pz];
+          const v1 = [xA + px, yBack,  zA + pz];
+          const v2 = [xB + px, yBack,  zB + pz];
+          const v3 = [xB - px, yBack,  zB - pz];
+
+          const f0 = [xA - px, yFront, zA - pz];
+          const f1 = [xA + px, yFront, zA + pz];
+          const f2 = [xB + px, yFront, zB + pz];
+          const f3 = [xB - px, yFront, zB - pz];
+
+          addTri(f0, f1, f2); addTri(f0, f2, f3);
+          const backL = [v0, v1, v2, v3], frontL = [f0, f1, f2, f3];
+          for (let s = 0; s < 4; s++) {
+            const ns = (s + 1) % 4;
+            addTri(backL[s], backL[ns], frontL[ns]);
+            addTri(backL[s], frontL[ns], frontL[s]);
+          }
+        });
+      }
+    }
+
     function buildSTLTriangleList() {
-      const zScale = parseFloat(document.getElementById('scad-z-scale')?.value) || 4.0;
-      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 65.0;
-      const heightMm = 3.5 * zScale;
+      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 58.0;
+      const pedH = parseFloat(document.getElementById('ped-height-mm')?.value) || 14.0;
+      const textDepth = parseFloat(document.getElementById('ped-text-depth')?.value) || 1.6;
+      const parcelReliefH = 8.0;
+
+      const line1 = document.getElementById('ped-line-1')?.value || 'BOL VAN LODIJKE M 369';
+      const line2 = document.getElementById('ped-line-2')?.value || '11.13 HA - 28.37 GEMETEN';
+      const line3 = document.getElementById('ped-line-3')?.value || 'RD 68120 388050 OTT 573';
+
+      const prev = document.getElementById('cal-pedestal-preview');
+      if (prev) prev.textContent = `${line1} · ${line2} · ${line3}`;
 
       const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
       const ptsRD = green.rdVertices.slice(0, 4);
       const cxRD = ptsRD.reduce((s, v) => s + v.x, 0) / 4.0;
       const cyRD = ptsRD.reduce((s, v) => s + v.y, 0) / 4.0;
 
-      // Convert RD vertices to centered millimeter vertices (v0..v3)
       const vMm = ptsRD.map(v => ({
         x: (v.x - cxRD) * 0.18,
         y: (v.y - cyRD) * 0.18
@@ -1433,29 +1572,38 @@
       const addTri = (p1, p2, p3) => {
         const ux = p2[0] - p1[0], uy = p2[1] - p1[1], uz = p2[2] - p1[2];
         const vx = p3[0] - p1[0], vy = p3[1] - p1[1], vz = p3[2] - p1[2];
-        let nx = uy * vz - uz * vy;
-        let ny = uz * vx - ux * vz;
-        let nz = ux * vy - uy * vx;
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
         const len = Math.hypot(nx, ny, nz) || 1.0;
         triangles.push({ n: [nx / len, ny / len, nz / len], v1: p1, v2: p2, v3: p3 });
       };
 
-      // 1. Extruded Cadastral Parcel Prism (Bottom, Top & 4 Side Walls = 12 triangles)
-      const b0 = [vMm[0].x, vMm[0].y, 0], b1 = [vMm[1].x, vMm[1].y, 0], b2 = [vMm[2].x, vMm[2].y, 0], b3 = [vMm[3].x, vMm[3].y, 0];
-      const t0 = [vMm[0].x, vMm[0].y, heightMm], t1 = [vMm[1].x, vMm[1].y, heightMm], t2 = [vMm[2].x, vMm[2].y, heightMm], t3 = [vMm[3].x, vMm[3].y, heightMm];
+      // 1. Solid Rectangular Pedestal Plinth (from z = 0 to z = pedH)
+      const pedHalfW = Math.max(domeR + 10, 68);
+      const pedHalfD = Math.max(domeR + 10, 68);
+      addBoxPrismToTriangles(triangles, -pedHalfW, -pedHalfD, 0, pedHalfW, pedHalfD, pedH);
 
-      addTri(b0, b2, b1); addTri(b0, b3, b2); // Bottom face
-      addTri(t0, t1, t2); addTri(t0, t2, t3); // Top face
+      // 2. 3D Relief Text Engraved on the South Front Face of the Pedestal (y = -pedHalfD)
+      extrudePedestalTextLineToSTL(triangles, line1, 0, -pedHalfD, pedH - 4.2, 3.1, 3.0, 0.75, textDepth);
+      extrudePedestalTextLineToSTL(triangles, line2, 0, -pedHalfD, pedH - 8.6, 2.7, 2.6, 0.70, textDepth);
+      extrudePedestalTextLineToSTL(triangles, line3, 0, -pedHalfD, pedH - 12.8, 2.5, 2.4, 0.65, textDepth);
 
-      const baseLoop = [b0, b1, b2, b3];
-      const topLoop = [t0, t1, t2, t3];
+      // 3. Extruded Cadastral Parcel Relief on top of Pedestal (z = pedH to z = pedH + parcelReliefH)
+      const zBase = pedH;
+      const zTop = pedH + parcelReliefH;
+      const b0 = [vMm[0].x, vMm[0].y, zBase], b1 = [vMm[1].x, vMm[1].y, zBase], b2 = [vMm[2].x, vMm[2].y, zBase], b3 = [vMm[3].x, vMm[3].y, zBase];
+      const t0 = [vMm[0].x, vMm[0].y, zTop],  t1 = [vMm[1].x, vMm[1].y, zTop],  t2 = [vMm[2].x, vMm[2].y, zTop],  t3 = [vMm[3].x, vMm[3].y, zTop];
+
+      addTri(b0, b2, b1); addTri(b0, b3, b2);
+      addTri(t0, t1, t2); addTri(t0, t2, t3);
+
+      const baseLoop = [b0, b1, b2, b3], topLoop = [t0, t1, t2, t3];
       for (let i = 0; i < 4; i++) {
         const ni = (i + 1) % 4;
         addTri(baseLoop[i], baseLoop[ni], topLoop[ni]);
         addTri(baseLoop[i], topLoop[ni], topLoop[i]);
       }
 
-      // 2. Geodesic Celestial Observatory Dome Mesh on top of parcel (Azimuth sectors x Elevation rings)
+      // 4. Geodesic Celestial Observatory Dome Mesh on top of Parcel
       const nAz = 16, nEl = 4;
       for (let i = 0; i < nEl; i++) {
         const el1 = (i / nEl) * (Math.PI / 2);
@@ -1463,18 +1611,12 @@
         for (let j = 0; j < nAz; j++) {
           const az1 = (j / nAz) * (2 * Math.PI);
           const az2 = ((j + 1) / nAz) * (2 * Math.PI);
-
           const domePt = (el, az) => [
             domeR * Math.cos(el) * Math.cos(az),
             domeR * Math.cos(el) * Math.sin(az),
-            heightMm + domeR * Math.sin(el)
+            zTop + domeR * Math.sin(el)
           ];
-
-          const d00 = domePt(el1, az1);
-          const d10 = domePt(el1, az2);
-          const d11 = domePt(el2, az2);
-          const d01 = domePt(el2, az1);
-
+          const d00 = domePt(el1, az1), d10 = domePt(el1, az2), d11 = domePt(el2, az2), d01 = domePt(el2, az1);
           addTri(d00, d10, d11);
           if (i < nEl - 1) addTri(d00, d11, d01);
         }
@@ -1490,13 +1632,10 @@
       const buffer = new ArrayBuffer(byteLength);
       const view = new DataView(buffer);
 
-      // 80-byte ASCII header
-      const headerStr = `VORTEX KERNEL v32.0 BINARY STL // PARCEL ${VortexState.activeParcelId} + CELESTIAL DOME`.padEnd(80, ' ');
+      const headerStr = `VORTEX v34.0 STL // PEDESTAL + ${VortexState.activeParcelId} + GEMETEN + RD`.padEnd(80, ' ');
       for (let i = 0; i < 80; i++) {
         view.setUint8(i, headerStr.charCodeAt(i) & 0x7f);
       }
-
-      // uint32 number of triangles (Little-Endian)
       view.setUint32(80, numTri, true);
 
       let offset = 84;
@@ -1506,14 +1645,12 @@
           view.setFloat32(offset, coords[k], true);
           offset += 4;
         }
-        view.setUint16(offset, 0, true); // 2-byte attribute byte count
+        view.setUint16(offset, 0, true);
         offset += 2;
       });
 
       const statsEl = document.getElementById('stl-mesh-stats');
-      if (statsEl) statsEl.textContent = `${numTri} Δ (${byteLength.toLocaleString('nl-NL')} B)`;
-      const badgeEl = document.getElementById('pipe-stl-badge');
-      if (badgeEl) badgeEl.textContent = `${numTri} Facets`;
+      if (statsEl) statsEl.textContent = `${numTri.toLocaleString('nl-NL')} Δ (${(byteLength / 1024).toFixed(1)} KB)`;
 
       return { buffer, numTri, byteLength };
     }
@@ -1524,18 +1661,23 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `vortex_${VortexState.activeParcelId.toLowerCase()}_mesh.stl`;
+      a.download = `vortex_voetstuk_${VortexState.activeParcelId.toLowerCase()}.stl`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      kernelLog(`📐 Binaire 3D .STL Mesh gedownload (${numTri} driehoeken, ${byteLength} bytes Little-Endian) voor 3D-slicer.`, 'success');
+      kernelLog(`📐 Binaire 3D .STL met Gegraveerd Voetstuk gedownload (${numTri} driehoeken, ${byteLength} bytes).`, 'success');
     }
 
     function generateOpenSCADModel() {
-      const zScale = parseFloat(document.getElementById('scad-z-scale')?.value) || 4.0;
-      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 65.0;
+      const domeR = parseFloat(document.getElementById('scad-dome-r')?.value) || 58.0;
+      const pedH = parseFloat(document.getElementById('ped-height-mm')?.value) || 14.0;
+      const textDepth = parseFloat(document.getElementById('ped-text-depth')?.value) || 1.6;
       const boreD = 2.4;
+
+      const line1 = document.getElementById('ped-line-1')?.value || 'BOL VAN LODIJKE M 369';
+      const line2 = document.getElementById('ped-line-2')?.value || '11.13 HA - 28.37 GEMETEN';
+      const line3 = document.getElementById('ped-line-3')?.value || 'RD 68120 388050 OTT 573';
 
       const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
       const jd = dateToJulianDate(VortexState.currentDate);
@@ -1550,6 +1692,9 @@
         `[${((v.x - cxRD) * 0.18).toFixed(2)}, ${((v.y - cyRD) * 0.18).toFixed(2)}]`
       ).join(', ');
 
+      const pedW = Math.max(domeR * 2 + 20, 136);
+      const pedD = Math.max(domeR * 2 + 20, 136);
+
       const starBoresScad = selected.map(r =>
         `    // Sightline Bore: ${r.name} (Az Zn=${r.znDeg.toFixed(2)} deg, Alt Hc=${r.hcDeg.toFixed(2)} deg)\n` +
         `    rotate([0, ${(90 - Math.max(5, r.hcDeg)).toFixed(2)}, ${(-r.znDeg).toFixed(2)}])\n` +
@@ -1557,37 +1702,72 @@
       ).join('\n');
 
       const scadCode = `// ============================================================================
-// VORTEX KERNEL v32.0 — PARAMETRISCH OPENSCAD 3D-PRINTMODEL (.SCAD)
-// Onderwerp : ${green.parcel.title} + Sferische Sterrenkoepel
-// Oppervlak : ${green.areaHa.toFixed(4)} ha (${green.areaGemeten.toFixed(2)} Zeeuwse gemeten | Ott 573: ${green.ottPaperCm2.toFixed(2)} cm2)
+// VORTEX KERNEL v34.0 — OPENSCAD MODEL MET GEGRAVEERD 3D-VOETSTUK (.SCAD)
+// Regel 1 (Perceel)  : "${line1}"
+// Regel 2 (Gemeten)  : "${line2}"
+// Regel 3 (RD Anker) : "${line3}"
 // ============================================================================
 
 $fn = 72;
+pedestal_w = ${pedW.toFixed(1)};
+pedestal_d = ${pedD.toFixed(1)};
+pedestal_h = ${pedH.toFixed(1)};
+text_relief_mm = ${textDepth.toFixed(2)};
+parcel_relief_h = 8.0;
 dome_radius_mm = ${domeR.toFixed(1)};
-relief_height_mm = ${(3.5 * zScale).toFixed(1)};
 
-module cadastral_parcel_base() {
-  linear_extrude(height = relief_height_mm, convexity = 4)
-    polygon(points = [ ${polyMm} ]);
+module pedestal_with_relief_text() {
+  union() {
+    // 1. Massief Voetstuk met Noordpijl-inkeping
+    difference() {
+      translate([-pedestal_w/2, -pedestal_d/2, 0])
+        cube([pedestal_w, pedestal_d, pedestal_h]);
+      // Gegraveerde Noord-as (0 graden) en VORTEX-as (245.91 graden) bovenop plint
+      translate([0, pedestal_d/2 - 8, pedestal_h - 1.0])
+        linear_extrude(height = 1.5)
+          text("N", size = 5, halign = "center", valign = "center", font = "Liberation Mono:style=Bold");
+    }
+
+    // 2. 3D-Reliëftekst op de voorzijde (Zuidzijde y = -pedestal_d/2)
+    translate([0, -pedestal_d/2, pedestal_h - 3.6])
+      rotate([90, 0, 0])
+        linear_extrude(height = text_relief_mm)
+          text("${line1}", size = 4.2, halign = "center", valign = "center", font = "Liberation Mono:style=Bold");
+
+    translate([0, -pedestal_d/2, pedestal_h - 8.2])
+      rotate([90, 0, 0])
+        linear_extrude(height = text_relief_mm)
+          text("${line2}", size = 3.6, halign = "center", valign = "center", font = "Liberation Mono:style=Bold");
+
+    translate([0, -pedestal_d/2, pedestal_h - 12.2])
+      rotate([90, 0, 0])
+        linear_extrude(height = text_relief_mm)
+          text("${line3}", size = 3.2, halign = "center", valign = "center", font = "Liberation Mono");
+  }
+}
+
+module cadastral_parcel_relief() {
+  translate([0, 0, pedestal_h])
+    linear_extrude(height = parcel_relief_h, convexity = 4)
+      polygon(points = [ ${polyMm} ]);
 }
 
 module celestial_observatory_dome() {
-  difference() {
-    translate([0, 0, relief_height_mm])
+  translate([0, 0, pedestal_h + parcel_relief_h])
+    difference() {
       difference() {
         sphere(r = dome_radius_mm);
         sphere(r = dome_radius_mm - 3.2);
         translate([0, 0, -dome_radius_mm])
           cube([dome_radius_mm * 2.2, dome_radius_mm * 2.2, dome_radius_mm * 2], center = true);
       }
-    translate([0, 0, relief_height_mm]) {
 ${starBoresScad}
     }
-  }
 }
 
 union() {
-  cadastral_parcel_base();
+  pedestal_with_relief_text();
+  cadastral_parcel_relief();
   celestial_observatory_dome();
 }`;
 
@@ -1603,23 +1783,22 @@ union() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `vortex_${VortexState.activeParcelId.toLowerCase()}_koepel.scad`;
+      a.download = `vortex_voetstuk_${VortexState.activeParcelId.toLowerCase()}.scad`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      kernelLog('🧊 OpenSCAD 3D-printmodel (.scad) gedownload.', 'success');
+      kernelLog('🧊 OpenSCAD 3D-printmodel met Gegraveerd Voetstuk (.scad) gedownload.', 'success');
     }
 
     /***************************************************************************
-     * 7. SOLID POD LINKED DATA (RDF/TURTLE) WITH GRAMPS GENEALOGY TRIPLES
+     * 8. SOLID POD LINKED DATA (RDF/TURTLE) WITH GRAMPS GENEALOGY TRIPLES
      ***************************************************************************/
     function generateSolidPodTurtle() {
       const baseUri = document.getElementById('solid-pod-base-uri')?.value || 'https://vanvrijberghe.solidcommunity.net/vortex/lodijke#';
       const includeGramps = Boolean(document.getElementById('chk-include-gramps')?.checked);
       const green = computeParcelGreenPlanimeter(VortexState.activeParcelId);
       const jd = dateToJulianDate(VortexState.currentDate);
-      const obs = VortexState.observer;
       const grayHex = '0x' + ((Math.round(green.areaM2) ^ (Math.round(green.areaM2) >> 1)) >>> 0).toString(16).toUpperCase();
       const wktPoly = 'POLYGON((' + green.parcel.coordsWGS84.map(([lon, lat]) => `${lon.toFixed(5)} ${lat.toFixed(5)}`).join(', ') + '))';
 
@@ -1654,26 +1833,17 @@ union() {
 vortex:${green.parcel.id}
     a geo:Feature , prov:Entity ;
     rdfs:label "${green.parcel.title}"@nl ;
-    dcterms:identifier "${green.parcel.gemeente} Sectie ${green.parcel.sectie} Nr. ${green.parcel.nummer}" ;
-    vortex:epsg28992Centroid "RD(${obs.rdX}, ${obs.rdY})" ;
+    vortex:pedestalInscription "${green.parcel.shortLabel} | ${green.areaHa.toFixed(2)} HA - ${green.areaGemeten.toFixed(2)} GEMETEN | RD ${green.cxRD} ${green.cyRD}" ;
+    vortex:epsg28992Centroid "RD(${green.cxRD}, ${green.cyRD})" ;
     vortex:areaSquareMeters "${green.areaM2.toFixed(2)}"^^xsd:double ;
     vortex:areaHectares "${green.areaHa.toFixed(4)}"^^xsd:double ;
     vortex:areaZeeuwseGemeten "${green.areaGemeten.toFixed(2)}"^^xsd:double ;
     vortex:ottNr573NoniusCm2 "${green.ottPaperCm2.toFixed(2)}"^^xsd:double ;
-    vortex:homographyRectified "true"^^xsd:boolean ;
     vortex:gray39IntegrityHash "${grayHex}" ;
     geo:hasGeometry [
         a geo:Geometry ;
         geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> ${wktPoly}"^^geo:wktLiteral
-    ] ;
-    prov:wasGeneratedBy vortex:ObservationSession_${VortexState.currentDate.toISOString().slice(0, 10).replace(/-/g, '')} .
-
-vortex:ObservationSession_${VortexState.currentDate.toISOString().slice(0, 10).replace(/-/g, '')}
-    a prov:Activity ;
-    prov:startedAtTime "${VortexState.currentDate.toISOString()}"^^xsd:dateTime ;
-    vortex:julianDate "${jd.toFixed(5)}"^^xsd:double ;
-    vortex:marcqGdopScore "${VortexState.lastGDOP.toFixed(3)}"^^xsd:double ;
-    vortex:instrument "A. Ott Kempten Compensatie-Poolplanimeter Nr. 573 (3x3 Homografie) & VORTEX Kernel v32.0" .
+    ] .
 ${grampsBlocks}`;
 
       const box = document.getElementById('solid-turtle-output-box');
@@ -1696,8 +1866,223 @@ ${grampsBlocks}`;
     }
 
     /***************************************************************************
-     * 8. MAPLIBRE GL JS v4.7.1 SPATIAL AI COMMAND INTERPRETER
+     * 9. OPENSEAMAP + NAUTICAL ZEEGRID & MAPLIBRE GL JS v4.7.1 ENGINE
      ***************************************************************************/
+    let vortexMap = null;
+    let mapReady = false;
+
+    function setZeegridStep(stepVal) {
+      VortexState.zeegridStepDeg = parseFloat(stepVal) || 0.0083333;
+      toggleLayer('nautisch_zeegrid', true);
+      syncMapLibreGeoJSON();
+      kernelLog(`🌐 Nautisch Zeegrid resolutie ingesteld op ${(VortexState.zeegridStepDeg * 60).toFixed(1)}' boogminuten (${(VortexState.zeegridStepDeg * 60).toFixed(1)} Zeemijl).`, 'info');
+    }
+
+    function bootOpenSeaMapAndZeegrid() {
+      toggleLayer('openseamap_seamarks', true);
+      toggleLayer('nautisch_zeegrid', true);
+      toggleLayer('kadastrale_percelen', true);
+      toggleLayer('nautische_positielijnen', true);
+      flyToCadastralParcel('LODIJKE-369');
+      kernelLog('⚓ OpenSeaMap Seamarks + Nautisch Zeegrid gecentreerd op de Oosterschelde & Bol van Lodijke (Perceel M 369).', 'success');
+    }
+
+    function initMapLibre3D() {
+      if (typeof maplibregl === 'undefined') return;
+      try {
+        vortexMap = new maplibregl.Map({
+          container: 'vortex-maplibre',
+          style: {
+            version: 8,
+            light: {
+              anchor: 'map',
+              color: '#fde047',
+              intensity: 0.65,
+              position: [1.5, 165, 70]
+            },
+            sources: {
+              'carto-dark': {
+                type: 'raster',
+                tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap, CARTO & OpenSeaMap Contributors'
+              },
+              'openseamap-seamarks': {
+                type: 'raster',
+                tiles: ['https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenSeaMap Seamarks'
+              }
+            },
+            layers: [
+              {
+                id: 'carto-dark-layer',
+                type: 'raster',
+                source: 'carto-dark',
+                minzoom: 0,
+                maxzoom: 20
+              },
+              {
+                id: 'openseamap-seamark-layer',
+                type: 'raster',
+                source: 'openseamap-seamarks',
+                minzoom: 6,
+                maxzoom: 18,
+                paint: {
+                  'raster-opacity': 0.95
+                }
+              }
+            ]
+          },
+          // Starts directly on Oosterschelde / Bol van Lodijke / Tholen with OpenSeaMap & Zeegrid
+          center: [4.1375, 51.4880],
+          zoom: 12.6,
+          pitch: 46,
+          bearing: -10
+        });
+
+        vortexMap.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+        vortexMap.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'nautical' }), 'bottom-left');
+
+        vortexMap.on('load', () => {
+          mapReady = true;
+          vortexMap.addSource('vortex-live-geojson', {
+            type: 'geojson',
+            data: buildGeoJSONFeatureCollection()
+          });
+
+          // 1. Nautical Zeegrid Graticule & Range Rings Layer
+          vortexMap.addLayer({
+            id: 'vortex-zeegrid-lines',
+            type: 'line',
+            source: 'vortex-live-geojson',
+            filter: ['in', ['get', 'feature_type'], ['literal', ['zeegrid_graticule', 'zeegrid_nm_ring', 'zeegrid_compass_axis']]],
+            paint: {
+              'line-color': ['coalesce', ['get', 'stroke'], '#00f0ff'],
+              'line-width': [
+                'case',
+                ['==', ['get', 'feature_type'], 'zeegrid_nm_ring'], 1.6,
+                ['==', ['get', 'feature_type'], 'zeegrid_compass_axis'], 1.4,
+                0.85
+              ],
+              'line-dasharray': [2, 2],
+              'line-opacity': 0.65
+            }
+          });
+
+          // 2. 3D Extruded Cadastral Parcels Layer
+          vortexMap.addLayer({
+            id: 'vortex-cadastral-3d',
+            type: 'fill-extrusion',
+            source: 'vortex-live-geojson',
+            filter: ['==', ['get', 'feature_type'], 'cadastral_parcel_3d'],
+            paint: {
+              'fill-extrusion-color': ['coalesce', ['get', 'fill_color'], '#00f0ff'],
+              'fill-extrusion-height': ['coalesce', ['get', 'extrusion_height'], 18],
+              'fill-extrusion-base': 0,
+              'fill-extrusion-opacity': 0.72
+            }
+          });
+
+          // 3. Nautical LOPs & Voyage Orthodrome Layer
+          vortexMap.addLayer({
+            id: 'vortex-geojson-lines',
+            type: 'line',
+            source: 'vortex-live-geojson',
+            filter: ['in', ['get', 'feature_type'], ['literal', ['nautical_lop', 'voyage_orthodrome']]],
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: {
+              'line-color': ['coalesce', ['get', 'stroke'], '#10b981'],
+              'line-width': 2.6,
+              'line-opacity': 0.92
+            }
+          });
+
+          // 4. Point Circle Layer (AP, Astro-Fix, Anchors)
+          vortexMap.addLayer({
+            id: 'vortex-geojson-points',
+            type: 'circle',
+            source: 'vortex-live-geojson',
+            filter: ['==', '$type', 'Point'],
+            paint: {
+              'circle-radius': 7,
+              'circle-color': ['coalesce', ['get', 'marker_color'], '#00f0ff'],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#03060c'
+            }
+          });
+
+          vortexMap.on('click', e => {
+            const feats = vortexMap.queryRenderedFeatures(e.point, {
+              layers: ['vortex-cadastral-3d', 'vortex-geojson-points', 'vortex-geojson-lines']
+            });
+            if (feats && feats.length > 0) {
+              const p = feats[0].properties;
+              if (p.parcel_id) {
+                const res = updateParcelGreenUI(p.parcel_id);
+                syncPedestalEngravingFromParcel(res);
+                generateOpenSCADModel();
+                new maplibregl.Popup()
+                  .setLngLat(e.lngLat)
+                  .setHTML(`<div><strong class="text-vortex-cyan">${p.title}</strong><br/>Green Oppervlakte: <strong>${p.area_ha} ha (${p.area_gemeten} gemeten)</strong><br/>RD Anker: <strong>RD ${res.cxRD} · ${res.cyRD}</strong></div>`)
+                  .addTo(vortexMap);
+                return;
+              }
+            }
+            const lat = Number(e.lngLat.lat.toFixed(4));
+            const lon = Number(e.lngLat.lng.toFixed(4));
+            setObserverLocation('ZEE-ANKER', `Zeegrid Anker (${lat}°N)`, lat, lon);
+          });
+        });
+      } catch (err) {
+        console.warn('MapLibre init warning:', err);
+      }
+    }
+
+    function syncMapLibreGeoJSON() {
+      if (!mapReady || !vortexMap) return;
+      // Toggle OpenSeaMap raster layer visibility
+      if (vortexMap.getLayer('openseamap-seamark-layer')) {
+        vortexMap.setLayoutProperty(
+          'openseamap-seamark-layer',
+          'visibility',
+          VortexState.layers.openseamap_seamarks ? 'visible' : 'none'
+        );
+      }
+      const src = vortexMap.getSource('vortex-live-geojson');
+      if (src) src.setData(buildGeoJSONFeatureCollection());
+    }
+
+    function flyMapToAnchor(placeId, zoomLevel = 12.2) {
+      const p = VortexState.places[placeId];
+      if (!p) return;
+      setObserverLocation(p.code, p.name, p.lat, p.lon);
+      if (vortexMap && mapReady) {
+        vortexMap.flyTo({ center: [p.lon, p.lat], zoom: zoomLevel, pitch: 48, essential: true });
+      }
+    }
+
+    function setViewportSplit(mode) {
+      VortexState.viewportSplit = mode;
+      const grid = document.getElementById('dual-viewport-grid');
+      const skyW = document.getElementById('sky-pane-wrapper');
+      const mapW = document.getElementById('map-pane-wrapper');
+      if (mode === 'sky') {
+        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.remove('hidden'); mapW.classList.add('hidden');
+      } else if (mode === 'map') {
+        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.add('hidden'); mapW.classList.remove('hidden');
+      } else {
+        grid.className = 'flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-[340px] overflow-hidden';
+        skyW.classList.remove('hidden'); mapW.classList.remove('hidden');
+      }
+      setTimeout(() => {
+        resizeCanvas();
+        if (vortexMap) vortexMap.resize();
+      }, 60);
+    }
+
     function executeMapLibreAICommand(customQuery = null) {
       const inp = document.getElementById('maplibre-ai-input');
       const raw = (customQuery !== null ? customQuery : (inp ? inp.value : '')).trim();
@@ -1708,28 +2093,187 @@ ${grampsBlocks}`;
         flyToCadastralParcel('LODIJKE-369');
       } else if (q.includes('365')) {
         flyToCadastralParcel('LODIJKE-365');
-      } else if (q.includes('scherpenisse') || q.includes('platteweg') || q.includes('guiljam')) {
+      } else if (q.includes('scherpenisse') || q.includes('platteweg') || q.includes('pluimpot')) {
         flyToCadastralParcel('SCHERPENISSE-PLATTEWEG');
-      } else if (q.includes('tholen') || q.includes('kruittoren') || q.includes('bout')) {
+      } else if (q.includes('tholen') || q.includes('kruittoren')) {
         flyToCadastralParcel('THOLEN-KRUITTOREN');
-      } else if (q.includes('homografie') || q.includes('kalibratie')) {
-        loadSyntheticArchiveMap();
-      } else if (q.includes('stl')) {
+      } else if (q.includes('domburg')) {
+        flyMapToAnchor('VORTEX-DOM', 12.5);
+      } else if (q.includes('laren')) {
+        flyMapToAnchor('VORTEX-LAREN', 12.5);
+      } else if (q.includes('fijn') || q.includes('zeegrid')) {
+        setZeegridStep(0.0083333);
+      } else if (q.includes('stl') || q.includes('voetstuk')) {
         downloadBinarySTLFile();
-      } else if (q.includes('gramps') || q.includes('solid') || q.includes('rdf')) {
-        switchModuleTab('scad_solid');
-        generateSolidPodTurtle();
-      } else if (q.includes('1889') || q.includes('procrustes')) {
-        runVanGoghProcrustes1889();
-      } else if (q.includes('gdop')) {
-        optimizeThreeStarGDOP();
+      } else if (q.includes('scad')) {
+        downloadOpenSCADFile();
       } else {
-        enableAllLayers();
+        bootOpenSeaMapAndZeegrid();
       }
     }
 
     /***************************************************************************
-     * 9. ORTHOGONAL PROCRUSTES ANALYSIS ENGINE (VAN GOGH 1889 SAINT-RÉMY)
+     * 10. GEOJSON BUILDER INCLUDING DYNAMIC NAUTICAL ZEEGRID & RANGE RINGS
+     ***************************************************************************/
+    function buildGeoJSONFeatureCollection() {
+      const jd = dateToJulianDate(VortexState.currentDate);
+      const obs = VortexState.observer;
+      const solar = getDynamicSolarSystemBodies(jd);
+      const sat = calcSatelliteTelemetry(jd, obs.lat, obs.lon);
+      const allBodies = [...solar, sat, ...CelestialCatalog];
+      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
+      const selected = reductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
+      const fix = computeLeastSquaresFix(selected, obs.lat, obs.lon);
+      const gdop = calcGDOPForSet(selected);
+
+      const features = [];
+      const cosLat = Math.cos(obs.lat * DEG2RAD);
+
+      // 1. Dynamic Nautical Zeegrid (Graticule + Nautical Mile Range Rings + Compass Rose Axes)
+      if (VortexState.layers.nautisch_zeegrid) {
+        const step = VortexState.zeegridStepDeg || 0.0083333;
+        const spanLat = step * 10;
+        const spanLon = step * 14;
+        const minLat = Math.floor((obs.lat - spanLat) / step) * step;
+        const maxLat = obs.lat + spanLat;
+        const minLon = Math.floor((obs.lon - spanLon) / step) * step;
+        const maxLon = obs.lon + spanLon;
+
+        for (let lat = minLat; lat <= maxLat; lat += step) {
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_graticule', stroke: '#0ea5e9' },
+            geometry: { type: 'LineString', coordinates: [[minLon, lat], [maxLon, lat]] }
+          });
+        }
+        for (let lon = minLon; lon <= maxLon; lon += step) {
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_graticule', stroke: '#0ea5e9' },
+            geometry: { type: 'LineString', coordinates: [[lon, minLat], [lon, maxLat]] }
+          });
+        }
+
+        // Concentric Nautical Mile (NM) Sea Range Rings (0.5 NM, 1.0 NM, 2.0 NM) around Active Observer
+        [0.5, 1.0, 2.0].forEach(nmRadius => {
+          const ringCoords = [];
+          for (let deg = 0; deg <= 360; deg += 6) {
+            const rad = deg * DEG2RAD;
+            const rLat = obs.lat + (nmRadius * Math.cos(rad)) / 60.0;
+            const rLon = obs.lon + (nmRadius * Math.sin(rad)) / (60.0 * cosLat);
+            ringCoords.push([Number(rLon.toFixed(6)), Number(rLat.toFixed(6))]);
+          }
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'zeegrid_nm_ring', radius_nm: nmRadius, stroke: '#00f0ff' },
+            geometry: { type: 'LineString', coordinates: ringCoords }
+          });
+        });
+
+        // Cardinal & VORTEX 245.91° Compass Axes across Observer
+        [0, 90, 180, 270, 245.91].forEach(azDeg => {
+          const rad = azDeg * DEG2RAD;
+          const lenNM = 2.2;
+          const endLat = obs.lat + (lenNM * Math.cos(rad)) / 60.0;
+          const endLon = obs.lon + (lenNM * Math.sin(rad)) / (60.0 * cosLat);
+          features.push({
+            type: 'Feature',
+            properties: {
+              feature_type: 'zeegrid_compass_axis',
+              azimuth: azDeg,
+              stroke: azDeg === 245.91 ? '#f59e0b' : '#38bdf8'
+            },
+            geometry: {
+              type: 'LineString',
+              coordinates: [[obs.lon, obs.lat], [Number(endLon.toFixed(6)), Number(endLat.toFixed(6))]]
+            }
+          });
+        });
+      }
+
+      // 2. 3D Cadastral Parcels
+      if (VortexState.layers.kadastrale_percelen) {
+        Object.keys(CadastralParcelsCatalog).forEach(pid => {
+          const green = computeParcelGreenPlanimeter(pid);
+          const p = green.parcel;
+          features.push({
+            type: 'Feature',
+            properties: {
+              feature_type: 'cadastral_parcel_3d',
+              parcel_id: p.id,
+              title: p.title,
+              area_ha: Number(green.areaHa.toFixed(4)),
+              area_gemeten: Number(green.areaGemeten.toFixed(2)),
+              ott_cm2: Number(green.ottPaperCm2.toFixed(2)),
+              fill_color: p.color,
+              extrusion_height: p.extrusionHeight
+            },
+            geometry: { type: 'Polygon', coordinates: [p.coordsWGS84] }
+          });
+        });
+      }
+
+      // 3. Assumed Position (AP) & Astro-Fix
+      features.push({
+        type: 'Feature',
+        properties: { feature_type: 'assumed_position', name: `AP: ${obs.name}`, marker_color: '#f59e0b' },
+        geometry: { type: 'Point', coordinates: [Number(obs.lon.toFixed(6)), Number(obs.lat.toFixed(6))] }
+      });
+
+      features.push({
+        type: 'Feature',
+        properties: { feature_type: 'marcq_st_hilaire_fix', name: 'Astro-Fix', gdop: Number(gdop.toFixed(3)), marker_color: '#10b981' },
+        geometry: { type: 'Point', coordinates: [Number(fix.fixLon.toFixed(6)), Number(fix.fixLat.toFixed(6))] }
+      });
+
+      // 4. Nautical Position Lines (LOPs)
+      if (VortexState.layers.nautische_positielijnen) {
+        selected.forEach(r => {
+          const azRad = r.znDeg * DEG2RAD;
+          const pNM = r.interceptNM;
+          const iLat = obs.lat + (pNM * Math.cos(azRad)) / 60.0;
+          const iLon = obs.lon + (pNM * Math.sin(azRad)) / (60.0 * cosLat);
+          const perpRad = azRad + Math.PI / 2.0;
+          const halfLenNM = 4.5;
+          const p1Lat = iLat - (halfLenNM * Math.cos(perpRad)) / 60.0;
+          const p1Lon = iLon - (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat);
+          const p2Lat = iLat + (halfLenNM * Math.cos(perpRad)) / 60.0;
+          const p2Lon = iLon + (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat);
+
+          features.push({
+            type: 'Feature',
+            properties: { feature_type: 'nautical_lop', body: r.name, stroke: r.color },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [Number(p1Lon.toFixed(6)), Number(p1Lat.toFixed(6))],
+                [Number(iLon.toFixed(6)),  Number(iLat.toFixed(6))],
+                [Number(p2Lon.toFixed(6)), Number(p2Lat.toFixed(6))]
+              ]
+            }
+          });
+        });
+      }
+
+      // 5. Zeeland Nautical Route
+      features.push({
+        type: 'Feature',
+        properties: { feature_type: 'voyage_orthodrome', stroke: '#10b981' },
+        geometry: { type: 'LineString', coordinates: VortexState.voyageRoute.map(wp => [wp.lon, wp.lat]) }
+      });
+
+      return { type: 'FeatureCollection', name: 'VORTEX_Kernel_v34_OpenSeaMap_Zeegrid', features };
+    }
+
+    function exportGeoJSONToIde() {
+      switchModuleTab('kernel');
+      const geojsonObj = buildGeoJSONFeatureCollection();
+      kernelLog(`🗺️ GEOJSON STREAM (${geojsonObj.features.length} features incl. Nautisch Zeegrid & 3D Kadaster):\n` + JSON.stringify(geojsonObj, null, 2), 'success');
+      return geojsonObj;
+    }
+
+    /***************************************************************************
+     * 11. PROCRUSTES 1889, MULTI-CALENDAR, SAROS & EPHEMERIS ENGINE
      ***************************************************************************/
     function computeVanGoghProcrustes(allReductions) {
       const pairs = [];
@@ -1743,15 +2287,11 @@ ${grampsBlocks}`;
           });
         }
       });
-
       const n = pairs.length;
       if (n < 2) return null;
 
       let mxX = 0, myX = 0, mxY = 0, myY = 0;
-      pairs.forEach(p => {
-        mxX += p.skyX.x; myX += p.skyX.y;
-        mxY += p.canvasY.x; myY += p.canvasY.y;
-      });
+      pairs.forEach(p => { mxX += p.skyX.x; myX += p.skyX.y; mxY += p.canvasY.x; myY += p.canvasY.y; });
       mxX /= n; myX /= n; mxY /= n; myY /= n;
 
       let num = 0, den = 0, normX2 = 0;
@@ -1782,9 +2322,7 @@ ${grampsBlocks}`;
         };
       });
 
-      const rmsDeg = Math.sqrt(sumSqErr / n);
-      const transNorm = Math.hypot(mxY - mxX, myY - myX);
-      return { thetaDeg, scale, transNorm, rmsDeg, results };
+      return { thetaDeg, scale, rmsDeg: Math.sqrt(sumSqErr / n), results };
     }
 
     function runVanGoghProcrustes1889() {
@@ -1796,9 +2334,6 @@ ${grampsBlocks}`;
       updateAllCalculations();
     }
 
-    /***************************************************************************
-     * 10. MULTI-CALENDAR, FRENCH REPUBLICAN, MAYA & SAROS 126 ENGINE
-     ***************************************************************************/
     function toRoman(num) {
       if (num <= 0) return String(num);
       const lookup = [['M',1000],['CM',900],['D',500],['CD',400],['C',100],['XC',90],['L',50],['XL',40],['X',10],['IX',9],['V',5],['IV',4],['I',1]];
@@ -1930,21 +2465,16 @@ ${grampsBlocks}`;
       const distFullMoon = Math.abs(elongDeg - 180);
 
       let eclipseStatus = 'Geen Eclips (Buiten Knooplimiet)';
-      let isEclipseActive = false;
       if (minNodeDistDeg < 18.5 && distNewMoon < 12.0) {
         eclipseStatus = `🌑 ZONSVERDUISTERING ACTIEF BIJ ${nearestNodeType} (Δλ=${minNodeDistDeg.toFixed(2)}°)`;
-        isEclipseActive = true;
       } else if (minNodeDistDeg < 12.5 && distFullMoon < 12.0) {
         eclipseStatus = `🌕 MAANSVERDUISTERING ACTIEF BIJ ${nearestNodeType} (Δλ=${minNodeDistDeg.toFixed(2)}°)`;
-        isEclipseActive = true;
       } else if (minNodeDistDeg < 18.5) {
         eclipseStatus = `⚠️ Eclips-Seizoen Geopend (${nearestNodeType} op ${minNodeDistDeg.toFixed(1)}°)`;
       }
 
       const draconicPhasePct = (mod360(moonLonDeg - ascNodeDeg) / 360.0) * 100.0;
-      const sarosCyclesFrom2026 = (jd - 2461265.2559) / 6585.3213;
-
-      return { ascNodeDeg, descNodeDeg, minNodeDistDeg, nearestNodeType, moonLatDeg, draconicPhasePct, sarosCyclesFrom2026, eclipseStatus, isEclipseActive };
+      return { ascNodeDeg, descNodeDeg, minNodeDistDeg, nearestNodeType, moonLatDeg, draconicPhasePct, eclipseStatus };
     }
 
     function stepSarosCycle(numCycles) {
@@ -2002,9 +2532,6 @@ ${grampsBlocks}`;
       }
     }
 
-    /***************************************************************************
-     * 11. AUTOMATIC 3-STAR GDOP OPTIMIZATION ENGINE
-     ***************************************************************************/
     function calcGDOPForSet(reductionsList) {
       if (!reductionsList || reductionsList.length < 2) return 99.9;
       let sAA = 0, sAB = 0, sBB = 0;
@@ -2067,266 +2594,6 @@ ${grampsBlocks}`;
       return { gdop: bestGDOP, triplet: bestTriplet };
     }
 
-    /***************************************************************************
-     * 12. MAPLIBRE GL JS v4.7.1 ENGINE WITH 3D SOLAR LIGHTING & KADASTER
-     ***************************************************************************/
-    let vortexMap = null;
-    let mapReady = false;
-
-    function initMapLibre3D() {
-      if (typeof maplibregl === 'undefined') return;
-      try {
-        vortexMap = new maplibregl.Map({
-          container: 'vortex-maplibre',
-          style: {
-            version: 8,
-            light: {
-              anchor: 'map',
-              color: '#fde047',
-              intensity: 0.65,
-              position: [1.5, 152, 72]
-            },
-            sources: {
-              'carto-dark': {
-                type: 'raster',
-                tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'],
-                tileSize: 256,
-                attribution: '© OpenStreetMap & CARTO | MapLibre GL JS v4.7.1'
-              }
-            },
-            layers: [
-              {
-                id: 'carto-dark-layer',
-                type: 'raster',
-                source: 'carto-dark',
-                minzoom: 0,
-                maxzoom: 20
-              }
-            ]
-          },
-          center: [VortexState.observer.lon, VortexState.observer.lat],
-          zoom: 9.2,
-          pitch: 50,
-          bearing: -12
-        });
-
-        vortexMap.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
-        vortexMap.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: 'metric' }), 'bottom-left');
-
-        vortexMap.on('load', () => {
-          mapReady = true;
-          vortexMap.addSource('vortex-live-geojson', {
-            type: 'geojson',
-            data: buildGeoJSONFeatureCollection()
-          });
-
-          vortexMap.addLayer({
-            id: 'vortex-cadastral-3d',
-            type: 'fill-extrusion',
-            source: 'vortex-live-geojson',
-            filter: ['==', ['get', 'feature_type'], 'cadastral_parcel_3d'],
-            paint: {
-              'fill-extrusion-color': ['coalesce', ['get', 'fill_color'], '#00f0ff'],
-              'fill-extrusion-height': ['coalesce', ['get', 'extrusion_height'], 16],
-              'fill-extrusion-base': 0,
-              'fill-extrusion-opacity': 0.72
-            }
-          });
-
-          vortexMap.addLayer({
-            id: 'vortex-geojson-lines',
-            type: 'line',
-            source: 'vortex-live-geojson',
-            filter: ['==', '$type', 'LineString'],
-            layout: { 'line-cap': 'round', 'line-join': 'round' },
-            paint: {
-              'line-color': ['coalesce', ['get', 'stroke'], '#00f0ff'],
-              'line-width': [
-                'case',
-                ['==', ['get', 'feature_type'], 'nautical_lop'], 3.0,
-                ['==', ['get', 'feature_type'], 'voyage_orthodrome'], 2.4,
-                2.0
-              ],
-              'line-opacity': 0.92
-            }
-          });
-
-          vortexMap.addLayer({
-            id: 'vortex-geojson-points',
-            type: 'circle',
-            source: 'vortex-live-geojson',
-            filter: ['==', '$type', 'Point'],
-            paint: {
-              'circle-radius': 7,
-              'circle-color': ['coalesce', ['get', 'marker_color'], '#00f0ff'],
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#03060c'
-            }
-          });
-
-          vortexMap.on('click', e => {
-            const feats = vortexMap.queryRenderedFeatures(e.point, {
-              layers: ['vortex-cadastral-3d', 'vortex-geojson-points', 'vortex-geojson-lines']
-            });
-            if (feats && feats.length > 0) {
-              const p = feats[0].properties;
-              if (p.parcel_id) {
-                updateParcelGreenUI(p.parcel_id);
-                new maplibregl.Popup()
-                  .setLngLat(e.lngLat)
-                  .setHTML(`<div><strong class="text-vortex-cyan">${p.title}</strong><br/>Green Oppervlakte: <strong>${p.area_ha} ha (${p.area_gemeten} gemeten)</strong><br/>Ott Nr. 573 Nonius: <strong>${p.ott_cm2} cm²</strong></div>`)
-                  .addTo(vortexMap);
-                return;
-              }
-            }
-            const lat = Number(e.lngLat.lat.toFixed(4));
-            const lon = Number(e.lngLat.lng.toFixed(4));
-            setObserverLocation('MAP-CLICK', `Kaart-Anker (${lat}°N)`, lat, lon);
-          });
-        });
-      } catch (err) {
-        console.warn('MapLibre init warning:', err);
-      }
-    }
-
-    function syncMapLibreGeoJSON(sunAzDeg = 152, sunAltDeg = 19) {
-      if (!mapReady || !vortexMap) return;
-      const src = vortexMap.getSource('vortex-live-geojson');
-      if (src) src.setData(buildGeoJSONFeatureCollection());
-      const polarAngle = Math.max(5, Math.min(88, 90 - sunAltDeg));
-      try {
-        vortexMap.setLight({
-          anchor: 'map',
-          color: sunAltDeg > 0 ? '#fde047' : '#38bdf8',
-          intensity: sunAltDeg > 0 ? 0.72 : 0.35,
-          position: [1.5, mod360(sunAzDeg), polarAngle]
-        });
-      } catch (e) {}
-    }
-
-    function flyMapToAnchor(placeId, zoomLevel = 11.5) {
-      const p = VortexState.places[placeId];
-      if (!p) return;
-      setObserverLocation(p.code, p.name, p.lat, p.lon);
-      if (vortexMap && mapReady) {
-        vortexMap.flyTo({ center: [p.lon, p.lat], zoom: zoomLevel, pitch: 52, essential: true });
-      }
-    }
-
-    function setViewportSplit(mode) {
-      VortexState.viewportSplit = mode;
-      const grid = document.getElementById('dual-viewport-grid');
-      const skyW = document.getElementById('sky-pane-wrapper');
-      const mapW = document.getElementById('map-pane-wrapper');
-      if (mode === 'sky') {
-        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
-        skyW.classList.remove('hidden'); mapW.classList.add('hidden');
-      } else if (mode === 'map') {
-        grid.className = 'flex-1 grid grid-cols-1 gap-2 min-h-[340px] overflow-hidden';
-        skyW.classList.add('hidden'); mapW.classList.remove('hidden');
-      } else {
-        grid.className = 'flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-[340px] overflow-hidden';
-        skyW.classList.remove('hidden'); mapW.classList.remove('hidden');
-      }
-      setTimeout(() => {
-        resizeCanvas();
-        if (vortexMap) vortexMap.resize();
-      }, 60);
-    }
-
-    /***************************************************************************
-     * 13. GEOJSON EXPORT ENGINE
-     ***************************************************************************/
-    function buildGeoJSONFeatureCollection() {
-      const jd = dateToJulianDate(VortexState.currentDate);
-      const obs = VortexState.observer;
-      const solar = getDynamicSolarSystemBodies(jd);
-      const sat = calcSatelliteTelemetry(jd, obs.lat, obs.lon);
-      const allBodies = [...solar, sat, ...CelestialCatalog];
-      const reductions = allBodies.map(b => calcSightReduction(b, obs.lat, obs.lon, jd));
-      const selected = reductions.filter(r => VortexState.selectedFixBodies.includes(r.name));
-      const fix = computeLeastSquaresFix(selected, obs.lat, obs.lon);
-      const gdop = calcGDOPForSet(selected);
-
-      const features = [];
-      const cosLat = Math.cos(obs.lat * DEG2RAD);
-
-      Object.keys(CadastralParcelsCatalog).forEach(pid => {
-        const green = computeParcelGreenPlanimeter(pid);
-        const p = green.parcel;
-        features.push({
-          type: 'Feature',
-          properties: {
-            feature_type: 'cadastral_parcel_3d',
-            parcel_id: p.id,
-            title: p.title,
-            area_ha: Number(green.areaHa.toFixed(4)),
-            area_gemeten: Number(green.areaGemeten.toFixed(2)),
-            ott_cm2: Number(green.ottPaperCm2.toFixed(2)),
-            fill_color: p.color,
-            extrusion_height: p.extrusionHeight
-          },
-          geometry: { type: 'Polygon', coordinates: [p.coordsWGS84] }
-        });
-      });
-
-      features.push({
-        type: 'Feature',
-        properties: { feature_type: 'assumed_position', name: `AP: ${obs.name}`, marker_color: '#f59e0b' },
-        geometry: { type: 'Point', coordinates: [Number(obs.lon.toFixed(6)), Number(obs.lat.toFixed(6))] }
-      });
-
-      features.push({
-        type: 'Feature',
-        properties: { feature_type: 'marcq_st_hilaire_fix', name: 'Astro-Fix', gdop: Number(gdop.toFixed(3)), marker_color: '#10b981' },
-        geometry: { type: 'Point', coordinates: [Number(fix.fixLon.toFixed(6)), Number(fix.fixLat.toFixed(6))] }
-      });
-
-      selected.forEach(r => {
-        const azRad = r.znDeg * DEG2RAD;
-        const pNM = r.interceptNM;
-        const iLat = obs.lat + (pNM * Math.cos(azRad)) / 60.0;
-        const iLon = obs.lon + (pNM * Math.sin(azRad)) / (60.0 * cosLat);
-        const perpRad = azRad + Math.PI / 2.0;
-        const halfLenNM = 15.0;
-        const p1Lat = iLat - (halfLenNM * Math.cos(perpRad)) / 60.0;
-        const p1Lon = iLon - (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat);
-        const p2Lat = iLat + (halfLenNM * Math.cos(perpRad)) / 60.0;
-        const p2Lon = iLon + (halfLenNM * Math.sin(perpRad)) / (60.0 * cosLat);
-
-        features.push({
-          type: 'Feature',
-          properties: { feature_type: 'nautical_lop', body: r.name, stroke: r.color },
-          geometry: {
-            type: 'LineString',
-            coordinates: [
-              [Number(p1Lon.toFixed(6)), Number(p1Lat.toFixed(6))],
-              [Number(iLon.toFixed(6)),  Number(iLat.toFixed(6))],
-              [Number(p2Lon.toFixed(6)), Number(p2Lat.toFixed(6))]
-            ]
-          }
-        });
-      });
-
-      features.push({
-        type: 'Feature',
-        properties: { feature_type: 'voyage_orthodrome', stroke: '#10b981' },
-        geometry: { type: 'LineString', coordinates: VortexState.voyageRoute.map(wp => [wp.lon, wp.lat]) }
-      });
-
-      return { type: 'FeatureCollection', name: 'VORTEX_Kernel_v32_GeoJSON', features };
-    }
-
-    function exportGeoJSONToIde() {
-      switchModuleTab('kernel');
-      const geojsonObj = buildGeoJSONFeatureCollection();
-      kernelLog(`🗺️ GEOJSON STREAM (${geojsonObj.features.length} features):\n` + JSON.stringify(geojsonObj, null, 2), 'success');
-      return geojsonObj;
-    }
-
-    /***************************************************************************
-     * 14. EPHEMERIS, SGP4 & SIGHT REDUCTION ENGINE
-     ***************************************************************************/
     function calcGreatCircle(lat1, lon1, lat2, lon2) {
       const p1 = lat1 * DEG2RAD, p2 = lat2 * DEG2RAD;
       const dPhi = (lat2 - lat1) * DEG2RAD, dLam = (lon2 - lon1) * DEG2RAD;
@@ -2462,7 +2729,7 @@ ${grampsBlocks}`;
     }
 
     /***************************************************************************
-     * 15. UI, REAL-TIME LOOP & CANVAS RENDERING
+     * 12. UI, REAL-TIME LOOP & CANVAS RENDERING
      ***************************************************************************/
     function toggleLayer(layerName, forceState = null) {
       if (!(layerName in VortexState.layers)) return false;
@@ -2477,6 +2744,7 @@ ${grampsBlocks}`;
       Object.keys(VortexState.layers).forEach(k => { VortexState.layers[k] = false; });
       syncLayerButtonsUI();
       renderCanvas();
+      syncMapLibreGeoJSON();
     }
 
     function enableAllLayers() {
@@ -2509,13 +2777,13 @@ ${grampsBlocks}`;
           notice.textContent = `Actief: ${activeNames}`;
         } else {
           notice.className = 'text-amber-400 text-[9px] leading-tight';
-          notice.textContent = 'Schakel lagen in of gebruik de 4-punts Homografie-kalibratie in Tab 1.';
+          notice.textContent = 'Alle lagen uitgeschakeld.';
         }
       }
     }
 
     function switchModuleTab(tabName) {
-      const tabs = ['kadaster', 'calendars', 'nautical', 'scad_solid', 'kernel'];
+      const tabs = ['scad_solid', 'kadaster', 'calendars', 'nautical', 'kernel'];
       tabs.forEach(t => {
         const panel = document.getElementById(`mod-${t}`);
         const btn = document.getElementById(`tab-btn-${t}`);
@@ -2533,15 +2801,16 @@ ${grampsBlocks}`;
       const p = VortexState.places[placeId];
       if (!p) return;
       setObserverLocation(p.code, p.name, p.lat, p.lon);
-      if (vortexMap && mapReady) vortexMap.flyTo({ center: [p.lon, p.lat], zoom: 11.2, essential: true });
+      if (vortexMap && mapReady) vortexMap.flyTo({ center: [p.lon, p.lat], zoom: 12.2, essential: true });
     }
 
     function setObserverLocation(code, name, lat, lon) {
       const rd = wgs84ToRD(lat, lon);
       VortexState.observer = { ...VortexState.observer, id: code, name, lat, lon, rdX: rd.x, rdY: rd.y };
-      document.getElementById('hdr-location').textContent = `ANKER: ${name.toUpperCase()} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`;
+      document.getElementById('hdr-location').textContent = `ZEE-ANKER: ${name.toUpperCase()} (${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E)`;
       document.getElementById('hdr-rd').textContent = `RD: ${rd.x} · ${rd.y}`;
       document.getElementById('ap-readout').textContent = `${formatDMM(lat)}N, ${formatDMM(lon)}E`;
+      document.getElementById('pipe-sea-coords').textContent = `${formatDMM(lat)}N, ${formatDMM(lon)}E`;
       updateAllCalculations();
     }
 
@@ -2554,7 +2823,7 @@ ${grampsBlocks}`;
       if (cap.placeId && VortexState.places[cap.placeId]) {
         const p = VortexState.places[cap.placeId];
         setObserverLocation(p.code, p.name, p.lat, p.lon);
-        if (vortexMap && mapReady) vortexMap.flyTo({ center: [p.lon, p.lat], zoom: 10.5, essential: true });
+        if (vortexMap && mapReady) vortexMap.flyTo({ center: [p.lon, p.lat], zoom: 11.8, essential: true });
       }
       syncDateInputsFromCurrentDate();
       updateAllCalculations();
@@ -2569,19 +2838,6 @@ ${grampsBlocks}`;
         if (VortexState.selectedFixBodies.length >= 4) VortexState.selectedFixBodies.shift();
         VortexState.selectedFixBodies.push(starName);
       }
-      updateAllCalculations();
-    }
-
-    function syncRealtimeQuadPipes() {
-      VortexState.currentDate = new Date();
-      VortexState.liveClock = true;
-      updateLiveClockButtonUI();
-      setObserverLocation('VORTEX-LAREN', 'Laren (Midden-Nederland)', 52.2500, 5.2200);
-      toggleLayer('uurhoek_grid', true);
-      toggleLayer('sterren', true);
-      toggleLayer('nautische_positielijnen', true);
-      toggleLayer('kadastrale_percelen', true);
-      syncDateInputsFromCurrentDate();
       updateAllCalculations();
     }
 
@@ -2654,8 +2910,6 @@ ${grampsBlocks}`;
       document.getElementById('cal-solar').textContent = `${calData.solar.gregorian} | λ☉ ${calData.solar.sunEclLonDeg.toFixed(1)}°`;
       document.getElementById('cal-lunar').textContent = `${calData.lunar.moonAgeDays.toFixed(1)}d (${calData.lunar.illumPct.toFixed(1)}%) | ${calData.lunar.hijri}`;
       document.getElementById('cal-french').textContent = calData.frenchRep.formatted;
-      document.getElementById('cal-maya').textContent = `${calData.mayan.longCount} | ${calData.mayan.tzolkin}`;
-      document.getElementById('cal-saros').textContent = `Ω=${calData.saros.ascNodeDeg.toFixed(1)}° (☋=${calData.saros.descNodeDeg.toFixed(1)}°)`;
 
       const fmDet = document.getElementById('french-maya-details');
       if (fmDet) {
@@ -2689,11 +2943,9 @@ ${grampsBlocks}`;
 
       const rSirius = reductions.find(r => r.name === 'Sirius');
       const rSun = reductions.find(r => r.name === 'Zon (Helios)');
-      if (rSirius) {
-        document.getElementById('pipe-star-coords').textContent = `Hc ${rSirius.hcDeg >= 0 ? '+' : ''}${rSirius.hcDeg.toFixed(2)}° | Zn ${rSirius.znDeg.toFixed(1)}°`;
-      }
-      if (rSun) {
-        document.getElementById('pipe-sun-coords').textContent = `Hc ${rSun.hcDeg >= 0 ? '+' : ''}${rSun.hcDeg.toFixed(2)}° | Zn ${rSun.znDeg.toFixed(1)}°`;
+      if (rSun && rSirius) {
+        document.getElementById('pipe-sun-coords').textContent = `Zon ${rSun.hcDeg >= 0 ? '+' : ''}${rSun.hcDeg.toFixed(1)}° | Zn ${rSun.znDeg.toFixed(1)}°`;
+        document.getElementById('pipe-sun-sub').textContent = `Sirius LHA ${rSirius.lhaDeg.toFixed(1)}° | GDOP ${VortexState.lastGDOP.toFixed(2)}`;
       }
 
       const tbody = document.getElementById('star-almanac-tbody');
@@ -2729,11 +2981,11 @@ ${grampsBlocks}`;
         `${formatDMM(fix.fixLat)}N, ${formatDMM(fix.fixLon)}E (GDOP ${gdop.toFixed(2)})`;
 
       renderCanvas(reductions, selectedReductions, fix, satBody, calData.saros, proc);
-      syncMapLibreGeoJSON(rSun ? rSun.znDeg : 155, rSun ? rSun.hcDeg : 18);
+      syncMapLibreGeoJSON();
     }
 
     /***************************************************************************
-     * 16. REAL-TIME 60 FPS CANVAS RENDERER (WITH 4-PT HOMOGRAPHY QUAD Q1..Q4)
+     * 13. REAL-TIME 60 FPS CANVAS RENDERER
      ***************************************************************************/
     const canvas = document.getElementById('vortex-canvas');
     const ctx = canvas.getContext('2d');
@@ -2783,9 +3035,7 @@ ${grampsBlocks}`;
       const cx = w * 0.5, cy = h * 0.52;
       const maxR = Math.min(w, h) * 0.37;
 
-      // =======================================================================
       // LAYER 0: 4-POINT PROJECTIVE HOMOGRAPHY CALIBRATION QUAD (Q1..Q4) & POLYGON
-      // =======================================================================
       if (VortexState.layers.repro_kaart_kalibratie) {
         ctx.save();
         const cal = VortexState.reproCalibration;
@@ -2794,7 +3044,6 @@ ${grampsBlocks}`;
           ctx.drawImage(cal.imageElement, w * 0.06, h * 0.06, w * 0.88, h * 0.88);
           ctx.globalAlpha = 1.0;
         } else {
-          // Draw Projective Bilinear Homography Grid inside Q1..Q4
           const q = cal.srcQuadNorm;
           ctx.strokeStyle = 'rgba(245, 158, 11, 0.22)';
           ctx.lineWidth = 1;
@@ -2813,7 +3062,6 @@ ${grampsBlocks}`;
             ctx.beginPath(); ctx.moveTo(leftX, leftY); ctx.lineTo(rightX, rightY); ctx.stroke();
           }
 
-          // Outer 4-Point Homography Reference Quad (Q1..Q4)
           ctx.strokeStyle = '#a855f7';
           ctx.lineWidth = 2.0;
           ctx.setLineDash([6, 3]);
@@ -2838,7 +3086,6 @@ ${grampsBlocks}`;
           });
         }
 
-        // Draw Traced Polygon for A. Ott Nr. 573 Planimeter
         if (cal.tracedPointsPx.length >= 2) {
           ctx.fillStyle = 'rgba(0, 240, 255, 0.18)';
           ctx.strokeStyle = '#00f0ff';
@@ -2851,23 +3098,10 @@ ${grampsBlocks}`;
           ctx.closePath();
           ctx.fill();
           ctx.stroke();
-
-          cal.tracedPointsPx.forEach((pt, idx) => {
-            const px = pt.x * w, py = pt.y * h;
-            const rectPt = applyHomographyPoint(cal.homographyMatrix, pt.x, pt.y);
-            ctx.fillStyle = '#fde047';
-            ctx.beginPath();
-            ctx.arc(px, py, 4.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#e2e8f0';
-            ctx.font = '9px "JetBrains Mono"';
-            ctx.fillText(`P${idx + 1}(${rectPt.X.toFixed(1)},${rectPt.Y.toFixed(1)}cm)`, px + 6, py - 4);
-          });
         }
         ctx.restore();
       }
 
-      // Base Horizon Circle
       ctx.save();
       ctx.strokeStyle = 'rgba(30, 47, 77, 0.45)';
       ctx.lineWidth = 1;
@@ -2888,6 +3122,11 @@ ${grampsBlocks}`;
           ctx.stroke();
         });
         ctx.setLineDash([]);
+        for (let az = 0; az < 360; az += 30) {
+          const pEdge = skyToCanvas(az, 0, cx, cy, maxR);
+          ctx.strokeStyle = az % 90 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(51, 65, 85, 0.35)';
+          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(pEdge.x, pEdge.y); ctx.stroke();
+        }
         ctx.restore();
       }
 
@@ -2900,21 +3139,12 @@ ${grampsBlocks}`;
           ctx.strokeStyle = '#c084fc';
           ctx.lineWidth = 1.8;
           ctx.setLineDash([4, 3]);
-          ctx.beginPath();
-          ctx.moveTo(pSky.x, pSky.y);
-          ctx.lineTo(pCanvas.x, pCanvas.y);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(pSky.x, pSky.y); ctx.lineTo(pCanvas.x, pCanvas.y); ctx.stroke();
           ctx.setLineDash([]);
 
           ctx.strokeStyle = item.color;
           ctx.lineWidth = 1.8;
-          ctx.beginPath();
-          ctx.arc(pCanvas.x, pCanvas.y, 10, 0, Math.PI * 2);
-          ctx.stroke();
-
-          ctx.fillStyle = item.color;
-          ctx.font = 'bold 9.5px "JetBrains Mono"';
-          ctx.fillText(`🎨 ${item.bodyName} (Δ=${item.errDeg.toFixed(1)}°)`, pCanvas.x + 12, pCanvas.y - 4);
+          ctx.beginPath(); ctx.arc(pCanvas.x, pCanvas.y, 10, 0, Math.PI * 2); ctx.stroke();
         });
         ctx.restore();
       }
@@ -2948,9 +3178,7 @@ ${grampsBlocks}`;
           const radius = body.type === 'sun' || body.type === 'moon' ? 6.0 : isSirius ? 5.0 : isFixStar ? 4.5 : isMajor ? 3.2 : 2.1;
 
           ctx.fillStyle = body.hcDeg >= 0 ? body.color : 'rgba(100, 116, 139, 0.5)';
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
 
           if (isMajor || body.hcDeg > 10) {
             ctx.fillStyle = body.hcDeg >= 0 ? '#f8fafc' : '#94a3b8';
@@ -2991,30 +3219,19 @@ ${grampsBlocks}`;
         const mx = (px + tx) * 0.5 - (ty - py) * 0.28, my = (py + ty) * 0.5 + (tx - px) * 0.28;
 
         ctx.fillStyle = '#d97706';
-        ctx.beginPath();
-        ctx.arc(px, py, 9, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(px, py, 9, 0, Math.PI * 2); ctx.fill();
 
         ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 3.8;
-        ctx.beginPath();
-        ctx.moveTo(px, py); ctx.lineTo(mx, my); ctx.lineTo(tx, ty);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(mx, my); ctx.lineTo(tx, ty); ctx.stroke();
 
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(tx, ty, 11, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = '#fde68a';
-        ctx.font = 'bold 10px "JetBrains Mono"';
-        ctx.fillText(`A. OTT KEMPTEN Nr. 573 | Nonius: ${VortexState.planimeter.wheelCount.toFixed(2)} cm²`, mx + 8, my - 8);
+        ctx.beginPath(); ctx.arc(tx, ty, 11, 0, Math.PI * 2); ctx.stroke();
         ctx.restore();
       }
     }
 
-    // Canvas Pointer Interaction (Pick 4 Homography Quad Points Q1..Q4, Trace Polygon, or Drag Planimeter)
     canvas.addEventListener('pointerdown', e => {
       const rect = canvas.getBoundingClientRect();
       const normX = Math.max(0.03, Math.min(0.97, (e.clientX - rect.left) / rect.width));
@@ -3031,7 +3248,6 @@ ${grampsBlocks}`;
           if (btn) btn.classList.remove('cyber-btn-active');
           document.getElementById('hud-click-mode').textContent = 'Inspecteer';
           recalcReproPlanimeter();
-          kernelLog('✅ 4-Punts Projectieve Homografie Matrix H (3×3) herberekend en toegepast op de Ott Nr. 573 planimeter.', 'success');
         } else {
           const labels = ['Q1 (LB)', 'Q2 (RB)', 'Q3 (RO)', 'Q4 (LO)'];
           document.getElementById('hud-click-mode').textContent = `🎯 Klik ${labels[cal.quadPickIndex]}`;
@@ -3077,7 +3293,7 @@ ${grampsBlocks}`;
     window.addEventListener('pointerup', () => { VortexState.planimeter.dragging = false; });
 
     /***************************************************************************
-     * 17. REAL-TIME 60 FPS ANIMATION ENGINE & PUBLIC API
+     * 14. REAL-TIME 60 FPS ANIMATION ENGINE & PUBLIC API
      ***************************************************************************/
     function stepTime(seconds) {
       VortexState.currentDate = new Date(VortexState.currentDate.getTime() + seconds * 1000);
@@ -3164,37 +3380,42 @@ ${grampsBlocks}`;
 
     window.VortexKernel = {
       setLayer: (name, state) => toggleLayer(name, state),
+      bootOpenSeaMap: (stepArcMin = 0.5) => {
+        setZeegridStep(stepArcMin / 60.0);
+        bootOpenSeaMapAndZeegrid();
+      },
+      setPedestalText: (line1, line2, line3) => {
+        document.getElementById('ped-line-1').value = line1;
+        document.getElementById('ped-line-2').value = line2;
+        document.getElementById('ped-line-3').value = line3;
+        return generateOpenSCADModel();
+      },
       askMapLibreAI: (commandStr) => executeMapLibreAICommand(commandStr),
       solveHomography: (targetW = 20.0, targetH = 16.0, scale = 2500) => {
         document.getElementById('homog-target-w').value = targetW;
         document.getElementById('homog-target-h').value = targetH;
         document.getElementById('repro-map-scale').value = scale;
         loadSyntheticArchiveMap();
-        const H = VortexState.reproCalibration.homographyMatrix;
-        kernelLog(`📐 3×3 Homografie Matrix H berekend (det=${computeDet3x3(H).toFixed(3)}):\n  [${H.map(v => v.toFixed(3)).join(', ')}]`, 'success');
-        return H;
+        return VortexState.reproCalibration.homographyMatrix;
       },
       measureParcelGreen: (parcelId = 'LODIJKE-369') => {
         flyToCadastralParcel(parcelId);
         return computeParcelGreenPlanimeter(parcelId);
       },
       exportBinarySTL: (triggerDownload = false) => {
-        switchModuleTab('scad_solid');
         const info = generateBinarySTLBuffer();
-        kernelLog(`📐 Binaire STL Mesh gegenereerd in geheugen: ${info.numTri} facetten (${info.byteLength} bytes Little-Endian).`, 'success');
+        kernelLog(`📐 Binaire STL Mesh (incl. 3D Reliëf-Voetstuk): ${info.numTri} facetten (${info.byteLength} bytes).`, 'success');
         if (triggerDownload) downloadBinarySTLFile();
         return info;
       },
       exportOpenSCAD: () => {
-        switchModuleTab('scad_solid');
         const scad = generateOpenSCADModel();
-        kernelLog('🧊 OpenSCAD 3D-printmodel (.scad) gegenereerd:\n' + scad, 'success');
+        kernelLog('🧊 OpenSCAD 3D-printmodel (.scad) met gegraveerd voetstuk:\n' + scad, 'success');
         return scad;
       },
       exportSolidTurtle: () => {
-        switchModuleTab('scad_solid');
         const ttl = generateSolidPodTurtle();
-        kernelLog('🔗 Solid POD + GRAMPS Genealogie Linked Data (RDF/Turtle .ttl) gegenereerd:\n' + ttl, 'success');
+        kernelLog('🔗 Solid POD + GRAMPS Genealogie Linked Data (RDF/Turtle .ttl):\n' + ttl, 'success');
         return ttl;
       },
       runProcrustes1889: () => {
@@ -3211,26 +3432,32 @@ ${grampsBlocks}`;
     };
 
     const KernelTemplates = {
-      tpl_homography_ott573: `// VORTEX KERNEL SCRIPT 1: 4-Punts Projectieve Homografie (3×3 Matrix H) + Ott Nr. 573 Green Integraal
+      tpl_openseamap_pedestal: `// VORTEX KERNEL SCRIPT 1: Start OpenSeaMap + Nautisch Zeegrid + 3D Voetstuk (.STL/.SCAD)
+VortexKernel.bootOpenSeaMap(0.5); // 0.5' Zeemijl grid over Oosterschelde & Bol van Lodijke
+
+// Stel de 3D-reliëftekst in op het voetstuk en genereer de Binaire STL + OpenSCAD code
+VortexKernel.setPedestalText(
+  "BOL VAN LODIJKE M 369",
+  "11.13 HA - 28.37 GEMETEN",
+  "RD 68120 388050 OTT 573"
+);
+const stl = VortexKernel.exportBinarySTL(false); // Zet op true om direct .stl te downloaden
+VortexKernel.log("Voetstuk STL gereed: " + stl.numTri + " facetten (" + stl.byteLength + " bytes)");`,
+
+      tpl_homography_ott573: `// VORTEX KERNEL SCRIPT 2: 4-Punts Projectieve Homografie (3×3 Matrix H) + Ott Nr. 573 Green Integraal
 const H = VortexKernel.solveHomography(20.0, 16.0, 2500);
 const m369 = VortexKernel.measureParcelGreen("LODIJKE-369");
-VortexKernel.log("Ott Nr. 573 (Homografie-gecorrigeerd): " + m369.areaHa.toFixed(4) + " ha = " + m369.areaGemeten.toFixed(2) + " Zeeuwse gemeten (" + m369.ottPaperCm2.toFixed(2) + " cm²)");`,
+VortexKernel.log("Ott Nr. 573: " + m369.areaHa.toFixed(4) + " ha = " + m369.areaGemeten.toFixed(2) + " Zeeuwse gemeten");`,
 
-      tpl_binary_stl_scad: `// VORTEX KERNEL SCRIPT 2: Genereer Binaire .STL 3D-Mesh & OpenSCAD (.scad) van Perceel M 369
-VortexKernel.optimizeGDOP();
-VortexKernel.exportOpenSCAD();
-const stl = VortexKernel.exportBinarySTL(false); // Zet op true om direct het .stl bestand te downloaden
-VortexKernel.log("STL gereed voor 3D-slicer: " + stl.numTri + " driehoeken (" + stl.byteLength + " bytes)");`,
-
-      tpl_solid_gramps_rdf: `// VORTEX KERNEL SCRIPT 3: Exporteer Solid POD RDF/Turtle met GRAMPS Genealogie (B.W. Schot, Bastiaen Bout, C.M. Guiljam)
+      tpl_solid_gramps_rdf: `// VORTEX KERNEL SCRIPT 3: Exporteer Solid POD RDF/Turtle met GRAMPS Genealogie (Schot, Bout, Guiljam)
 VortexKernel.measureParcelGreen("LODIJKE-369");
 VortexKernel.exportSolidTurtle();`,
 
       tpl_procrustes_1889: `// VORTEX KERNEL SCRIPT 4: Wiskundige Procrustes-Analyse De Sterrennacht (19 Juni 1889 03:35 UT)
 const res = VortexKernel.runProcrustes1889();
-VortexKernel.log("Procrustes SVD Rotatie θ = " + res.thetaDeg.toFixed(2) + "°, Schaal s = " + res.scale.toFixed(3) + "×, RMS = " + res.rmsDeg.toFixed(2) + "°");`,
+VortexKernel.log("Procrustes SVD Rotatie θ = " + res.thetaDeg.toFixed(2) + "°, Schaal s = " + res.scale.toFixed(3) + "×");`,
 
-      tpl_geojson_export: `// VORTEX KERNEL SCRIPT 5: Exporteer volledige 3D Kadaster & Marcq St. Hilaire GeoJSON
+      tpl_geojson_export: `// VORTEX KERNEL SCRIPT 5: Exporteer OpenSeaMap Zeegrid, 3D Kadaster & Marcq St. Hilaire GeoJSON
 VortexKernel.exportGeoJSON();`
     };
 
@@ -3261,19 +3488,23 @@ VortexKernel.exportGeoJSON();`
       kernelLog('📋 Code gekopieerd naar klembord.', 'info');
     }
 
+    /***************************************************************************
+     * 15. INITIALIZATION ON WINDOW LOAD (BOOTS DIRECTLY INTO OPENSEAMAP + ZEEGRID)
+     ***************************************************************************/
     window.onload = function () {
       syncDateInputsFromCurrentDate();
       syncLayerButtonsUI();
-      recalcReproPlanimeter();
-      updateParcelGreenUI('LODIJKE-369');
+      const green = updateParcelGreenUI('LODIJKE-369');
+      syncPedestalEngravingFromParcel(green);
       generateOpenSCADModel();
       generateSolidPodTurtle();
-      loadKernelTemplate('tpl_homography_ott573');
+      loadKernelTemplate('tpl_openseamap_pedestal');
       resizeCanvas();
       initMapLibre3D();
       requestAnimationFrame(realtimeAnimationLoop);
 
-      kernelLog('VORTEX KERNEL IDE v32.0 geladen: 4-Punts 3×3 Homografie (Ott 573), Binaire .STL Mesh Generator & Solid POD GRAMPS Genealogie.', 'success');
+      kernelLog('⚓ VORTEX KERNEL IDE v34.0 direct gestart met OpenSeaMap Seamarks + Nautisch Zeegrid boven de Oosterschelde (Bol van Lodijke M 369).', 'success');
+      kernelLog('🧊 3D-Voetstuk met reliëftekst (Perceelnaam, 28.37 Zeeuwse gemeten & RD 68120·388050) gereed voor .STL en .SCAD export.', 'info');
     };
   </script>
 </body>
