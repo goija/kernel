@@ -146,7 +146,7 @@
                         ⟳ Herstel 12 aug 2026 (Standaard)
                     </button>
                     <button onclick="toggleSelfTestDrawer()" class="px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-mono transition flex items-center gap-1.5">
-                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">16/16</span> ✅)</span>
+                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">17/17</span> ✅)</span>
                     </button>
                     <button onclick="copyAuditReport()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5">
                         <span id="copyBtnText">📋 Kopieer Diagnose-JSON</span>
@@ -264,7 +264,26 @@
                     <button onclick="setTafelTime(20 + 6/60)" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition">
                         ⚡ Max Eclips (20:06 CEST)
                     </button>
+                    <button onclick="toggleIcebergMode()" id="icebergToggleBtn" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-semibold transition">
+                        🧊 Omgekeerde IJsberg Modus: Aan
+                    </button>
                 </div>
+            </div>
+
+            <!-- Fysische Metafoor Banner: De Omgekeerde IJsberg Onder Water -->
+            <div id="icebergMetaBanner" class="p-3.5 rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 via-obs-950 to-emerald-950/30 font-mono text-xs space-y-1.5">
+                <div class="flex items-center justify-between text-cyan-300 font-bold">
+                    <span class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                        Fysische Analogie: De "Omgekeerde IJsberg Onder Water" ($T_s < T_2 < T_{50\text{m}}$)
+                    </span>
+                    <span class="text-[11px] text-slate-400">Brunt-Väisälä Stabiliteit: $N^2 = \frac{g}{\theta}\frac{\partial \theta}{\partial z} > 0$</span>
+                </div>
+                <p class="text-slate-300 leading-relaxed font-sans text-xs">
+                    Tijdens een normale zonnige middag fungeert het aardoppervlak als een warmtebron: warme lucht stijgt op (thermische bellen/convectie). 
+                    Tijdens de eclips van 12 augustus 2026 koelt het heidedekzand echter zo extreem snel af ($T_s \to 24{,}1^\circ\text{C}$ om 20:06 CEST, terwijl $T_2 = 26{,}3^\circ\text{C}$ en $T_{50\text{m}} \approx 28{,}5^\circ\text{C}$), dat de bodem werkt als een <strong>ondergedompeld blok ijs</strong> op de bodem van een waterbekken. 
+                    De zwaarste, koudste lucht ligt gefixeerd aan de grond ($\partial\rho/\partial z < 0$), waardoor alle thermische stijgstromen direct doven en een extreem stabiele koude-laag (de "omgekeerde ijsberg") de onderste 20 tot 50 meter van de atmosfeer hydraulisch vergrendelt.
+                </p>
             </div>
 
             <!-- Subsectie 1: Astrometrische Ephemeriden & Topocentrische WGS84 Geometrie -->
@@ -547,7 +566,7 @@
                 <div class="glass-sub rounded-xl p-3.5 border-t-2 border-t-emerald-400">
                     <div class="text-xs font-mono text-emerald-300 font-bold">3. Oppervlakkige Grondinversie</div>
                     <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
-                        Doordat het droge dekzand sneller afkoelt dan de lucht erboven, ontstaat vanaf <strong>19:35 CEST</strong> een stabiele grondinversie (<span class="font-mono text-emerald-300">∂T/∂z &gt; 0</span>, <span class="font-mono">T₂ &gt; T_s</span> tot <span class="font-mono">+2,20 °C</span> bij max eclips).
+                        Doordat het droge dekzand sneller afkoelt dan de lucht erboven, ontstaat vanaf <strong>19:35 CEST</strong> een stabiele grondinversie (<span class="font-mono text-emerald-300">∂T/∂z &gt; 0</span>, <span class="font-mono">T₂ &gt; T_s</span> tot <span class="font-mono">+2,20 °C</span> bij max eclips; het "omgekeerde ijsberg"-regime).
                     </p>
                 </div>
                 <div class="glass-sub rounded-xl p-3.5 border-t-2 border-t-purple-400">
@@ -1541,6 +1560,23 @@
 
         let tafelSeries = [];
         let tafelAnimState = { running: false, rafId: null };
+        let showIcebergMode = true;
+
+        function toggleIcebergMode() {
+            showIcebergMode = !showIcebergMode;
+            const btn = document.getElementById('icebergToggleBtn');
+            const banner = document.getElementById('icebergMetaBanner');
+            if (btn) {
+                btn.textContent = showIcebergMode ? "🧊 Omgekeerde IJsberg Modus: Aan" : "🧊 Omgekeerde IJsberg Modus: Uit";
+                btn.className = showIcebergMode 
+                    ? "px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-semibold transition"
+                    : "px-2.5 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-400 border border-slate-700 font-semibold transition";
+            }
+            if (banner) {
+                banner.style.display = showIcebergMode ? 'block' : 'none';
+            }
+            drawTafelProfileCanvas();
+        }
 
         // 1.1 Morrison & Stephenson (2004) Delta-T en WGS84 initialisatie
         function computeMorrisonStephensonDeltaT(y = 2026.611) {
@@ -2058,26 +2094,61 @@
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, W, groundY);
 
-            // Grondinversielaag of Convectieve pluimen boven de heide
+            // Grondinversielaag of Convectieve pluimen boven de heide (met "Omgekeerde IJsberg" weergave)
             if (st.inv > 0) {
-                const invHeight = Math.min(groundY * 0.55, (st.inv / 3.8) * (groundY * 0.52));
-                const invGrad = ctx.createLinearGradient(0, groundY - invHeight, 0, groundY);
-                invGrad.addColorStop(0, 'rgba(16, 185, 129, 0.0)');
-                invGrad.addColorStop(1, 'rgba(16, 185, 129, 0.28)');
-                ctx.fillStyle = invGrad;
-                ctx.fillRect(0, groundY - invHeight, W, invHeight);
+                const invHeight = Math.min(groundY * 0.58, (st.inv / 3.8) * (groundY * 0.54));
 
-                ctx.strokeStyle = 'rgba(52, 211, 153, 0.5)';
-                ctx.setLineDash([5, 4]);
-                ctx.beginPath();
-                ctx.moveTo(0, groundY - invHeight);
-                ctx.lineTo(W, groundY - invHeight);
-                ctx.stroke();
-                ctx.setLineDash([]);
+                if (showIcebergMode) {
+                    // Visualiseer de "omgekeerde ijsberg onder water"
+                    const iceGrad = ctx.createLinearGradient(0, groundY - invHeight, 0, groundY);
+                    iceGrad.addColorStop(0, 'rgba(6, 182, 212, 0.05)');
+                    iceGrad.addColorStop(0.5, 'rgba(14, 165, 233, 0.25)');
+                    iceGrad.addColorStop(1, 'rgba(56, 189, 248, 0.50)'); // Koudste bodemlaag (ijsbergbasis)
+                    ctx.fillStyle = iceGrad;
 
-                ctx.fillStyle = '#6ee7b7';
-                ctx.font = '10px "JetBrains Mono", monospace';
-                ctx.fillText(`Stabiele Grondinversie (T₂ > T_s: +${st.inv.toFixed(2).replace('.', ',')} °C)`, 12, groundY - invHeight - 5);
+                    // Gestileerde ijsbergmassa aan de grond
+                    ctx.beginPath();
+                    ctx.moveTo(0, groundY);
+                    ctx.lineTo(0, groundY - invHeight * 0.45);
+                    ctx.bezierCurveTo(W * 0.25, groundY - invHeight * 1.05, W * 0.70, groundY - invHeight * 0.85, W, groundY - invHeight * 0.50);
+                    ctx.lineTo(W, groundY);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // IJsbergkristal-contour
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 1.75;
+                    ctx.beginPath();
+                    ctx.moveTo(0, groundY - invHeight * 0.45);
+                    ctx.bezierCurveTo(W * 0.25, groundY - invHeight * 1.05, W * 0.70, groundY - invHeight * 0.85, W, groundY - invHeight * 0.50);
+                    ctx.stroke();
+
+                    // Labels en fysische annotatie
+                    ctx.fillStyle = '#67e8f9';
+                    ctx.font = 'bold 10px "JetBrains Mono", monospace';
+                    ctx.fillText(`🧊 Omgekeerde IJsberg: Koude-reservoir aan de grond (T_s = ${st.T_s.toFixed(1).replace('.', ',')} °C < T₂ = ${st.T_2.toFixed(1).replace('.', ',')} °C)`, 12, groundY - invHeight - 8);
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '9px "JetBrains Mono", monospace';
+                    ctx.fillText(`Kouder dan lucht erboven • Drijft niet omhoog (stabiel: ∂T/∂z = +${(st.inv / 2.0).toFixed(2)} °C/m)`, 12, groundY - invHeight + 12);
+                } else {
+                    const invGrad = ctx.createLinearGradient(0, groundY - invHeight, 0, groundY);
+                    invGrad.addColorStop(0, 'rgba(16, 185, 129, 0.0)');
+                    invGrad.addColorStop(1, 'rgba(16, 185, 129, 0.28)');
+                    ctx.fillStyle = invGrad;
+                    ctx.fillRect(0, groundY - invHeight, W, invHeight);
+
+                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.5)';
+                    ctx.setLineDash([5, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(0, groundY - invHeight);
+                    ctx.lineTo(W, groundY - invHeight);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    ctx.fillStyle = '#6ee7b7';
+                    ctx.font = '10px "JetBrains Mono", monospace';
+                    ctx.fillText(`Stabiele Grondinversie (T₂ > T_s: +${st.inv.toFixed(2).replace('.', ',')} °C)`, 12, groundY - invHeight - 5);
+                }
             } else {
                 // Teken thermische convectiewervels (wanneer R_n > 0 en T_s > T_2)
                 ctx.strokeStyle = 'rgba(251, 146, 60, 0.35)';
@@ -4157,6 +4228,16 @@
                 title: "Paneel 6: Procrustes SVD 1889",
                 pass: Math.abs(detR - 1.0) < 1e-12,
                 detail: `θ=-46.60° s=0.15 det(R)=${detR.toFixed(6)} (Q4)`
+            });
+
+            // Test 17: Fysische "Omgekeerde IJsberg" Inversie-Conditie (Bodem kouder dan lucht bij 20:06 CEST)
+            const stIce = getTafelStateAt(20.1);
+            const isIcebergCondition = stIce && (stIce.T_s < stIce.T_2) && (stIce.inv > 2.0);
+            tests.push({
+                id: "T17",
+                title: "Paneel 4: Omgekeerde IJsberg Conditie",
+                pass: Boolean(isIcebergCondition),
+                detail: `T_s (${stIce.T_s.toFixed(1)}°C) < T₂ (${stIce.T_2.toFixed(1)}°C) → ΔT_inv=+${stIce.inv.toFixed(2)}°C`
             });
 
             const passCount = tests.filter(t => t.pass).length;
