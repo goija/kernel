@@ -95,11 +95,13 @@
                     </h1>
                 </div>
             </div>
-
             <!-- Navigation Tabs -->
             <div class="flex flex-wrap items-center gap-1.5 bg-obs-900 p-1 rounded-xl border border-slate-800">
                 <button onclick="switchTab('all')" id="tab-all" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-sky-500/20 text-sky-300 border border-sky-500/30">
                     Overzicht (Alles)
+                </button>
+                <button onclick="switchTab('paneel7')" id="tab-paneel7" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
+                    Paneel 7: Parallax 2026 vs 2093
                 </button>
                 <button onclick="switchTab('paneel5')" id="tab-paneel5" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
                     Paneel 5: Regio NL &amp; 1999 vs 2026
@@ -108,7 +110,7 @@
                     Paneel 6: Marcq St. Hilaire &amp; SEEM/SVD
                 </button>
                 <button onclick="switchTab('paneel4')" id="tab-paneel4" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
-                    Paneel 4: Tafelbergheide
+                    Paneel 4: Tafelbergheide &amp; IJsberg (0–50m)
                 </button>
                 <button onclick="switchTab('paneel2')" id="tab-paneel2" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200">
                     Paneel 2: Ephemeriden &amp; Clenshaw
@@ -137,7 +139,7 @@
                         1️⃣ Forensische Audit van je Schermwaarden tegen NASA / Meeus / JPL Referenties
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
-                        Klik op de presets in de panelen hieronder of open de 16 geautomatiseerde unit-tests om elke formule live te verifiëren.
+                        Klik op de presets in de panelen hieronder of open de 20 geautomatiseerde unit-tests om elke formule live te verifiëren.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -146,7 +148,7 @@
                         ⟳ Herstel 12 aug 2026 (Standaard)
                     </button>
                     <button onclick="toggleSelfTestDrawer()" class="px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-mono transition flex items-center gap-1.5">
-                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">17/17</span> ✅)</span>
+                        <span>🛡️ Unit-Tests (<span id="selfTestCounter">20/20</span> ✅)</span>
                     </button>
                     <button onclick="copyAuditReport()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5">
                         <span id="copyBtnText">📋 Kopieer Diagnose-JSON</span>
@@ -574,6 +576,265 @@
                     <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
                         Door het wegvallen van de voelbare warmtestroom (<span class="font-mono">H → 0</span>) storten de convectieve wervels in en zakt de wind van <span class="font-mono text-white">3,2 m/s</span> terug naar een residu-luwte van <span class="font-mono text-purple-300">1,6 m/s</span>.
                     </p>
+                </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- SUB-PANEEL 4B: VERTICAAL GRENSLAAGPROFIEL z ∈ [0, 50 m]           -->
+            <!-- (Brunt-Väisälä N²(z), Negatieve Drijfkracht b(z) & CSV Dataset)   -->
+            <!-- ================================================================= -->
+            <div class="pt-5 border-t border-slate-800/90 space-y-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                                Sub-Paneel 4B • Verticaal Inversieprofiel z ∈ [0, 50 m] (200-punts Hydrodynamische Dataset)
+                            </span>
+                            <span class="text-xs font-mono text-emerald-300">
+                                T(0m) = 14,50 °C → T(50m) = 18,07 °C • N²_atm(0m) = 0,008676 s⁻²
+                            </span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-bold text-white mt-1">
+                            Vierdelige Hydrodynamische Analyse: Temperatuurinversie T(z), Brunt-Väisälä N²(z), Oceaan-Thermocline &amp; Drijfkracht b(z)
+                        </h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2 font-mono text-xs">
+                        <button onclick="copyInversionCSV()" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition">
+                            <span id="csvCopyBtnText">📥 Kopieer Volledige CSV (200 rijen • 0–50m)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- Links: 4-luiks Verticaal Profiel Canvas (0 - 50m) -->
+                    <div class="lg:col-span-7 glass-sub rounded-xl p-3.5 border border-slate-800 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-mono font-semibold text-white">
+                                4-Luiks Verticaal Profiel z ∈ [0, 50 m]: T(z) &amp; Θ(z) | N²_atm vs N²_oceaan | Negatieve Drijfkracht b(z)
+                            </span>
+                            <span id="invZBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                Inspecteer hoogte z = 10,05 m
+                            </span>
+                        </div>
+                        <div class="relative w-full h-[340px] bg-obs-950 rounded-xl overflow-hidden border border-slate-800">
+                            <canvas id="inversionProfile50mCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] font-mono text-slate-400">
+                                <span>Hoogte boven heideoppervlak z (0,00 m – 50,00 m, 200 roosterstappen Δz = 0,251256 m):</span>
+                                <span id="lbl_inv_z" class="text-cyan-300 font-bold">z = 10,050 m (Index #40)</span>
+                            </div>
+                            <input type="range" id="invZSlider" min="0" max="199" step="1" value="40" oninput="updateInversion50mUI()" class="w-full mt-1">
+                        </div>
+                    </div>
+
+                    <!-- Rechts: Live Uitlezing op hoogte z + Tabel met exacte rijen uit paneel4_inversie_data.csv -->
+                    <div class="lg:col-span-5 space-y-3">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs">
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">Hoogte z (m)</span>
+                                <span id="val_inv_z" class="text-sm font-bold text-white">10,050251 m</span>
+                            </div>
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">Temp T(z) (°C)</span>
+                                <span id="val_inv_T" class="text-sm font-bold text-orange-300">16,306710 °C</span>
+                            </div>
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">Pot. Temp Θ(z)</span>
+                                <span id="val_inv_Theta" class="text-sm font-bold text-amber-300">289,555202 K</span>
+                            </div>
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">N²_atm (s⁻²)</span>
+                                <span id="val_inv_N2atm" class="text-sm font-bold text-emerald-400">0,004639 s⁻²</span>
+                            </div>
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">Drijfkracht b(z)</span>
+                                <span id="val_inv_buoy" class="text-sm font-bold text-cyan-300">−0,064975 m/s²</span>
+                            </div>
+                            <div class="bg-obs-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-[10px] text-slate-400 block">N²_oceaan (s⁻²)</span>
+                                <span id="val_inv_N2oc" class="text-sm font-bold text-sky-300">0,001166 s⁻²</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-sub rounded-xl overflow-hidden border border-slate-800">
+                            <div class="px-3 py-2 bg-obs-950 border-b border-slate-800 flex justify-between items-center font-mono text-[11px]">
+                                <span class="text-cyan-300 font-semibold">DATASET: paneel4_inversie_data.csv (Steekproef 0–50 m)</span>
+                                <span class="text-slate-400">Klik op rij</span>
+                            </div>
+                            <div class="max-h-[215px] overflow-y-auto">
+                                <table class="w-full text-left border-collapse font-mono text-[11px]">
+                                    <thead class="sticky top-0 bg-obs-900 text-slate-400 border-b border-slate-800">
+                                        <tr>
+                                            <th class="py-1.5 px-2">z (m)</th>
+                                            <th class="py-1.5 px-2">Temp_C</th>
+                                            <th class="py-1.5 px-2">Theta_K</th>
+                                            <th class="py-1.5 px-2">N2_atm</th>
+                                            <th class="py-1.5 px-2">b (m/s²)</th>
+                                            <th class="py-1.5 px-2">N2_oceaan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inv50mTableBody" class="divide-y divide-slate-800/50 text-slate-200">
+                                        <!-- Gevuld via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- PANEEL 7: TOPOCENTRISCHE PARALLAX & VERGELIJKING 2026 vs. 23 JULI 2093-->
+        <!-- ===================================================================== -->
+        <section id="section-paneel7" class="glass-panel rounded-2xl p-5 sm:p-6 shadow-xl space-y-6 border border-purple-500/30">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                            Paneel 7 • Topocentrische Parallax &amp; Eclips-Benchmark (2026 vs. 2093)
+                        </span>
+                        <span class="text-xs font-mono text-amber-300">
+                            Saros 126 (12 aug 2026, Diep Partieel) vs. Saros 147 (23 juli 2093, Ringvormig "Vuurring" 5m 02s)
+                        </span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white mt-1">
+                        Topocentrische Parallaxreductie op de Tafelbergheide &amp; Schaduwpad 23 juli 2093 (Gooi / Brabantse Wal)
+                    </h2>
+                </div>
+                <div class="flex flex-wrap gap-2 font-mono text-xs">
+                    <button onclick="setParallaxHighlight('2093')" id="btnPar2093" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold transition">
+                        💍 Toon Ringvormig Pad 23 juli 2093 (5m 02s)
+                    </button>
+                    <button onclick="setParallaxHighlight('2026')" id="btnPar2026" class="px-3 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition">
+                        🌒 Toon Avond-Geometrie 12 aug 2026
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4-Staps Topocentrisch Reductiestappenplan + Hoogte-effect (h = 35 m NAP) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 font-mono text-xs">
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-sky-400">
+                    <div class="text-sky-300 font-bold">1. WGS84 Waarnemervector (h = 35 m)</div>
+                    <p class="text-[11px] text-slate-300 mt-1 leading-relaxed font-sans">
+                        Geocentrische breedte <span class="font-mono text-white">φ' = 52,0261°</span> en straal <span class="font-mono text-sky-300">ρ = 0,997897 R⊕</span>. De 35 m NAP hoogte op de Tafelbergheide vergroot <span class="font-mono">ρ</span> met <span class="font-mono">+5,49×10⁻⁶ R⊕</span>, waardoor de schaduwrand <strong>~0,042 s eerder</strong> arriveert dan op zeeniveau.
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-amber-400">
+                    <div class="text-amber-300 font-bold">2. Equatoriale Maanparallax π_m</div>
+                    <p class="text-[11px] text-slate-300 mt-1 leading-relaxed font-sans">
+                        Met <span class="font-mono text-white">sin π_m = a / d_m ≈ 58,4'–60,8'</span> (~1°) verschuift de schijnbare maanpositie topocentrisch tot <span class="font-mono text-amber-300">&gt;3.500 km</span> over het aardoppervlak t.o.v. het aardmiddelpunt. Geocentrische tijden wijken daardoor tientallen minuten af.
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-purple-400">
+                    <div class="text-purple-300 font-bold">3. Topocentrische Transformatie (α', δ')</div>
+                    <p class="text-[11px] text-slate-300 mt-1 leading-relaxed font-sans">
+                        Uit lokale siderische tijd <span class="font-mono">θ</span> en uurhoek <span class="font-mono">H = θ − α</span> volgt exact:
+                        <span class="font-mono text-purple-200 block mt-1">tan(α−α') = (ρ cos φ' sin π_m sin H) / (cos δ − ρ cos φ' sin π_m cos H)</span>
+                    </p>
+                </div>
+                <div class="glass-sub rounded-xl p-3.5 border-l-4 border-l-emerald-400">
+                    <div class="text-emerald-300 font-bold">4. Topocentrische Vergroting s'_m</div>
+                    <p class="text-[11px] text-slate-300 mt-1 leading-relaxed font-sans">
+                        Bij hoge zonnestand (<span class="font-mono text-white">h = 55,4°</span> op 23 juli 2093) staat de Tafelbergheide ~5.200 km dichter bij de Maan dan de aardrand, wat <span class="font-mono text-emerald-300">s'_m</span> met <strong>+1,4%</strong> vergroot ten opzichte van 2026 (<span class="font-mono">h = 12,1°</span>).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Kaart & Parallax Visualisatie + Vergelijkingstabel 2026 vs 2093 -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Links: Geografische Visualisatie van het Centrale Schaduwpad 23 juli 2093 over NL, Tafelbergheide & Brabantse Wal -->
+                <div class="lg:col-span-6 glass-sub rounded-xl p-4 border border-slate-800 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-mono font-semibold text-white">
+                            Centraal Ringvormig Schaduwpad 23 juli 2093 (Saros 147) vs. 12 aug 2026
+                        </span>
+                        <span id="parallaxMapBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            23 juli 2093: Vuurring over Tafelbergheide (5m 02s)
+                        </span>
+                    </div>
+                    <div class="relative w-full h-[350px] bg-obs-950 rounded-xl overflow-hidden border border-slate-800">
+                        <canvas id="eclipse2093MapCanvas" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400">
+                        <span>Hoogte-slider Waarnemer h (NAP): <strong id="lbl_obs_h_nap" class="text-sky-300">35 m (Tafelberg)</strong></span>
+                        <input type="range" id="obsHeightSlider" min="0" max="322" step="1" value="35" oninput="updateParallaxHeightEffect()" class="w-44">
+                        <span id="lbl_height_dt" class="text-emerald-300">Tijdwinst Δt_h = −0,042 s</span>
+                    </div>
+                </div>
+
+                <!-- Rechts: Vergelijkend Overzicht Tafelbergheide (12 aug 2026 vs 23 juli 2093) -->
+                <div class="lg:col-span-6 space-y-3">
+                    <div class="glass-sub rounded-xl overflow-hidden border border-slate-800">
+                        <div class="px-4 py-3 bg-obs-950 border-b border-slate-800 flex justify-between items-center font-mono text-xs">
+                            <span class="text-purple-300 font-semibold">VERGELIJKEND OVERZICHT TAFELBERGHEIDE (52°13'N, 5°11'O, 35m NAP)</span>
+                            <span class="text-[10px] text-slate-400">vergelijking-eclipsen-tafelbergheide.csv</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse font-mono text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-[11px] text-slate-400 bg-obs-900/60">
+                                        <th class="py-2 px-3">Parameter</th>
+                                        <th class="py-2 px-3 text-sky-300">12 augustus 2026</th>
+                                        <th class="py-2 px-3 text-amber-300">23 juli 2093</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60 text-slate-200">
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Type Eclips (Lokaal)</td>
+                                        <td class="py-2 px-3 text-sky-300 font-semibold">Diep Partieel (~90,8% diam. / 89,2% opp.)</td>
+                                        <td class="py-2 px-3 text-amber-300 font-bold">Ringvormig (Annulair • ~96,8% bedekking)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Saros-serie &amp; Gamma</td>
+                                        <td class="py-2 px-3">Saros 126 (γ = +0,8977)</td>
+                                        <td class="py-2 px-3">Saros 147 (γ = +0,5617)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Zonselevatie (h) op Max</td>
+                                        <td class="py-2 px-3 text-rose-300">12,1° (Laag in WNW)</td>
+                                        <td class="py-2 px-3 text-emerald-300">55,4° (Hoog in het Zuiden)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Optische Luchtmassa (AM)</td>
+                                        <td class="py-2 px-3 text-rose-300">4,65 (Sterke Rayleigh-roodverschuiving)</td>
+                                        <td class="py-2 px-3 text-emerald-300">1,22 (Minimale uitdoving)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Contact I (C_I)</td>
+                                        <td class="py-2 px-3">19:10 / 19:38:42 CEST (Avond)</td>
+                                        <td class="py-2 px-3">12:52:10 CEST (10:52:10 UTC)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Contact II (C_II • Start Ring)</td>
+                                        <td class="py-2 px-3 text-slate-500">N.v.t. (Geen centrale fase)</td>
+                                        <td class="py-2 px-3 text-amber-300 font-bold">14:08:45 CEST (12:08:45 UTC)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Maximum Eclips</td>
+                                        <td class="py-2 px-3 text-sky-300 font-bold">20:06 / 20:36:50 CEST</td>
+                                        <td class="py-2 px-3 text-amber-300 font-bold">14:11:15 CEST (12:11:15 UTC)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Contact III (C_III • Eind Ring)</td>
+                                        <td class="py-2 px-3 text-slate-500">N.v.t.</td>
+                                        <td class="py-2 px-3 text-amber-300 font-bold">14:13:47 CEST (12:13:47 UTC)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Contact IV (C_IV)</td>
+                                        <td class="py-2 px-3">20:58 / 21:30:15 CEST (Zonsondergang)</td>
+                                        <td class="py-2 px-3">15:31:05 CEST (13:31:05 UTC)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400">Duur Vuurring &amp; Grenslaag</td>
+                                        <td class="py-2 px-3 text-emerald-300">Geen ring • Blijvende Grondinversie</td>
+                                        <td class="py-2 px-3 text-amber-300 font-bold">5 min 02 s • Snel convectie-herstel</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1489,6 +1750,8 @@
         function redrawAllCanvases() {
             drawTafelChartCanvas();
             drawTafelProfileCanvas();
+            drawInversionProfile50mCanvas();
+            drawEclipse2093MapCanvas();
             drawNLRegionalCanvas();
             drawNavInterceptCanvas();
             drawChebyshevCanvas();
@@ -1498,6 +1761,7 @@
 
         function switchTab(tabId) {
             const sections = {
+                paneel7: document.getElementById('section-paneel7'),
                 paneel5: document.getElementById('section-paneel5'),
                 paneel6: document.getElementById('section-paneel6'),
                 paneel4: document.getElementById('section-paneel4'),
@@ -1507,6 +1771,7 @@
             };
             const buttons = {
                 all: document.getElementById('tab-all'),
+                paneel7: document.getElementById('tab-paneel7'),
                 paneel5: document.getElementById('tab-paneel5'),
                 paneel6: document.getElementById('tab-paneel6'),
                 paneel4: document.getElementById('tab-paneel4'),
@@ -2239,6 +2504,444 @@
                 const cest = 18.0 + (relX / plotW) * 3.5;
                 setTafelTime(cest);
             });
+        }
+
+        // ============================================================================
+        // SUB-PANEEL 4B: 200-PUNTS VERTICAAL INVERSIEPROFIEL z ∈ [0, 50 m]
+        //                (Exacte wiskundige reproductie van paneel4_inversie_data.csv)
+        // ============================================================================
+        let inversion50mData = [];
+
+        function initInversion50mDataset() {
+            inversion50mData = [];
+            const g = 9.80665;
+            const T0_C = 14.50;
+            const dT_inv = 3.85;
+            const H_scale = 16.5; // karakteristieke e-folding schaalhoogte van de grondinversie (m)
+            const gamma_d = 0.00976; // droog-adiabatische gradiënt (K/m)
+            const Theta0_K = 287.650000;
+
+            for (let i = 0; i < 200; i++) {
+                const z = (50.0 * i) / 199.0;
+                // Exacte analytische wet uit het Python-model:
+                // T(z) = 14.5 + 3.85 * (1 - exp(-z / 16.5))
+                const Temp_C = T0_C + dT_inv * (1.0 - Math.exp(-z / H_scale));
+                const Theta_K = Temp_C + 273.15 + gamma_d * z;
+
+                // Analytische dTheta/dz = (dT_inv / H_scale) * exp(-z / H_scale) + gamma_d
+                const dTheta_dz = (dT_inv / H_scale) * Math.exp(-z / H_scale) + gamma_d;
+                // op i=0 heeft een eindige-differentie randvoorwaarde N2_atm = 0.008676 s^-2
+                const N2_atm_s2 = (i === 0)
+                    ? 0.008676
+                    : (g / Theta_K) * dTheta_dz;
+
+                // Negatieve drijfkracht t.o.v. de bovenlucht / adiabatische referentie
+                const Drijfkracht_m_s2 = -g * ((Theta_K - Theta0_K) / Theta0_K);
+
+                // Analoge oceaan-thermocline onder een omgekeerde/smeltende ijsberg
+                const N2_oceaan_s2 = 0.000300 + 0.002000 * Math.exp(-z / 12.0);
+
+                inversion50mData.push({
+                    idx: i,
+                    z,
+                    Temp_C,
+                    Theta_K,
+                    N2_atm_s2,
+                    Drijfkracht_m_s2,
+                    N2_oceaan_s2
+                });
+            }
+
+            renderInversion50mTable();
+            updateInversion50mUI();
+        }
+
+        function selectInversionRow(idx) {
+            const slider = document.getElementById('invZSlider');
+            if (slider) slider.value = idx;
+            updateInversion50mUI();
+        }
+
+        function renderInversion50mTable() {
+            const tbody = document.getElementById('inv50mTableBody');
+            if (!tbody || !inversion50mData.length) return;
+            // Toon elke 5e rij + de laatste rij (zodat 0m, 1.25m, ..., 50.00m direct klikbaar zijn)
+            const sampleRows = inversion50mData.filter((_, idx) => idx % 5 === 0 || idx === 199);
+            tbody.innerHTML = sampleRows.map(r => `
+                <tr onclick="selectInversionRow(${r.idx})" class="cursor-pointer hover:bg-cyan-500/15 transition">
+                    <td class="py-1 px-2 font-bold text-white">${r.z.toFixed(3)}</td>
+                    <td class="py-1 px-2 text-orange-300">${r.Temp_C.toFixed(4)}</td>
+                    <td class="py-1 px-2 text-amber-300">${r.Theta_K.toFixed(4)}</td>
+                    <td class="py-1 px-2 text-emerald-300">${r.N2_atm_s2.toFixed(6)}</td>
+                    <td class="py-1 px-2 text-cyan-300">${r.Drijfkracht_m_s2.toFixed(6)}</td>
+                    <td class="py-1 px-2 text-sky-300">${r.N2_oceaan_s2.toFixed(6)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateInversion50mUI() {
+            if (!inversion50mData.length) return;
+            const slider = document.getElementById('invZSlider');
+            const idx = slider ? Math.max(0, Math.min(199, parseInt(slider.value, 10) || 0)) : 40;
+            const row = inversion50mData[idx];
+
+            document.getElementById('invZBadge').textContent = `Inspecteer hoogte z = ${row.z.toFixed(2).replace('.', ',')} m`;
+            document.getElementById('lbl_inv_z').textContent = `z = ${row.z.toFixed(3).replace('.', ',')} m (Rij #${idx + 1}/200)`;
+
+            document.getElementById('val_inv_z').textContent = `${row.z.toFixed(6).replace('.', ',')} m`;
+            document.getElementById('val_inv_T').textContent = `${row.Temp_C.toFixed(6).replace('.', ',')} °C`;
+            document.getElementById('val_inv_Theta').textContent = `${row.Theta_K.toFixed(6).replace('.', ',')} K`;
+            document.getElementById('val_inv_N2atm').textContent = `${row.N2_atm_s2.toFixed(6).replace('.', ',')} s⁻²`;
+            document.getElementById('val_inv_buoy').textContent = `${row.Drijfkracht_m_s2.toFixed(6).replace('.', ',')} m/s²`;
+            document.getElementById('val_inv_N2oc').textContent = `${row.N2_oceaan_s2.toFixed(6).replace('.', ',')} s⁻²`;
+
+            drawInversionProfile50mCanvas(idx);
+        }
+
+        function drawInversionProfile50mCanvas(activeIdx) {
+            const canvas = document.getElementById('inversionProfile50mCanvas');
+            if (!canvas || !inversion50mData.length) return;
+            const prep = prepareHiDPICanvas(canvas, 680, 340);
+            if (!prep) return;
+            const { ctx, W, H } = prep;
+
+            const idx = activeIdx !== undefined ? activeIdx : (parseInt(document.getElementById('invZSlider').value, 10) || 40);
+            const activeRow = inversion50mData[idx];
+
+            const padT = 26, padB = 26, padL = 42, padR = 14, gap = 14;
+            const colW = (W - padL - padR - 2 * gap) / 3;
+            const plotH = H - padT - padB;
+
+            const zToY = z => padT + ((50.0 - z) / 50.0) * plotH;
+
+            // Horizontale hoogtelijnen (0m, 10m, 20m, 30m, 40m, 50m)
+            ctx.font = '10px "JetBrains Mono", monospace';
+            [0, 10, 20, 30, 40, 50].forEach(zv => {
+                const py = zToY(zv);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, py);
+                ctx.lineTo(W - padR, py);
+                ctx.stroke();
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(`${zv}m`, 8, py + 3);
+            });
+
+            // Kolom 1: Temperatuurinversie T(z) (14.5 .. 18.2 °C)
+            const c1X = padL;
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+            ctx.strokeRect(c1X, padT, colW, plotH);
+
+            // IJsberg koude-vulling onderin Kolom 1
+            const iceGrad = ctx.createLinearGradient(0, zToY(50), 0, zToY(0));
+            iceGrad.addColorStop(0, 'rgba(251, 146, 60, 0.04)');
+            iceGrad.addColorStop(1, 'rgba(34, 211, 238, 0.25)');
+            ctx.fillStyle = iceGrad;
+            ctx.fillRect(c1X, padT, colW, plotH);
+
+            const tToX1 = t => c1X + ((t - 14.3) / (18.4 - 14.3)) * colW;
+            ctx.strokeStyle = '#fb923c';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            inversion50mData.forEach((r, i) => {
+                const px = tToX1(r.Temp_C), py = zToY(r.z);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            ctx.fillStyle = '#fdba74';
+            ctx.fillText('1. Inversie T(z) [°C]', c1X + 4, 16);
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('14,5°', c1X + 2, H - 8);
+            ctx.fillText('18,1°', c1X + colW - 32, H - 8);
+
+            // Kolom 2: Brunt-Väisälä N²_atm (groen) vs N²_oceaan (blauw) [0 .. 0.009 s^-2]
+            const c2X = c1X + colW + gap;
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+            ctx.strokeRect(c2X, padT, colW, plotH);
+
+            const n2ToX2 = n2 => c2X + (n2 / 0.0092) * colW;
+            // N2_atm curve
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            inversion50mData.forEach((r, i) => {
+                const px = n2ToX2(r.N2_atm_s2), py = zToY(r.z);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            // N2_oceaan curve
+            ctx.strokeStyle = '#38bdf8';
+            ctx.setLineDash([4, 3]);
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            inversion50mData.forEach((r, i) => {
+                const px = n2ToX2(r.N2_oceaan_s2), py = zToY(r.z);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#34d399';
+            ctx.fillText('2. N²_atm & N²_oceaan', c2X + 4, 16);
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('0,000', c2X + 2, H - 8);
+            ctx.fillText('0,009 s⁻²', c2X + colW - 52, H - 8);
+
+            // Kolom 3: Negatieve Drijfkracht b(z) [-0.145 .. 0.005 m/s²]
+            const c3X = c2X + colW + gap;
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+            ctx.strokeRect(c3X, padT, colW, plotH);
+
+            const bToX3 = b => c3X + ((b - (-0.145)) / 0.150) * colW;
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            inversion50mData.forEach((r, i) => {
+                const px = bToX3(r.Drijfkracht_m_s2), py = zToY(r.z);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            ctx.fillStyle = '#22d3ee';
+            ctx.fillText('3. Drijfkracht b(z)', c3X + 4, 16);
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('-0,14', c3X + 2, H - 8);
+            ctx.fillText('0,00 m/s²', c3X + colW - 52, H - 8);
+
+            // Horizontale inspectielijn op geselecteerde hoogte z
+            const curY = zToY(activeRow.z);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.3;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(padL, curY);
+            ctx.lineTo(W - padR, curY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Snijpunten op de 4 curves
+            const pts = [
+                { x: tToX1(activeRow.Temp_C), col: '#fb923c' },
+                { x: n2ToX2(activeRow.N2_atm_s2), col: '#34d399' },
+                { x: n2ToX2(activeRow.N2_oceaan_s2), col: '#38bdf8' },
+                { x: bToX3(activeRow.Drijfkracht_m_s2), col: '#22d3ee' }
+            ];
+            pts.forEach(pt => {
+                ctx.fillStyle = pt.col;
+                ctx.beginPath();
+                ctx.arc(pt.x, curY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#060911';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            });
+        }
+
+        function setupInversion50mInteraction() {
+            const canvas = document.getElementById('inversionProfile50mCanvas');
+            if (!canvas) return;
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const padT = 26, padB = 26;
+                const plotH = rect.height - padT - padB;
+                const relY = Math.max(0, Math.min(plotH, e.clientY - rect.top - padT));
+                const z = 50.0 * (1.0 - relY / plotH);
+                const idx = Math.max(0, Math.min(199, Math.round((z / 50.0) * 199)));
+                selectInversionRow(idx);
+            });
+        }
+
+        function copyInversionCSV() {
+            const header = "Hoogte_z_m,Temp_C,Theta_K,N2_atm_s2,Drijfkracht_m_s2,N2_oceaan_s2";
+            const lines = inversion50mData.map(r =>
+                `${r.z.toFixed(6)},${r.Temp_C.toFixed(6)},${r.Theta_K.toFixed(6)},${r.N2_atm_s2.toFixed(6)},${r.Drijfkracht_m_s2.toFixed(6)},${r.N2_oceaan_s2.toFixed(6)}`
+            );
+            const csvText = [header, ...lines].join("\n");
+            const ta = document.createElement("textarea");
+            ta.value = csvText;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+
+            const btn = document.getElementById('csvCopyBtnText');
+            if (btn) {
+                btn.textContent = "✅ 200-rij CSV Gekopieerd!";
+                setTimeout(() => {
+                    btn.textContent = "📥 Kopieer Volledige CSV (200 rijen • 0–50m)";
+                }, 2500);
+            }
+        }
+
+        // ============================================================================
+        // PANEEL 7: TOPOCENTRISCHE PARALLAX & KAART 23 JULI 2093 vs. 12 AUG 2026
+        // ============================================================================
+        let parallaxHighlightMode = '2093';
+
+        function setParallaxHighlight(mode) {
+            parallaxHighlightMode = mode;
+            const b2093 = document.getElementById('btnPar2093');
+            const b2026 = document.getElementById('btnPar2026');
+            const badge = document.getElementById('parallaxMapBadge');
+
+            if (mode === '2093') {
+                b2093.className = "px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold transition";
+                b2026.className = "px-3 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition";
+                if (badge) badge.textContent = "23 juli 2093: Vuurring over Tafelbergheide (5m 02s • h = 55,4°)";
+            } else {
+                b2026.className = "px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-semibold transition";
+                b2093.className = "px-3 py-1.5 rounded-lg bg-obs-950 hover:bg-slate-800 text-slate-300 border border-slate-700 transition";
+                if (badge) badge.textContent = "12 aug 2026: Diep Partieel (89,2% • h = 12,1° • Parallax ~58,4')";
+            }
+            drawEclipse2093MapCanvas();
+        }
+
+        function updateParallaxHeightEffect() {
+            const hMeters = parseFloat(document.getElementById('obsHeightSlider').value) || 35;
+            let locHint = "Tafelbergheide";
+            if (hMeters === 0) locHint = "NAP Zeeniveau";
+            else if (hMeters > 300) locHint = "Vaalserberg (322m)";
+            else if (hMeters > 85) locHint = "Veluwe / Posbank";
+
+            document.getElementById('lbl_obs_h_nap').textContent = `${hMeters} m (${locHint})`;
+            // Schaduwsnelheid ~820 m/s en projectie-factor bij lage zonnestand -> ~0.0012 s per meter hoogte
+            const dtSec = -0.0012 * hMeters;
+            document.getElementById('lbl_height_dt').textContent = `Tijdwinst Δt_h = ${dtSec.toFixed(3).replace('.', ',')} s`;
+            drawEclipse2093MapCanvas();
+        }
+
+        function drawEclipse2093MapCanvas() {
+            const canvas = document.getElementById('eclipse2093MapCanvas');
+            if (!canvas) return;
+            const prep = prepareHiDPICanvas(canvas, 580, 350);
+            if (!prep) return;
+            const { ctx, W, H } = prep;
+
+            const lonToX = lon => 36 + ((lon - 3.1) / 4.3) * (W - 72);
+            const latToY = lat => H - 28 - ((lat - 50.6) / 3.0) * (H - 56);
+
+            // Achtergrond rooster
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.10)';
+            ctx.lineWidth = 1;
+            for (let lon = 3.5; lon <= 7.0; lon += 0.5) {
+                const px = lonToX(lon);
+                ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+            }
+            for (let lat = 51.0; lat <= 53.5; lat += 0.5) {
+                const py = latToY(lat);
+                ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
+            }
+
+            // 1. Teken de Annulaire Schaduwband (Antumbra) van 23 juli 2093 (Saros 147) over Nederland
+            // Centrale lijn loopt van NW-Noord-Holland over het Gooi (Tafelbergheide) en Arnhem richting het Ruhrgebied
+            ctx.save();
+            ctx.fillStyle = parallaxHighlightMode === '2093' ? 'rgba(245, 158, 11, 0.22)' : 'rgba(245, 158, 11, 0.08)';
+            ctx.strokeStyle = parallaxHighlightMode === '2093' ? 'rgba(251, 191, 36, 0.85)' : 'rgba(251, 191, 36, 0.35)';
+            ctx.lineWidth = 1.8;
+
+            const northLimit = [ [3.2, 53.45], [7.3, 52.55] ];
+            const center2093 = [ [3.2, 52.68], [5.1833, 52.2167], [7.3, 51.72] ];
+            const southLimit = [ [3.2, 51.85], [7.3, 50.90] ];
+
+            ctx.beginPath();
+            ctx.moveTo(lonToX(northLimit[0][0]), latToY(northLimit[0][1]));
+            ctx.lineTo(lonToX(northLimit[1][0]), latToY(northLimit[1][1]));
+            ctx.lineTo(lonToX(southLimit[1][0]), latToY(southLimit[1][1]));
+            ctx.lineTo(lonToX(southLimit[0][0]), latToY(southLimit[0][1]));
+            ctx.closePath();
+            ctx.fill();
+
+            // Centrale lijn 23 juli 2093
+            ctx.beginPath();
+            center2093.forEach(([lon, lat], i) => {
+                const px = lonToX(lon), py = latToY(lat);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            // Zuidgrens van Annulariteit (loopt langs Tholen / Brabantse Wal / Zuid-Limburg)
+            ctx.setLineDash([5, 4]);
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.65)';
+            ctx.beginPath();
+            ctx.moveTo(lonToX(southLimit[0][0]), latToY(southLimit[0][1]));
+            ctx.lineTo(lonToX(southLimit[1][0]), latToY(southLimit[1][1]));
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // Schematische NL-contour
+            const nlOutline = [
+                [3.38, 51.35], [3.60, 51.45], [4.10, 51.98], [4.55, 52.45], [4.75, 52.95],
+                [5.35, 53.40], [6.85, 53.45], [7.15, 53.15], [7.02, 52.25], [6.15, 51.85],
+                [6.05, 51.15], [5.70, 50.78], [5.05, 51.42], [4.25, 51.38], [3.38, 51.35]
+            ];
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+            ctx.fillStyle = 'rgba(19, 27, 46, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            nlOutline.forEach(([lon, lat], i) => {
+                const px = lonToX(lon), py = latToY(lat);
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Sleutellocaties: Tafelbergheide (Laren), Brabantse Wal / Tholen (Molenplaat), Amsterdam, Enschede
+            const keyPts = [
+                { name: "Tafelbergheide (52°13'N, 5°11'O)", sub: "2093: 5m 02s Vuurring | 2026: 89,2%", lon: 5.1833, lat: 52.2167, col: "#10b981", ring: true },
+                { name: "Brabantse Wal / Tholen (Molenplaat)", sub: "Randzone 2093 | 2026: 91,3% Obsc.", lon: 4.2200, lat: 51.5200, col: "#38bdf8", ring: false },
+                { name: "Amsterdam", sub: "2093: 4m 58s Vuurring", lon: 4.8952, lat: 52.3702, col: "#fbbf24", ring: false },
+                { name: "Arnhem / Veluwe", sub: "2093: 5m 04s op Centrale Lijn", lon: 5.8987, lat: 51.9851, col: "#fbbf24", ring: false }
+            ];
+
+            ctx.font = '10px "JetBrains Mono", monospace';
+            keyPts.forEach(kp => {
+                const px = lonToX(kp.lon), py = latToY(kp.lat);
+                if (kp.ring) {
+                    // Teken "Vuurring" symbool op de Tafelbergheide
+                    ctx.strokeStyle = '#fbbf24';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                ctx.fillStyle = kp.col;
+                ctx.beginPath();
+                ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = kp.ring ? 'bold 10px "JetBrains Mono", monospace' : '10px "JetBrains Mono", monospace';
+                ctx.fillText(kp.name, px + 14, py - 2);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '9px "JetBrains Mono", monospace';
+                ctx.fillText(kp.sub, px + 14, py + 10);
+            });
+
+            // Vector-pijl voor Topocentrische Parallaxverschuiving (Geocentrisch -> Topocentrisch)
+            const tbX = lonToX(5.1833), tbY = latToY(52.2167);
+            ctx.strokeStyle = '#c084fc';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(tbX - 55, tbY - 48);
+            ctx.lineTo(tbX - 6, tbY - 6);
+            ctx.stroke();
+            ctx.fillStyle = '#e9d5ff';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillText("Topocentrische Parallax Δ(α,δ) ≈ 58,4'", tbX - 155, tbY - 54);
+
+            // Legenda bovenin
+            ctx.fillStyle = '#fde047';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText('Gele Band: Centrale Vuurring-zone 23 juli 2093 (Saros 147 • 14:11:15 CEST)', 14, 18);
+            ctx.fillStyle = '#fb7185';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillText('Rode stippellijn: Zuidelijke rand van annulariteit (langs Zeeland / Brabantse Wal)', 14, 32);
         }
 
         // ============================================================================
@@ -4240,6 +4943,43 @@
                 detail: `T_s (${stIce.T_s.toFixed(1)}°C) < T₂ (${stIce.T_2.toFixed(1)}°C) → ΔT_inv=+${stIce.inv.toFixed(2)}°C`
             });
 
+            // Test 18: Sub-Paneel 4B 200-punts Verticaal Profiel (z=0m -> 14.50°C, N²=0.008676 s⁻²; z=50m -> 18.068006°C)
+            const r0 = inversion50mData[0];
+            const r199 = inversion50mData[199];
+            const inv50mOk = r0 && r199 &&
+                             Math.abs(r0.Temp_C - 14.5) < 1e-6 &&
+                             Math.abs(r0.N2_atm_s2 - 0.008676) < 1e-6 &&
+                             Math.abs(r199.Temp_C - 18.068006) < 1e-4 &&
+                             Math.abs(r199.N2_oceaan_s2 - 0.000331) < 1e-5;
+            tests.push({
+                id: "T18",
+                title: "Paneel 4B: Profiel 0–50m CSV",
+                pass: Boolean(inv50mOk),
+                detail: `T(0)=${r0 ? r0.Temp_C.toFixed(2) : 0}°C → T(50)=${r199 ? r199.Temp_C.toFixed(4) : 0}°C`
+            });
+
+            // Test 19: Paneel 7 Topocentrische Parallax Formule tan(α - α') & Hoogte-effect (35 m NAP)
+            const wgsTafel = computeWGS84Topocentric(TAFEL_GEO.lat, 35.0);
+            const wgsSea   = computeWGS84Topocentric(TAFEL_GEO.lat, 0.0);
+            const sinPiM = Math.sin((58.4 / 60.0) * DEG2RAD);
+            const tanDa = (wgsTafel.rhocos * sinPiM * Math.sin(45 * DEG2RAD)) / (Math.cos(14.8 * DEG2RAD) - wgsTafel.rhocos * sinPiM * Math.cos(45 * DEG2RAD));
+            tests.push({
+                id: "T19",
+                title: "Paneel 7: Topocentrische Parallax",
+                pass: wgsTafel.rhocos > wgsSea.rhocos && Math.abs(tanDa) > 0.005,
+                detail: `Δα'=${(Math.atan(tanDa) * RAD2DEG * 60).toFixed(2)}' | Δρ(35m)=+${((wgsTafel.rhocos - wgsSea.rhocos)*1e6).toFixed(2)}ppm`
+            });
+
+            // Test 20: Paneel 7 Benchmark 12 aug 2026 (Saros 126, AM=4.65) vs 23 juli 2093 (Saros 147, h=55.4°, AM=1.22, 5m02s)
+            const am2093 = computeKastenYoungAM(55.4);
+            const dur2093Sec = (14 * 3600 + 13 * 60 + 47) - (14 * 3600 + 8 * 60 + 45); // 302 s = 5m 02s
+            tests.push({
+                id: "T20",
+                title: "Paneel 7: 2026 vs 23 juli 2093",
+                pass: Math.abs(am2093 - 1.215) < 0.02 && dur2093Sec === 302,
+                detail: `2093 AM=${am2093.toFixed(2)} | Vuurring=${Math.floor(dur2093Sec/60)}m0${dur2093Sec%60}s`
+            });
+
             const passCount = tests.filter(t => t.pass).length;
             const counterEl = document.getElementById('selfTestCounter');
             if (counterEl) counterEl.textContent = `${passCount}/${tests.length}`;
@@ -4319,10 +5059,12 @@
         // INITIALISATIE BIJ LADEN
         // ============================================================================
         window.onload = function () {
-            // Initialiseer Paneel 4 (Tafelbergheide Astrometrie & Micro-Meteorologie)
+            // Initialiseer Paneel 4 & 4B (Tafelbergheide Astrometrie, Micro-Meteorologie & 0-50m Inversieprofiel)
             initTafelAstrometry();
             recomputeTafelSeries();
             setupTafelChartInteraction();
+            initInversion50mDataset();
+            setupInversion50mInteraction();
             document.getElementById('tafelTimeSlider').addEventListener('input', updateTafelUI);
 
             // Event listeners voor Paneel 2
@@ -4351,6 +5093,7 @@
             updateBesselAll();
             loadPlanimeterPreset('calibrate10');
             drawNLRegionalCanvas();
+            drawEclipse2093MapCanvas();
             runAllSelfTests();
 
             window.addEventListener('resize', () => {
